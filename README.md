@@ -16,13 +16,76 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+### Generators
 
-    $ gem install artemis
+#### Endpoint installer
 
-## Usage
+```sh
+$ rails g graphql:install metaphysics https://metaphysics-production.artsy.net/
+```
 
-TODO: Write usage instructions here
+**This has not yet been implemented.**
+
+#### Query file generator
+
+```sh
+$ rails g graphql:query Artist
+```
+
+**This has not yet been implemented.**
+
+## Examples
+
+```yml
+# config/graphql.yml
+development:
+  metaphysics:
+    url: https://metaphysics-production.artsy.net/
+```
+
+```ruby
+# app/queries/metaphysics.rb
+class Metaphysics < Artemis::Client
+end
+```
+
+```graphql
+# app/queries/metaphysics/artwork.graphql
+query($id: String!) {
+  artwork(id: $id) {
+    title
+  }
+}
+
+# app/queries/metaphysics/me.graphql
+query {
+  me {
+    name
+  }
+}
+```
+
+```ruby
+results = Metaphysics.artwork(id: "andy-warhol-john-wayne-1986-number-377-cowboys-and-indians")
+results.data
+# => {
+#      "data": {
+#        "artwork": {
+#          "title": "John Wayne, 1986 (#377, Cowboys & Indians)"
+#        }
+#      }
+#    }
+
+results = Metaphysics.with_context(headers: { "X-ACCESS-TOKEN": "..." }).me
+results.data
+# => {
+#      "data": {
+#        "me": {
+#          "name": "Yuki Nishijima"
+#        }
+#      }
+#    }
+```
 
 ## Development
 
