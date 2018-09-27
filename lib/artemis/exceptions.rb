@@ -4,4 +4,7 @@ module Artemis
 
   class EndpointNotFound < Error
   end
+
+  class ConfigurationError < Error
+  end
 end

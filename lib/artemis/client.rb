@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require 'artemis/graphql_endpoint'
+require 'artemis/exceptions'
 
 module Artemis
   class Client
-    GRAPHQL_FILE_PATH = 'app/graphql'.freeze
+    mattr_accessor :query_paths
 
     attr_reader :client
 
@@ -27,9 +28,18 @@ module Artemis
         new(default_context.deep_merge(context))
       end
 
-      # TODO: Make it better faster smarter
-      def path_for_graphql_file(filename)
-        Rails.root.join(GRAPHQL_FILE_PATH, name.underscore, "#{filename}.graphql")
+      def lookup_graphql_file(filename)
+        graphql_file = graphql_file_paths.detect do |path|
+          path.end_with?("#{name.underscore}/#{filename}.graphql")
+        end || raise(Artemis::ConfigurationError, "Graphql file not found: #{filename}.graphql")
+
+        Pathname.new(graphql_file)
+      end
+
+      def graphql_file_paths
+        @graphql_file_paths ||= query_paths.flat_map do |path|
+          Dir["#{path}/#{name.underscore}/*.graphql"]
+        end
       end
 
       private
@@ -41,14 +51,14 @@ module Artemis
       end
 
       def respond_to_missing?(method_name, *_, &block)
-        File.exist?(path_for_graphql_file(method_name)) || super
+        File.exist?(lookup_graphql_file(method_name).to_s) || super
       end
     end
 
     private
 
     def method_missing(method_name, **arguments)
-      graphql = self.class.path_for_graphql_file(method_name).read
+      graphql = self.class.lookup_graphql_file(method_name).read
       ast     = client.parse(graphql)
 
       compile_query_method!(method_name, ast)
@@ -58,12 +68,12 @@ module Artemis
       else
         method(method_name).call(**arguments)
       end
-    rescue Errno::ENOENT
+    rescue Artemis::ConfigurationError
       super
     end
 
     def respond_to_missing?(method_name, *_, &block)
-      File.exist?(self.class.path_for_graphql_file(method_name)) || super
+      File.exist?(self.class.lookup_graphql_file(method_name).to_s) || super
     end
 
     def compile_query_method!(method_name, ast)
