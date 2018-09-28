@@ -2,6 +2,12 @@
 
 require 'delegate'
 
+require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/hash/keys'
+require 'active_support/core_ext/object/blank'
+
+require 'graphql/client'
+
 require 'artemis/adapters'
 require 'artemis/exceptions'
 
@@ -27,7 +33,7 @@ module Artemis
 
     attr_reader :name, :url, :adapter, :timeout, :schema_path, :pool_size
 
-    def initialize(name, url: , adapter: , timeout: 30, schema_path: nil, pool_size: 5)
+    def initialize(name, url: , adapter: :net_http, timeout: 30, schema_path: nil, pool_size: 5)
       @name, @url, @adapter, @timeout, @schema_path, @pool_size = name.to_s, url, adapter, timeout, schema_path, pool_size
 
       @mutex_for_schema     = Mutex.new
@@ -63,7 +69,7 @@ module Artemis
           document:          document,
           operation_name:    operation_name,
           variables:         variables,
-          context:           @default_context.merge(context)
+          context:           @default_context.deep_merge(context)
         )
       end
     end

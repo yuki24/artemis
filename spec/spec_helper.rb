@@ -1,5 +1,21 @@
+require 'artemis'
 require 'pry'
 require 'pry-byebug' if RUBY_ENGINE == 'ruby'
+
+# This assumes that all of thw following methods are property implemented:
+#
+#   * +Artemis::Client.query_paths+
+#   * +Artemis::GraphQLEndpoint.register!+
+#   * +Artemis::GraphQLEndpoint.lookup+
+#   * +Artemis::GraphQLEndpoint#load_schema!+
+#
+# The only method that doesn't need test coverage is +Artemis::Client.query_paths+. The rest of the methods should be
+# tested, but we don't have any test setup for that yet.
+Artemis::Client.query_paths = [File.join(__dir__, 'fixtures')]
+Artemis::GraphQLEndpoint.register!(:metaphysics, adapter: :test, url: '', schema_path: 'spec/fixtures/metaphysics/schema.json')
+Artemis::GraphQLEndpoint.lookup(:metaphysics).load_schema!
+
+require 'fixtures/metaphysics'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

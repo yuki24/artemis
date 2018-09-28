@@ -7,4 +7,7 @@ module Artemis
 
   class ConfigurationError < Error
   end
+
+  class GraphQLFileNotFound < Error
+  end
 end

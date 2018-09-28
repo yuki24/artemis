@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/module/attribute_accessors'
+
 require 'artemis/graphql_endpoint'
 require 'artemis/exceptions'
 
 module Artemis
   class Client
-    mattr_accessor :query_paths
+    cattr_accessor :query_paths
 
     attr_reader :client
 
@@ -29,11 +31,16 @@ module Artemis
       end
 
       def lookup_graphql_file(filename)
-        graphql_file = graphql_file_paths.detect do |path|
+        path = graphql_file_paths.detect do |path|
           path.end_with?("#{name.underscore}/#{filename}.graphql")
-        end || raise(Artemis::ConfigurationError, "Graphql file not found: #{filename}.graphql")
+        end
 
-        Pathname.new(graphql_file)
+        if path.nil?
+          raise GraphQLFileNotFound, "could not found #{filename}.graphql in:\n" \
+                                     "    #{query_paths.map {|path| File.join(path, name.underscore) }.join("\n    ")}\n\n"
+        end
+
+        Pathname.new(path)
       end
 
       def graphql_file_paths
@@ -68,7 +75,7 @@ module Artemis
       else
         method(method_name).call(**arguments)
       end
-    rescue Artemis::ConfigurationError
+    rescue Artemis::GraphQLFileNotFound
       super
     end
 
