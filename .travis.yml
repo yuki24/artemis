@@ -1,5 +1,36 @@
-sudo: false
-language: ruby
+nguage: ruby
+script: bundle exec rake spec
+cache:  bundler
+sudo:   false
+
+before_install: gem install bundler -v 1.16.1
+
 rvm:
   - 2.5.1
-before_install: gem install bundler -v 1.16.1
+  - 2.4.4
+  - 2.3.7
+  - 2.2.10
+  - ruby-head
+  - jruby-9.2.0.0
+  - jruby-head
+
+gemfile:
+  - gemfiles/rails_52.gemfile
+  - gemfiles/rails_51.gemfile
+  - gemfiles/rails_50.gemfile
+  - gemfiles/rails_42.gemfile
+  - gemfiles/rails_edge.gemfile
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: jruby-9.2.0.0
+    - rvm: jruby-head
+    - gemfile: gemfiles/rails_edge.gemfile
+  exclude:
+    - rvm: 2.3.7
+      gemfile: gemfiles/rails_edge.gemfile
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails_52.gemfile
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails_edge.gemfile
