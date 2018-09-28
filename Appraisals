@@ -1,5 +1,5 @@
 appraise "rails_edge" do
-  git '/Users/yuki/GitHub/rails' do
+  git 'git://github.com/rails/rails.git' do
     gem "railties"
     gem "activesupport"
   end
