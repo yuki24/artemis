@@ -7,6 +7,7 @@ module Artemis
     extend ActiveSupport::Autoload
 
     autoload :NetHttpAdapter
+    autoload :TestAdapter
     # autoload :NetHttpPersistentAdapter
 
     class << self
