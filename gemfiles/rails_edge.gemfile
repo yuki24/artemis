@@ -7,4 +7,6 @@ git "git://github.com/rails/rails.git" do
   gem "activesupport"
 end
 
+gem "pry-byebug"
+
 gemspec path: "../"
