@@ -1,5 +1,5 @@
 nguage: ruby
-script: bundle exec rake spec
+script: bundle exec rake
 cache:  bundler
 sudo:   false
 
