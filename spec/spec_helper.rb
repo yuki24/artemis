@@ -17,6 +17,8 @@ Artemis::GraphQLEndpoint.lookup(:metaphysics).load_schema!
 
 require 'fixtures/metaphysics'
 
+PROJECT_DIR = FileUtils.pwd
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true

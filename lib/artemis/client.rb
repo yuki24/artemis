@@ -40,7 +40,7 @@ module Artemis
                                      "    #{query_paths.map {|path| File.join(path, name.underscore) }.join("\n    ")}\n\n"
         end
 
-        Pathname.new(path)
+        path
       end
 
       def graphql_file_paths
@@ -65,7 +65,7 @@ module Artemis
     private
 
     def method_missing(method_name, **arguments)
-      graphql = self.class.lookup_graphql_file(method_name).read
+      graphql = File.open(self.class.lookup_graphql_file(method_name)).read
       ast     = client.parse(graphql)
 
       compile_query_method!(method_name, ast)

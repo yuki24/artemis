@@ -1,0 +1,8 @@
+query {
+  artwork(id: "yayoi-kusama-pumpkin-yellow-and-black") {
+    title
+    artist {
+      name
+    }
+  }
+}

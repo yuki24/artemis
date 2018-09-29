@@ -4,16 +4,52 @@ describe GraphQL::Client do
   end
 
   describe ".lookup_graphql_file" do
-    it "returns the path to the matching graph file"
-    it "raises an exception if the file is missing"
+    it "returns the path to the matching graph file" do
+      expect(Metaphysics.lookup_graphql_file("artist")).to eq("#{PROJECT_DIR}/spec/fixtures/metaphysics/artist.graphql")
+    end
+
+    it "raises an exception if the file is missing" do
+      expect { Metaphysics.lookup_graphql_file("does_not_exist") }.to raise_error(Artemis::GraphQLFileNotFound)
+    end
   end
 
   describe ".graphql_file_paths" do
-    it "returns a list of GraphQL files (*.graphql) in the query_paths"
-    it "raises an exception if query_paths is unset"
+    it "returns a list of GraphQL files (*.graphql) in the query_paths" do
+      Metaphysics.instance_variable_set :@graphql_file_paths, nil
+      original = Metaphysics.query_paths
+
+      Metaphysics.query_paths = [File.join(PROJECT_DIR, 'tmp')]
+
+      begin
+        with_files "./tmp/metaphysics/text.txt", "./tmp/metaphysics/sale.graphql" do
+          expect(Metaphysics.graphql_file_paths).to eq(["#{PROJECT_DIR}/tmp/metaphysics/sale.graphql"])
+        end
+      ensure
+        Metaphysics.instance_variable_set :@graphql_file_paths, nil
+        Metaphysics.query_paths = original
+      end
+    end
   end
 
-  it "can make a GraphQL request without variables"
+  it "can make a GraphQL request without variables" do
+    Metaphysics.artwork
+
+    request = requests[0]
+
+    expect(request.operation_name).to eq('Metaphysics__Artwork')
+    expect(request.variables).to be_empty
+    expect(request.context).to eq({})
+    expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
+      query Metaphysics__Artwork {
+        artwork(id: "yayoi-kusama-pumpkin-yellow-and-black") {
+          title
+          artist {
+            name
+          }
+        }
+      }
+    GRAPHQL
+  end
 
   it "can make a GraphQL request with variables" do
     Metaphysics.artist(id: "yayoi-kusama")
@@ -72,7 +108,6 @@ describe GraphQL::Client do
   it "assigns the default context to a GraphQL request if present" do
     begin
       Metaphysics.default_context = { headers: { Authorization: 'bearer ...' } }
-
       Metaphysics.artist(id: "yayoi-kusama")
 
       expect(requests[0].context).to eq(headers: { Authorization: 'bearer ...' })
@@ -104,5 +139,12 @@ describe GraphQL::Client do
 
   def requests
     Artemis::Adapters::TestAdapter.requests
+  end
+
+  def with_files(*files)
+    files.each {|file| FileUtils.touch(file) }
+    yield
+  ensure
+    files.each {|file| File.delete(file) }
   end
 end
