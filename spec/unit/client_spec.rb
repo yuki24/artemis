@@ -5,11 +5,11 @@ describe GraphQL::Client do
 
   describe ".lookup_graphql_file" do
     it "returns the path to the matching graph file" do
-      expect(Metaphysics.lookup_graphql_file("artist")).to eq("#{PROJECT_DIR}/spec/fixtures/metaphysics/artist.graphql")
+      expect(Metaphysics.resolve_graphql_file_path("artist")).to eq("#{PROJECT_DIR}/spec/fixtures/metaphysics/artist.graphql")
     end
 
-    it "raises an exception if the file is missing" do
-      expect { Metaphysics.lookup_graphql_file("does_not_exist") }.to raise_error(Artemis::GraphQLFileNotFound)
+    it "returns nil if the file is missing" do
+      expect(Metaphysics.resolve_graphql_file_path("does_not_exist")).to be_nil
     end
   end
 
@@ -72,10 +72,12 @@ describe GraphQL::Client do
 
   it "can make a GraphQL request with a query that contains fragments"
 
-  it "sets the parsed query to a constant" do
-    Metaphysics.artist(id: "yayoi-kusama")
+  it "loads the matching GraphQL query and sets it to a constant when the constant is called" do
+    Metaphysics.send(:remove_const, :Artist) if Metaphysics.constants.include?(:Artist)
 
-    expect(Metaphysics::Artist.document.to_query_string).to eq(<<~GRAPHQL.strip)
+    query = Metaphysics::Artist
+
+    expect(query.document.to_query_string).to eq(<<~GRAPHQL.strip)
       query Metaphysics__Artist($id: String!) {
         artist(id: $id) {
           name

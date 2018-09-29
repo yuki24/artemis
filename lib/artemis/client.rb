@@ -18,6 +18,15 @@ module Artemis
     class << self
       attr_writer :default_context
 
+      def const_missing(const_name)
+        graphql = File.open(resolve_graphql_file_path(const_name.to_s.underscore)).read
+        ast     = endpoint.instantiate_client.parse(graphql)
+
+        const_set(const_name, ast)
+      rescue Artemis::GraphQLFileNotFound
+        super
+      end
+
       def default_context
         @default_context ||= { }
       end
@@ -30,17 +39,10 @@ module Artemis
         new(default_context.deep_merge(context))
       end
 
-      def lookup_graphql_file(filename)
-        path = graphql_file_paths.detect do |path|
+      def resolve_graphql_file_path(filename)
+        graphql_file_paths.detect do |path|
           path.end_with?("#{name.underscore}/#{filename}.graphql")
         end
-
-        if path.nil?
-          raise GraphQLFileNotFound, "could not found #{filename}.graphql in:\n" \
-                                     "    #{query_paths.map {|path| File.join(path, name.underscore) }.join("\n    ")}\n\n"
-        end
-
-        path
       end
 
       def graphql_file_paths
@@ -58,45 +60,37 @@ module Artemis
       end
 
       def respond_to_missing?(method_name, *_, &block)
-        File.exist?(lookup_graphql_file(method_name).to_s) || super
+        File.exist?(resolve_graphql_file_path(method_name).to_s) || super
       end
     end
 
     private
 
     def method_missing(method_name, **arguments)
-      graphql = File.open(self.class.lookup_graphql_file(method_name)).read
-      ast     = client.parse(graphql)
+      graphql_file_path = self.class.resolve_graphql_file_path(method_name)
 
-      compile_query_method!(method_name, ast)
+      if graphql_file_path
+        graphql = File.open(graphql_file_path).read
+        ast     = client.parse(graphql)
 
-      if arguments.empty?
-        method(method_name).call
-      else
+        compile_query_method!(method_name, ast.definition_node.variables.empty?)
+
         method(method_name).call(**arguments)
+      else
+        super
       end
-    rescue Artemis::GraphQLFileNotFound
+    rescue Errno::ENOENT # in case the file is missing
       super
     end
 
     def respond_to_missing?(method_name, *_, &block)
-      File.exist?(self.class.lookup_graphql_file(method_name).to_s) || super
+      File.exist?(self.class.resolve_graphql_file_path(method_name)) || super
     end
 
-    def compile_query_method!(method_name, ast)
+    def compile_query_method!(method_name, has_variable)
       const_name = method_name.to_s.camelize
 
-      # A hack that suppresses `warning: already initialized constant Constant...'
-      begin
-        self.class.const_get(const_name)
-        self.class.send(:remove_const, const_name)
-      rescue NameError
-        # no-op...
-      end
-
-      self.class.const_set(const_name, ast)
-
-      if ast.definition_node.variables.empty?
+      if has_variable
         eval <<-RUBY, nil, __FILE__, __LINE__ + 1
           def #{method_name}(context: {})
             client.query(self.class::#{const_name}, context: context)
