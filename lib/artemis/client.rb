@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/string/inflections'
 
 require 'artemis/graphql_endpoint'
 require 'artemis/exceptions'
