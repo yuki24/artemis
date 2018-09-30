@@ -31,15 +31,11 @@ module Artemis
       end
 
       def resolve_graphql_file_path(filename)
-        graphql_file_paths.detect do |path|
-          path.end_with?("#{name.underscore}/#{filename}.graphql")
-        end
+        graphql_file_paths.detect {|path| path.end_with?("#{name.underscore}/#{filename}.graphql") }
       end
 
       def graphql_file_paths
-        @graphql_file_paths ||= query_paths.flat_map do |path|
-          Dir["#{path}/#{name.underscore}/*.graphql"]
-        end
+        @graphql_file_paths ||= query_paths.flat_map {|path| Dir["#{path}/#{name.underscore}/*.graphql"] }
       end
 
       private
