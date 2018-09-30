@@ -72,22 +72,6 @@ describe GraphQL::Client do
 
   it "can make a GraphQL request with a query that contains fragments"
 
-  it "loads the matching GraphQL query and sets it to a constant when the constant is called" do
-    Metaphysics.send(:remove_const, :Artist) if Metaphysics.constants.include?(:Artist)
-
-    query = Metaphysics::Artist
-
-    expect(query.document.to_query_string).to eq(<<~GRAPHQL.strip)
-      query Metaphysics__Artist($id: String!) {
-        artist(id: $id) {
-          name
-          bio
-          birthday
-        }
-      }
-    GRAPHQL
-  end
-
   it "assigns context to the request when provided as an argument" do
     context = { headers: { Authorization: 'bearer ...' } }
 

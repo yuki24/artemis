@@ -19,12 +19,16 @@ module Artemis
       attr_writer :default_context
 
       def const_missing(const_name)
-        graphql = File.open(resolve_graphql_file_path(const_name.to_s.underscore)).read
-        ast     = endpoint.instantiate_client.parse(graphql)
+        graphql_file = resolve_graphql_file_path(const_name.to_s.underscore)
 
-        const_set(const_name, ast)
-      rescue Artemis::GraphQLFileNotFound
-        super
+        if graphql_file
+          graphql = File.open(graphql_file).read
+          ast     = endpoint.instantiate_client.parse(graphql)
+
+          const_set(const_name, ast)
+        else
+          super
+        end
       end
 
       def default_context
@@ -54,59 +58,45 @@ module Artemis
       private
 
       def method_missing(method_name, *arguments, &block)
-        new(default_context).public_send(method_name, *arguments, &block)
-      rescue NoMethodError
-        super
+        if resolve_graphql_file_path(method_name)
+          new(default_context).public_send(method_name, *arguments, &block)
+        else
+          super
+        end
       end
 
       def respond_to_missing?(method_name, *_, &block)
-        File.exist?(resolve_graphql_file_path(method_name).to_s) || super
+        resolve_graphql_file_path(method_name) || super
       end
     end
 
     private
 
     def method_missing(method_name, **arguments)
-      graphql_file_path = self.class.resolve_graphql_file_path(method_name)
-
-      if graphql_file_path
-        graphql = File.open(graphql_file_path).read
-        ast     = client.parse(graphql)
-
-        compile_query_method!(method_name, ast.definition_node.variables.empty?)
-
+      if self.class.resolve_graphql_file_path(method_name)
+        compile_query_method!(method_name)
         method(method_name).call(**arguments)
       else
         super
       end
-    rescue Errno::ENOENT # in case the file is missing
-      super
     end
 
     def respond_to_missing?(method_name, *_, &block)
-      File.exist?(self.class.resolve_graphql_file_path(method_name)) || super
+      self.class.resolve_graphql_file_path(method_name) || super
     end
 
-    def compile_query_method!(method_name, has_variable)
+    def compile_query_method!(method_name)
       const_name = method_name.to_s.camelize
 
-      if has_variable
-        eval <<-RUBY, nil, __FILE__, __LINE__ + 1
-          def #{method_name}(context: {})
-            client.query(self.class::#{const_name}, context: context)
-          end
-        RUBY
-      else
-        eval <<-RUBY, nil, __FILE__, __LINE__ + 1
-          def #{method_name}(context: {}, **arguments)
-            client.query(
-              self.class::#{const_name},
-              variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
-              context: context
-            )
-          end
-        RUBY
-      end
+      self.class.send(:class_eval, <<-RUBY, __FILE__, __LINE__ + 1)
+        def #{method_name}(context: {}, **arguments)
+          client.query(
+            self.class::#{const_name},
+            variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
+            context: context
+          )
+        end
+      RUBY
     end
   end
 end
