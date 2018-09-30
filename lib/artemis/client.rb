@@ -18,19 +18,6 @@ module Artemis
     class << self
       attr_writer :default_context
 
-      def const_missing(const_name)
-        graphql_file = resolve_graphql_file_path(const_name.to_s.underscore)
-
-        if graphql_file
-          graphql = File.open(graphql_file).read
-          ast     = endpoint.instantiate_client.parse(graphql)
-
-          const_set(const_name, ast)
-        else
-          super
-        end
-      end
-
       def default_context
         @default_context ||= { }
       end
@@ -56,6 +43,19 @@ module Artemis
       end
 
       private
+
+      def const_missing(const_name)
+        graphql_file = resolve_graphql_file_path(const_name.to_s.underscore)
+
+        if graphql_file
+          graphql = File.open(graphql_file).read
+          ast     = endpoint.instantiate_client.parse(graphql)
+
+          const_set(const_name, ast)
+        else
+          super
+        end
+      end
 
       def method_missing(method_name, *arguments, &block)
         if resolve_graphql_file_path(method_name)
