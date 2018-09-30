@@ -18,9 +18,7 @@ describe Artemis::GraphQLEndpoint do
     endpoint = Artemis::GraphQLEndpoint.lookup(:github)
 
     expect(endpoint.url).to eq("https://api.github.com/graphql")
-
-    # FIXME: not a fan of this test
-    expect(endpoint.connection).to be_instance_of(Artemis::Adapters::NetHttpAdapter)
+    expect(endpoint.connection).to be_instance_of(Artemis::Adapters::NetHttpAdapter) # Not a fan of this test but for now
 
     # FIXME: This #schema method makes a network call.
     # expect(endpoint.schema).to eq(...)
@@ -39,9 +37,7 @@ describe Artemis::GraphQLEndpoint do
     expect(endpoint.url).to eq("https://api.github.com/graphql")
     expect(endpoint.timeout).to eq(10)
     expect(endpoint.pool_size).to eq(25)
-
-    # FIXME: not a fan of this test
-    expect(endpoint.connection).to be_instance_of(Artemis::Adapters::TestAdapter)
+    expect(endpoint.connection).to be_instance_of(Artemis::Adapters::TestAdapter) # Not a fan of this test but for now
 
     # FIXME: needs an example schema (and specify the :schema_path option) to test this.
     # expect(endpoint.schema).to eq(...)
