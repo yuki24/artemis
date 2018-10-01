@@ -72,8 +72,11 @@ module Artemis
 
     def method_missing(method_name, **arguments)
       if self.class.resolve_graphql_file_path(method_name)
-        compile_query_method!(method_name)
-        method(method_name).call(**arguments)
+        client.query(
+          self.class.const_get(method_name.to_s.camelize),
+          variables: arguments ? arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) } : {},
+          context: (arguments && arguments[:context]) || {}
+        )
       else
         super
       end
