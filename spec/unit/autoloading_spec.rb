@@ -15,7 +15,15 @@ describe "#{GraphQL::Client} Autoloading" do
     GRAPHQL
   end
 
-  it "raises an exception when the path was resolved but the file does not exist"
+  it "raises an exception when the path was resolved but the file does not exist" do
+    begin
+      Metaphysics.graphql_file_paths << "metaphysics/removed.graphql"
+
+      expect { Metaphysics::Removed }.to raise_error(Errno::ENOENT)
+    ensure
+      Metaphysics.graphql_file_paths.delete("metaphysics/removed.graphql")
+    end
+  end
 
   it "raises an NameError when there is no graphql file that matches the const name" do
     expect { Metaphysics::DoesNotExist }.to raise_error(NameError)
