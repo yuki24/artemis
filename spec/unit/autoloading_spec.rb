@@ -1,4 +1,18 @@
 describe "#{GraphQL::Client} Autoloading" do
+  describe ".load_constant" do
+    it "loads the specified constant if there is a matching graphql file" do
+      Metaphysics.send(:remove_const, :Artist) if Metaphysics.constants.include?(:Artist)
+
+      Metaphysics.load_constant(:Artist)
+
+      expect(defined?(Metaphysics::Artist)).to eq('constant')
+    end
+
+    it "does nothing and returns nil if there is no matching file" do
+      expect(Metaphysics.load_constant(:DoesNotExist)).to be_nil
+    end
+  end
+
   it "dynamically loads the matching GraphQL query and sets it to a constant" do
     Metaphysics.send(:remove_const, :Artist) if Metaphysics.constants.include?(:Artist)
 

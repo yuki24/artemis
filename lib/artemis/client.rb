@@ -40,9 +40,7 @@ module Artemis
         @graphql_file_paths ||= query_paths.flat_map {|path| Dir["#{path}/#{name.underscore}/*.graphql"] }
       end
 
-      private
-
-      def const_missing(const_name)
+      def load_constant(const_name)
         graphql_file = resolve_graphql_file_path(const_name.to_s.underscore)
 
         if graphql_file
@@ -50,9 +48,14 @@ module Artemis
           ast     = endpoint.instantiate_client.parse(graphql)
 
           const_set(const_name, ast)
-        else
-          super
         end
+      end
+      alias load_query load_constant
+
+      private
+
+      def const_missing(const_name)
+        load_constant(const_name) || super
       end
 
       def method_missing(method_name, *arguments, &block)
