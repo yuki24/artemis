@@ -1,9 +1,16 @@
 require "bundler/gem_tasks"
+require "rake/testtask"
 require 'rspec/core/rake_task'
+
+Rake::TestTask.new('test:isolated') do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = ["test/railtie_test.rb"]
+  t.warning    = false
+end
 
 %w(
   integration
-  isolated
   unit
 ).each do |type|
   desc "Run the code examples in spec/#{type}"
@@ -12,4 +19,4 @@ require 'rspec/core/rake_task'
   end
 end
 
-task default: ['spec:unit', 'spec:isolated']
+task default: ['spec:unit', 'test:isolated']
