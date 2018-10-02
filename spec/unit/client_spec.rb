@@ -21,6 +21,8 @@ describe GraphQL::Client do
       Metaphysics.query_paths = [File.join(PROJECT_DIR, 'tmp')]
 
       begin
+        FileUtils.mkdir "./tmp/metaphysics"
+
         with_files "./tmp/metaphysics/text.txt", "./tmp/metaphysics/sale.graphql" do
           expect(Metaphysics.graphql_file_paths).to eq(["#{PROJECT_DIR}/tmp/metaphysics/sale.graphql"])
         end
