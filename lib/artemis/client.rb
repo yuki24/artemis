@@ -40,6 +40,12 @@ module Artemis
         @graphql_file_paths ||= query_paths.flat_map {|path| Dir["#{path}/#{name.underscore}/*.graphql"] }
       end
 
+      def preload!
+        graphql_file_paths.each do |path|
+          load_constant(File.basename(path, File.extname(path)).camelize)
+        end
+      end
+
       def load_constant(const_name)
         graphql_file = resolve_graphql_file_path(const_name.to_s.underscore)
 

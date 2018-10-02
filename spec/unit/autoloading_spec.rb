@@ -13,6 +13,18 @@ describe "#{GraphQL::Client} Autoloading" do
     end
   end
 
+  describe ".preload!" do
+    it "preloads all the graphQL files in the query paths" do
+      Metaphysics.send(:remove_const, :Artist)  if Metaphysics.constants.include?(:Artist)
+      Metaphysics.send(:remove_const, :Artwork) if Metaphysics.constants.include?(:Artwork)
+
+      Metaphysics.preload!
+
+      expect(defined?(Metaphysics::Artist)).to eq('constant')
+      expect(defined?(Metaphysics::Artwork)).to eq('constant')
+    end
+  end
+
   it "dynamically loads the matching GraphQL query and sets it to a constant" do
     Metaphysics.send(:remove_const, :Artist) if Metaphysics.constants.include?(:Artist)
 
