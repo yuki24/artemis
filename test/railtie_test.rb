@@ -76,6 +76,45 @@ class RailtieTest < ActiveSupport::TestCase
     assert_nil Metaphysics.instance_variable_get(:@retained)
   end
 
+  test "preload the *.graphql files in production" do
+    FileUtils.mkdir "#{app_path}/app/operations"
+    FileUtils.mkdir "#{app_path}/app/operations/metaphysics"
+
+    File.open("#{app_path}/config/graphql.yml", "w") do |f|
+      f.puts <<-YAML
+        production:
+          metaphysics:
+            url: https://metaphysics-production.artsy.net
+      YAML
+    end
+
+    File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
+      f.puts <<-YAML
+        class Metaphysics < Artemis::Client
+        end
+      YAML
+    end
+
+    File.open("#{app_path}/app/operations/metaphysics/artist.graphql", "w") do |f|
+      f.puts <<-GRAPHQL
+        query($id: String!) {
+          artist(id: $id) {
+            name
+          }
+        }
+      GRAPHQL
+    end
+
+    begin
+      ENV["RAILS_ENV"] = "production"
+      boot_rails
+
+      assert defined?(Metaphysics::Artist)
+    ensure
+      ENV.delete("RAILS_ENV")
+    end
+  end
+
   private
 
   def app
