@@ -1,4 +1,4 @@
-# Artemis
+# Artemis [![Build Status](https://travis-ci.org/yuki24/artemis.svg?branch=master)](https://travis-ci.org/yuki24/artemis)
 
 ## Installation
 
