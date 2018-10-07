@@ -85,6 +85,7 @@ class RailtieTest < ActiveSupport::TestCase
         production:
           metaphysics:
             url: https://metaphysics-production.artsy.net
+            schema_path: spec/fixtures/metaphysics/schema.json
       YAML
     end
 
