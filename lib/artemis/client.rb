@@ -20,6 +20,16 @@ module Artemis
     # Default context that is appended to every GraphQL request for the client.
     config.default_context = {}
 
+    # List of before callbacks that get invoked in every +execute+ call.
+    #
+    # @api  private
+    config.before_callbacks = []
+
+    # List of after callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    config.after_callbacks = []
+
     # Plain +GraphQL::Client+ object.
     attr_reader :client
 
@@ -39,7 +49,41 @@ module Artemis
       end
 
       def instantiate_client(context = {})
-        ::GraphQL::Client.new(schema: endpoint.schema, execute: Executor.new(endpoint.connection, context))
+        ::GraphQL::Client.new(schema: endpoint.schema, execute: Executor.new(endpoint.connection, callbacks, context))
+      end
+
+      # Defines a callback that will get called right before the
+      # client's execute method is executed.
+      #
+      #   class GitHub < Artemis::Client
+      #
+      #     before_execute do |document, operation_name, variables, context|
+      #       Analytics.log(operation_name, variables, context[:user_id])
+      #     end
+      #
+      #     ...
+      #   end
+      #
+      def before_execute(&block)
+        config.before_callbacks << block
+      end
+
+      # Defines a callback that will get called right after the
+      # client's execute method has finished.
+      #
+      #   class GitHub < Artemis::Client
+      #
+      #     after_execute do |data, errors, extensions|
+      #       if errors.present?
+      #         Rails.logger.error(errors.to_json)
+      #       end
+      #     end
+      #
+      #     ...
+      #   end
+      #
+      def after_execute(&block)
+        config.after_callbacks << block
       end
 
       def resolve_graphql_file_path(filename)
@@ -85,16 +129,25 @@ module Artemis
       def respond_to_missing?(method_name, *_, &block)
         resolve_graphql_file_path(method_name) || super
       end
+
+      Callbacks = Struct.new(:before_callbacks, :after_callbacks)
+
+      private_constant :Callbacks
+
+      # @api private
+      def callbacks
+        Callbacks.new(config.before_callbacks, config.after_callbacks)
+      end
     end
 
     private
 
-    def method_missing(method_name, **arguments)
+    def method_missing(method_name, context: {}, **arguments)
       if self.class.resolve_graphql_file_path(method_name)
         client.query(
           self.class.const_get(method_name.to_s.camelize),
-          variables: arguments ? arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) } : {},
-          context: (arguments && arguments[:context]) || {}
+          variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
+          context: context
         )
       else
         super
@@ -120,20 +173,29 @@ module Artemis
     end
   end
 
+  # @api private
   class Executor < SimpleDelegator
-    def initialize(connection, default_context)
+    def initialize(connection, callbacks, default_context)
       super(connection)
 
+      @callbacks = callbacks
       @default_context = default_context
     end
 
     def execute(document:, operation_name: nil, variables: {}, context: {})
-      __getobj__.execute(
-        document:          document,
-        operation_name:    operation_name,
-        variables:         variables,
-        context:           @default_context.deep_merge(context)
-      )
+      _context = @default_context.deep_merge(context)
+
+      @callbacks.before_callbacks.each do |callback|
+        callback.call(document, operation_name, variables, _context)
+      end
+
+      response = __getobj__.execute(document: document, operation_name: operation_name, variables: variables, context: _context)
+
+      @callbacks.after_callbacks.each do |callback|
+        callback.call(response['data'], response['errors'], response['extensions'])
+      end
+
+      response
     end
   end
 

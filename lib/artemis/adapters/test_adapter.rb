@@ -19,8 +19,9 @@ module Artemis
         self.requests << Request.new(*arguments.values_at(:document, :operation_name, :variables, :context))
 
         {
-          data: {},
-          errors: {}
+          'data' => { 'test' => 'data' },
+          'errors' => [],
+          'extensions' => {}
         }
       end
     end
