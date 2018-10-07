@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'delegate'
-
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/object/blank'
@@ -40,10 +38,6 @@ module Artemis
       @mutex_for_connection = Mutex.new
     end
 
-    def instantiate_client(context = {})
-      ::GraphQL::Client.new(schema: schema, execute: ContextProvider.new(connection, context))
-    end
-
     def schema
       @schema || @mutex_for_schema.synchronize do
         @schema ||= ::GraphQL::Client.load_schema(schema_path.presence || connection)
@@ -56,24 +50,5 @@ module Artemis
         @connection ||= ::Artemis::Adapters.lookup(adapter).new(url, service_name: name, timeout: timeout, pool_size: pool_size)
       end
     end
-
-    class ContextProvider < SimpleDelegator
-      def initialize(connection, default_context)
-        super(connection)
-
-        @default_context = default_context
-      end
-
-      def execute(document:, operation_name: nil, variables: {}, context: {})
-        __getobj__.execute(
-          document:          document,
-          operation_name:    operation_name,
-          variables:         variables,
-          context:           @default_context.deep_merge(context)
-        )
-      end
-    end
-
-    private_constant :ContextProvider
   end
 end

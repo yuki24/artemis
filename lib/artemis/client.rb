@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'delegate'
+
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/string/inflections'
@@ -14,7 +16,7 @@ module Artemis
     attr_reader :client
 
     def initialize(context = {})
-      @client = self.class.endpoint.instantiate_client(context)
+      @client = self.class.instantiate_client(context)
     end
 
     class << self
@@ -30,6 +32,10 @@ module Artemis
 
       def with_context(context)
         new(default_context.deep_merge(context))
+      end
+
+      def instantiate_client(context = {})
+        ::GraphQL::Client.new(schema: endpoint.schema, execute: Executor.new(endpoint.connection, context))
       end
 
       def resolve_graphql_file_path(filename)
@@ -51,7 +57,7 @@ module Artemis
 
         if graphql_file
           graphql = File.open(graphql_file).read
-          ast     = endpoint.instantiate_client.parse(graphql)
+          ast     = instantiate_client.parse(graphql)
 
           const_set(const_name, ast)
         end
@@ -109,4 +115,23 @@ module Artemis
       RUBY
     end
   end
+
+  class Executor < SimpleDelegator
+    def initialize(connection, default_context)
+      super(connection)
+
+      @default_context = default_context
+    end
+
+    def execute(document:, operation_name: nil, variables: {}, context: {})
+      __getobj__.execute(
+        document:          document,
+        operation_name:    operation_name,
+        variables:         variables,
+        context:           @default_context.deep_merge(context)
+      )
+    end
+  end
+
+  private_constant :Executor
 end
