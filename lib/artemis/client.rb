@@ -2,6 +2,7 @@
 
 require 'delegate'
 
+require 'active_support/configurable'
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/string/inflections'
@@ -11,7 +12,11 @@ require 'artemis/exceptions'
 
 module Artemis
   class Client
-    cattr_accessor :query_paths
+    include ActiveSupport::Configurable
+
+    config.query_paths = []
+
+    config.default_context = {}
 
     attr_reader :client
 
@@ -20,11 +25,7 @@ module Artemis
     end
 
     class << self
-      attr_writer :default_context
-
-      def default_context
-        @default_context ||= { }
-      end
+      delegate :query_paths, :default_context, :query_paths=, :default_context=, to: :config
 
       def endpoint
         Artemis::GraphQLEndpoint.lookup(name)
