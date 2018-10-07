@@ -168,8 +168,15 @@ module Artemis
     # @api private
     def method_missing(method_name, context: {}, **arguments)
       if self.class.resolve_graphql_file_path(method_name)
+        const_name = method_name.to_s.camelize
+
+        # This check will be unnecessary once we drop support for Ruby 2.4 and earlier
+        if !self.class.const_get(const_name).is_a?(GraphQL::Client::OperationDefinition)
+          self.class.load_constant(const_name)
+        end
+
         client.query(
-          self.class.const_get(method_name.to_s.camelize),
+          self.class.const_get(const_name),
           variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
           context: context
         )

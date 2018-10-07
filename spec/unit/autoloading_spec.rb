@@ -41,6 +41,33 @@ describe "#{GraphQL::Client} Autoloading" do
     GRAPHQL
   end
 
+  it "correctly loads the matching GraphQL query even when the top-level constant with the same name exists" do
+    # In Ruby <= 2.4 top-level constants can be looked up through a namespace, which turned out to be a bad practice.
+    # This has been removed in 2.5, but in earlier versions still suffer from this behaviour.
+    Metaphysics.send(:remove_const, :Artist) if Metaphysics.constants.include?(:Artist)
+    Object.send(:remove_const, :Artist) if Object.constants.include?(:Artist)
+
+    begin
+      Object.send(:const_set, :Artist, 1)
+
+      Metaphysics.artist
+    ensure
+      Object.send(:remove_const, :Artist)
+    end
+
+    query = Metaphysics::Artist
+
+    expect(query.document.to_query_string).to eq(<<~GRAPHQL.strip)
+      query Metaphysics__Artist($id: String!) {
+        artist(id: $id) {
+          name
+          bio
+          birthday
+        }
+      }
+    GRAPHQL
+  end
+
   it "raises an exception when the path was resolved but the file does not exist" do
     begin
       Metaphysics.graphql_file_paths << "metaphysics/removed.graphql"
