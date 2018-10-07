@@ -13,8 +13,8 @@ module Artemis
   class Client
     include ActiveSupport::Configurable
 
-    # The paths in which the Artemis client looks for files that have the .graphql extension.
-    # In a rails app, this value will be set to `["app/operations"]` by Artemis's +Artemis::Railtie+.
+    # The paths in which the Artemis client looks for files that have the +.graphql+ extension.
+    # In a rails app, this value will be set to +["app/operations"]+ by Artemis' +Artemis::Railtie+.
     config.query_paths = []
 
     # Default context that is appended to every GraphQL request for the client.
@@ -30,9 +30,29 @@ module Artemis
     # @api private
     config.after_callbacks = []
 
-    # Plain +GraphQL::Client+ object.
+    # Returns a plain +GraphQL::Client+ object. For more details please refer to the official documentation for
+    # {the +graphql-client+ gem}[https://github.com/github/graphql-client].
     attr_reader :client
 
+    # Creates a new instance of the GraphQL client for the service.
+    #
+    #   # app/operations/github/user.graphql
+    #   query($id: String!) {
+    #     user(login: $id) {
+    #       name
+    #     }
+    #   }
+    #
+    #   # app/operations/github.rb
+    #   class GitHub < Artemis::Client
+    #   end
+    #
+    #   github = GitHub.new
+    #   github.user(id: 'yuki24').data.user.name # => "Yuki Nishijima"
+    #
+    #   github = GitHub.new(context: { headers: { Authorization: "bearer ..." } })
+    #   github.user(id: 'yuki24').data.user.name # => "Yuki Nishijima"
+    #
     def initialize(context = {})
       @client = self.class.instantiate_client(context)
     end
@@ -114,10 +134,12 @@ module Artemis
 
       private
 
+      # @api private
       def const_missing(const_name)
         load_constant(const_name) || super
       end
 
+      # @api private
       def method_missing(method_name, *arguments, &block)
         if resolve_graphql_file_path(method_name)
           new(default_context).public_send(method_name, *arguments, &block)
@@ -126,6 +148,7 @@ module Artemis
         end
       end
 
+      # @api private
       def respond_to_missing?(method_name, *_, &block)
         resolve_graphql_file_path(method_name) || super
       end
@@ -142,6 +165,7 @@ module Artemis
 
     private
 
+    # @api private
     def method_missing(method_name, context: {}, **arguments)
       if self.class.resolve_graphql_file_path(method_name)
         client.query(
@@ -154,10 +178,12 @@ module Artemis
       end
     end
 
+    # @api private
     def respond_to_missing?(method_name, *_, &block)
       self.class.resolve_graphql_file_path(method_name) || super
     end
 
+    # @api private
     def compile_query_method!(method_name)
       const_name = method_name.to_s.camelize
 
