@@ -14,10 +14,14 @@ module Artemis
   class Client
     include ActiveSupport::Configurable
 
+    # The paths in which the Artemis client looks for files that have the .graphql extension.
+    # In a rails app, this value will be set to `["app/operations"]` by Artemis's +Artemis::Railtie+.
     config.query_paths = []
 
+    # Default context that is appended to every GraphQL request for the client.
     config.default_context = {}
 
+    # Plain +GraphQL::Client+ object.
     attr_reader :client
 
     def initialize(context = {})
