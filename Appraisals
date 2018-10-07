@@ -21,6 +21,8 @@ appraise "rails_50" do
 end
 
 appraise "rails_42" do
+  gem "activerecord", '~> 4.2'
   gem "railties", '~> 4.2'
   gem "activesupport", '~> 4.2'
+  gem "minitest", '5.10.3'
 end
