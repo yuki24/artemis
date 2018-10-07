@@ -6,9 +6,8 @@ require 'active_support/deprecation'
 require 'active_support/testing/autorun'
 
 require 'minitest/pride'
-# require 'pry'
-require 'byebug'
-# require 'pry-byebug' if RUBY_ENGINE == 'ruby'
+require 'pry'
+require 'pry-byebug' if RUBY_ENGINE == 'ruby'
 require "rails/railtie"
 
 begin
