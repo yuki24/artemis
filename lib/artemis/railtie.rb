@@ -28,17 +28,19 @@ module Artemis
       end
     end
 
-    initializer 'graphql.client.load_config' do |app|
+    initializer 'graphql.client.load_config', after: :eager_load! do |app|
       app.config_for(:graphql).each do |endpoint_name, options|
         Artemis::GraphQLEndpoint.register!(endpoint_name, options)
       end
     end
 
-    # TODO: preload GraphQL files in production
-    # initializer 'graphql.preload', after: :eager_load! do
-    #   if Rails.env.production?
-    #
-    #   end
-    # end
+    initializer 'graphql.client.preload', after: 'graphql.client.load_config' do |app|
+      # TODO: Is this a good idea to directly call +Rails.env+?
+      if Rails.env.production?
+        app.config_for(:graphql).keys.each do |endpoint_name|
+          endpoint_name.to_s.camelize.constantize.preload!
+        end
+      end
+    end
   end
 end
