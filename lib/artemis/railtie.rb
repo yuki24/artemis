@@ -35,8 +35,7 @@ module Artemis
     end
 
     initializer 'graphql.client.preload', after: 'graphql.client.load_config' do |app|
-      # TODO: Is this a good idea to directly call +Rails.env+?
-      if Rails.env.production?
+      if app.config.eager_load
         app.config_for(:graphql).keys.each do |endpoint_name|
           endpoint_name.to_s.camelize.constantize.preload!
         end

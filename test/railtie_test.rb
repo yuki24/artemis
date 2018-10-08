@@ -76,13 +76,13 @@ class RailtieTest < ActiveSupport::TestCase
     assert_nil Metaphysics.instance_variable_get(:@retained)
   end
 
-  test "preload the *.graphql files in production" do
+  test "preload the *.graphql files when eager_load is true" do
     FileUtils.mkdir "#{app_path}/app/operations"
     FileUtils.mkdir "#{app_path}/app/operations/metaphysics"
 
     File.open("#{app_path}/config/graphql.yml", "w") do |f|
       f.puts <<-YAML
-        production:
+        development:
           metaphysics:
             url: https://metaphysics-production.artsy.net
             schema_path: spec/fixtures/metaphysics/schema.json
@@ -106,14 +106,14 @@ class RailtieTest < ActiveSupport::TestCase
       GRAPHQL
     end
 
-    begin
-      ENV["RAILS_ENV"] = "production"
-      boot_rails
+    add_to_config <<-RUBY
+      config.eager_load = true
+    RUBY
 
-      assert defined?(Metaphysics::Artist)
-    ensure
-      ENV.delete("RAILS_ENV")
-    end
+    boot_rails
+
+    assert defined?(Metaphysics),         "Constant Metaphysics was not loaded"
+    assert defined?(Metaphysics::Artist), "Constant Metaphysics::Artist was not loaded"
   end
 
   private
