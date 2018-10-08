@@ -62,4 +62,10 @@ describe 'Adapters' do
 
     it_behaves_like 'an adapter'
   end
+
+  describe Artemis::Adapters::CurbAdapter do
+    let(:adapter) { Artemis::Adapters::CurbAdapter.new('http://localhost:8000', service_name: nil, timeout: 5, pool_size: 5) }
+
+    it_behaves_like 'an adapter'
+  end
 end
