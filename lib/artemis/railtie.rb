@@ -28,7 +28,7 @@ module Artemis
       end
     end
 
-    initializer 'graphql.client.load_config', after: :eager_load! do |app|
+    initializer 'graphql.client.load_config' do |app|
       app.config_for(:graphql).each do |endpoint_name, options|
         Artemis::GraphQLEndpoint.register!(endpoint_name, options)
       end

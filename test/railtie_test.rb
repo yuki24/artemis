@@ -108,6 +108,10 @@ class RailtieTest < ActiveSupport::TestCase
 
     add_to_config <<-RUBY
       config.eager_load = true
+
+      initializer 'add_middleware' do |app|
+        app.config.middleware.use Rack::Head # Rack::Head is used just because it's almost always available
+      end
     RUBY
 
     boot_rails
