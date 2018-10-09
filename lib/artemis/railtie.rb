@@ -30,7 +30,7 @@ module Artemis
 
     initializer 'graphql.client.load_config' do |app|
       app.config_for(:graphql).each do |endpoint_name, options|
-        Artemis::GraphQLEndpoint.register!(endpoint_name, options)
+        Artemis::GraphQLEndpoint.register!(endpoint_name, { 'schema_path' => app.root.join("vendor/graphql/schema/#{endpoint_name}.json").to_s }.merge(options))
       end
     end
 

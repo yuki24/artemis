@@ -30,24 +30,28 @@ class RailtieTest < ActiveSupport::TestCase
     assert_equal [expanded_path], Artemis::Client.query_paths
   end
 
-  test "loads graphql.yml and register endpoints" do
+  test "loads GraphQL schema from vendor/graphql/schema/service_name.json" do
     File.open("#{app_path}/config/graphql.yml", "w") do |f|
       f.puts <<-YAML
         development:
           metaphysics:
             url: https://metaphysics-production.artsy.net
-            adapter: :net_http
+            adapter: :test
             timeout: 5
             pool_size: 25
       YAML
     end
 
+    FileUtils.mkdir_p "#{app_path}/vendor/graphql/schema"
+    FileUtils.cp_r File.expand_path("spec/fixtures/metaphysics/schema.json"), "#{app_path}/vendor/graphql/schema/metaphysics.json"
+
     boot_rails
 
     endpoint = Artemis::GraphQLEndpoint.lookup(:metaphysics)
 
+    assert_equal GraphQL::Schema, endpoint.schema.class
     assert_equal "https://metaphysics-production.artsy.net", endpoint.url
-    assert_equal :net_http, endpoint.adapter
+    assert_equal :test,     endpoint.adapter
     assert_equal 5,         endpoint.timeout
     assert_equal 25,        endpoint.pool_size
   end
