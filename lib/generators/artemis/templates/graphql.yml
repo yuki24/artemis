@@ -1,0 +1,19 @@
+default: &default
+  adapter: :net_http
+  timeout: 10
+  pool_size: 25
+
+development:
+  <%= file_name %>:
+    <<: *default
+    url: <%= endpoint_url %>
+
+test:
+  <%= file_name %>:
+    <<: *default
+    url: <%= endpoint_url %>
+
+production:
+  <%= file_name %>:
+    <<: *default
+    url: <%= endpoint_url %>
