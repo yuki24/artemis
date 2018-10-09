@@ -1,0 +1,65 @@
+require 'graphql/client'
+require 'graphql/client/http'
+
+class Artemis::InstallGenerator < Rails::Generators::NamedBase
+  source_root File.expand_path('../templates', __FILE__)
+
+  argument :endpoint_url, type: :string, banner: "The endpoint URL for a GraphQL service"
+
+  def generate_client
+    template "client.rb", client_file_name
+    create_file query_dir_gitkeep, ""
+  end
+
+  def generate_config
+    in_root do
+      if behavior == :invoke && !File.exist?(config_file_name)
+        template "graphql.yml", config_file_name
+      end
+    end
+  end
+
+  def download_schema
+    say "      downloading GraphQL schema from #{endpoint_url}..."
+
+    result = GraphQL::Client::HTTP.new(endpoint_url)
+               .execute(
+                 document: GraphQL::Client::IntrospectionDocument,
+                 operation_name: "IntrospectionQuery",
+                 variables: {},
+                 context: {}
+               ).to_h
+
+    create_file schema_file_name, JSON.pretty_generate(result)
+  end
+
+  private
+
+  def file_name # :doc:
+    @_file_name ||= super.underscore
+  end
+
+  def client_file_name
+    if mountable_engine?
+      "app/operations/#{namespaced_path}/#{file_name}.rb"
+    else
+      "app/operations/#{file_name}.rb"
+    end
+  end
+
+  def query_dir_gitkeep
+    if mountable_engine?
+      "app/operations/#{namespaced_path}/#{file_name}/.gitkeep"
+    else
+      "app/operations/#{file_name}/.gitkeep"
+    end
+  end
+
+  def schema_file_name
+    "vendor/graphql/schema/#{file_name}.json"
+  end
+
+  def config_file_name
+    "config/graphql.yml"
+  end
+end
