@@ -13,7 +13,7 @@ module Artemis
         super(uri) # Do not pass in the block to avoid getting #headers and #connection overridden.
 
         @service_name = service_name.to_s
-        @timeout     = timeout
+        @timeout      = timeout
         @pool_size    = pool_size
       end
 

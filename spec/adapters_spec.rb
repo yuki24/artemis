@@ -3,21 +3,28 @@ require 'rack'
 
 describe 'Adapters' do
   FakeServer = ->(env) {
-    body = {
-      data: {
-        body: JSON.parse(env['rack.input'].read),
-        headers: env.select {|key, val| key.start_with?('HTTP_') }
-                   .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
-                   .to_h,
-      },
-      errors: [],
-      extensions: {}
-    }.to_json
+    case env['PATH_INFO']
+    when '/500'
+      [500, {}, ['Server error']]
+    else
+      body = {
+        data: {
+          body: JSON.parse(env['rack.input'].read),
+          headers: env.select {|key, val| key.start_with?('HTTP_') }
+                     .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
+                     .to_h,
+        },
+        errors: [],
+        extensions: {}
+      }.to_json
 
-    [200, {}, [body]]
+      [200, {}, [body]]
+    end
   }
 
   before :all do
+    Artemis::Adapters::AbstractAdapter.attr_writer :uri
+
     @server_thread = Thread.new do
       Rack::Handler::WEBrick.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
     end
@@ -52,6 +59,14 @@ describe 'Adapters' do
         expect(response['data']['body']['operationName']).to eq('IntrospectionQuery')
         expect(response['errors']).to eq([])
         expect(response['extensions']).to eq({})
+      end
+
+      it 'makes an actual HTTP request' do
+        adapter.uri = URI.parse('http://localhost:8000/500')
+
+        expect do
+          adapter.execute(document: GraphQL::Client::IntrospectionDocument, operation_name: 'IntrospectionQuery')
+        end.to raise_error(Artemis::GraphQLServerError, "Received server error status 500: Server error")
       end
     end
   end
