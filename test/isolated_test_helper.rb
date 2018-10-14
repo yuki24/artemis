@@ -108,3 +108,34 @@ end
 Generation.initialize_app
 
 require 'artemis'
+
+require 'rack'
+require 'json'
+
+FakeServer = ->(env) {
+  body = {
+    data: {
+      body: JSON.parse(env['rack.input'].read),
+      headers: env.select {|key, val| key.start_with?('HTTP_') }
+                 .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
+                 .to_h,
+    },
+    errors: [],
+    extensions: { }
+  }.to_json
+
+  [200, {}, [body]]
+}
+
+SERVER_THREAD = Thread.new do
+  Rack::Handler::WEBrick.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
+end
+
+loop do
+  begin
+    TCPSocket.open('localhost', 8000)
+    break
+  rescue Errno::ECONNREFUSED
+    # no-op
+  end
+end

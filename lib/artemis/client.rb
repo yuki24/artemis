@@ -60,16 +60,14 @@ module Artemis
     class << self
       delegate :query_paths, :default_context, :query_paths=, :default_context=, to: :config
 
+      alias with_context new
+
       def endpoint
         Artemis::GraphQLEndpoint.lookup(name)
       end
 
-      def with_context(context)
-        new(default_context.deep_merge(context))
-      end
-
       def instantiate_client(context = {})
-        ::GraphQL::Client.new(schema: endpoint.schema, execute: Executor.new(endpoint.connection, callbacks, context))
+        ::GraphQL::Client.new(schema: endpoint.schema, execute: connection(context))
       end
 
       # Defines a callback that will get called right before the
@@ -131,6 +129,11 @@ module Artemis
         end
       end
       alias load_query load_constant
+
+      # @api private
+      def connection(context = {})
+        Executor.new(endpoint.connection, callbacks, default_context.deep_merge(context))
+      end
 
       private
 

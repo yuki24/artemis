@@ -22,15 +22,7 @@ class Artemis::InstallGenerator < Rails::Generators::NamedBase
   def download_schema
     say "      downloading GraphQL schema from #{endpoint_url}..."
 
-    result = GraphQL::Client::HTTP.new(endpoint_url)
-               .execute(
-                 document: GraphQL::Client::IntrospectionDocument,
-                 operation_name: "IntrospectionQuery",
-                 variables: {},
-                 context: {}
-               ).to_h
-
-    create_file schema_file_name, JSON.pretty_generate(result)
+    rake "graphql:schema:update SERVICE=#{file_name}"
   end
 
   private
