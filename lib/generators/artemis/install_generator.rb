@@ -47,10 +47,6 @@ class Artemis::InstallGenerator < Rails::Generators::NamedBase
     end
   end
 
-  def schema_file_name
-    "vendor/graphql/schema/#{file_name}.json"
-  end
-
   def config_file_name
     "config/graphql.yml"
   end

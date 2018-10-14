@@ -59,18 +59,6 @@ module Generation
       end
     end
 
-    routes = File.read("#{app_path}/config/routes.rb")
-    if routes =~ /(\n\s*end\s*)\z/
-      File.open("#{app_path}/config/routes.rb", "w") do |f|
-        f.puts $` + "\nActiveSupport::Deprecation.silence { match ':controller(/:action(/:id))(.:format)', via: :all }\n" + $1
-      end
-    end
-
-    File.open("#{app_path}/config/graphql.yml", "w") do |f|
-      f.puts <<-YAML
-      YAML
-    end
-
     add_to_config <<-RUBY
       config.eager_load = false
       config.session_store :cookie_store, key: "_myapp_session"
