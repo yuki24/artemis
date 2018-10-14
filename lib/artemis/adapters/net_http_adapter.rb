@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'json'
 require 'net/http'
 
 require 'artemis/adapters/abstract_adapter'
