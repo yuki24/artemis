@@ -4,7 +4,12 @@ require 'rack'
 describe 'Adapters' do
   FakeServer = ->(env) {
     body = {
-      data: JSON.parse(env['rack.input'].read),
+      data: {
+        body: JSON.parse(env['rack.input'].read),
+        headers: env.select {|key, val| key.start_with?('HTTP_') }
+                   .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
+                   .to_h,
+      },
       errors: [],
       extensions: {}
     }.to_json
@@ -36,15 +41,15 @@ describe 'Adapters' do
     describe '#execute' do
       it 'makes an actual HTTP request' do
         response = adapter.execute(
-          document: Metaphysics::Artist.document, # TODO: We don't want adapter tests to depend on +Metaphysics::Artist+
-          operation_name: 'op',
+          document: GraphQL::Client::IntrospectionDocument,
+          operation_name: 'IntrospectionQuery',
           variables: { id: 'yayoi-kusama' },
           context: { user_id: 1 }
         )
 
-        expect(response['data']['query']).to eq(Metaphysics::Artist.document.to_query_string)
-        expect(response['data']['variables']).to eq('id' => 'yayoi-kusama')
-        expect(response['data']['operationName']).to eq('op')
+        expect(response['data']['body']['query']).to eq(GraphQL::Client::IntrospectionDocument.to_query_string)
+        expect(response['data']['body']['variables']).to eq('id' => 'yayoi-kusama')
+        expect(response['data']['body']['operationName']).to eq('IntrospectionQuery')
         expect(response['errors']).to eq([])
         expect(response['extensions']).to eq({})
       end
