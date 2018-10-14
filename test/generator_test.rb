@@ -1,4 +1,4 @@
-require 'active_support/testing/autorun'
+require 'isolated_test_helper'
 require 'rails/generators/test_case'
 
 require 'generators/artemis/install_generator'
@@ -10,7 +10,14 @@ class GeneratorTest < Rails::Generators::TestCase
   setup :prepare_destination
 
   test "GraphQL client set up is done" do
-    run_generator
+    stub_any_instance generator_class, instance: generator do |instance|
+      mock = Minitest::Mock.new
+      mock.expect(:call, nil, ["graphql:schema:update SERVICE=metaphysics"])
+
+      instance.stub(:rake, mock) { run_generator }
+
+      assert_mock mock
+    end
 
     assert_file "app/operations/metaphysics.rb" do |client|
       assert_match(/class Metaphysics < Artemis::Client/, client)
@@ -39,7 +46,5 @@ class GeneratorTest < Rails::Generators::TestCase
             url: https://metaphysics-production.artsy.net
       YAML
     end
-
-    assert_file "vendor/graphql/schema/metaphysics.json"
   end
 end
