@@ -4,6 +4,9 @@ require 'delegate'
 
 require 'curb'
 
+require 'artemis/adapters/abstract_adapter'
+require 'artemis/exceptions'
+
 module Artemis
   module Adapters
     class CurbAdapter < AbstractAdapter
@@ -37,8 +40,11 @@ module Artemis
 
         easy.http_post
 
-        if easy.response_code == 200 || easy.response_code == 400
+        case easy.response_code
+        when 200, 400
           JSON.parse(easy.body)
+        when 500..599
+          raise Artemis::GraphQLServerError, "Received server error status #{easy.response_code}: #{easy.body}"
         else
           { "errors" => [{ "message" => "#{easy.response_code} #{easy.body}" }] }
         end

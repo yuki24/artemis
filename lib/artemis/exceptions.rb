@@ -10,4 +10,10 @@ module Artemis
 
   class GraphQLFileNotFound < Error
   end
+
+  class GraphQLError < Error
+  end
+
+  class GraphQLServerError < GraphQLError
+  end
 end

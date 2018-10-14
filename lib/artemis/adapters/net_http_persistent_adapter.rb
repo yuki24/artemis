@@ -4,9 +4,11 @@ require 'delegate'
 
 require 'net/http/persistent'
 
+require 'artemis/adapters/net_http_adapter'
+
 module Artemis
   module Adapters
-    class NetHttpPersistentAdapter < AbstractAdapter
+    class NetHttpPersistentAdapter < NetHttpAdapter
       attr_reader :_connection, :raw_connection
 
       def initialize(uri, service_name: , timeout: , pool_size: )
