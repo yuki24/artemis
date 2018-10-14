@@ -6,6 +6,8 @@ class Artemis::InstallGenerator < Rails::Generators::NamedBase
 
   argument :endpoint_url, type: :string, banner: "The endpoint URL for a GraphQL service"
 
+  class_option :authorization, type: :string, default: nil, aliases: "-A"
+
   def generate_client
     template "client.rb", client_file_name
     create_file query_dir_gitkeep, ""
@@ -22,7 +24,11 @@ class Artemis::InstallGenerator < Rails::Generators::NamedBase
   def download_schema
     say "      downloading GraphQL schema from #{endpoint_url}..."
 
-    rake "graphql:schema:update SERVICE=#{file_name}"
+    if options['authorization'].present?
+      rake "graphql:schema:update SERVICE=#{file_name} AUTHORIZATION='#{options['authorization']}'"
+    else
+      rake "graphql:schema:update SERVICE=#{file_name}"
+    end
   end
 
   private
