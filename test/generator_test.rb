@@ -47,4 +47,15 @@ class GeneratorTest < Rails::Generators::TestCase
       YAML
     end
   end
+
+  test "GraphQL client set up is done with authorization" do
+    stub_any_instance generator_class, instance: generator(default_arguments, { authorization: "token token" }) do |instance|
+      mock = Minitest::Mock.new
+      mock.expect(:call, nil, ["graphql:schema:update SERVICE=metaphysics AUTHORIZATION='token token'"])
+
+      instance.stub(:rake, mock) { run_generator }
+
+      assert_mock mock
+    end
+  end
 end
