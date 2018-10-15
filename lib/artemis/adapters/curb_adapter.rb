@@ -28,6 +28,7 @@ module Artemis
         body["variables"] = variables if variables.any?
         body["operationName"] = operation_name if operation_name
 
+        easy.timeout     = timeout
         easy.multi       = multi
         easy.headers     = headers(context) || {}
         easy.post_body   = JSON.generate(body)

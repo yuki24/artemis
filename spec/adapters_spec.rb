@@ -4,6 +4,10 @@ require 'rack'
 describe 'Adapters' do
   FakeServer = ->(env) {
     case env['PATH_INFO']
+    when '/slow_server'
+      sleep 2.1
+
+      [200, {}, ['{}']]
     when '/500'
       [500, {}, ['Server error']]
     else
@@ -23,7 +27,7 @@ describe 'Adapters' do
   }
 
   before :all do
-    Artemis::Adapters::AbstractAdapter.attr_writer :uri
+    Artemis::Adapters::AbstractAdapter.attr_writer :uri, :timeout
 
     @server_thread = Thread.new do
       Rack::Handler::WEBrick.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
@@ -61,30 +65,41 @@ describe 'Adapters' do
         expect(response['extensions']).to eq({})
       end
 
-      it 'makes an actual HTTP request' do
+      it 'raises an error when it receives a server error' do
         adapter.uri = URI.parse('http://localhost:8000/500')
 
         expect do
           adapter.execute(document: GraphQL::Client::IntrospectionDocument, operation_name: 'IntrospectionQuery')
         end.to raise_error(Artemis::GraphQLServerError, "Received server error status 500: Server error")
       end
+
+      it 'allows for overriding timeout' do
+        adapter.uri = URI.parse('http://localhost:8000/slow_server')
+
+        expect do
+          adapter.execute(document: GraphQL::Client::IntrospectionDocument, operation_name: 'IntrospectionQuery')
+        end.to raise_error(timeout_error)
+      end
     end
   end
 
   describe Artemis::Adapters::NetHttpAdapter do
-    let(:adapter) { Artemis::Adapters::NetHttpAdapter.new('http://localhost:8000', service_name: nil, timeout: 5, pool_size: 5) }
+    let(:adapter) { Artemis::Adapters::NetHttpAdapter.new('http://localhost:8000', service_name: nil, timeout: 2, pool_size: 5) }
+    let(:timeout_error) { Net::ReadTimeout }
 
     it_behaves_like 'an adapter'
   end
 
   describe Artemis::Adapters::NetHttpPersistentAdapter do
-    let(:adapter) { Artemis::Adapters::NetHttpPersistentAdapter.new('http://localhost:8000', service_name: nil, timeout: 5, pool_size: 5) }
+    let(:adapter) { Artemis::Adapters::NetHttpPersistentAdapter.new('http://localhost:8000', service_name: nil, timeout: 2, pool_size: 5) }
+    let(:timeout_error) { Net::HTTP::Persistent::Error }
 
     it_behaves_like 'an adapter'
   end
 
   describe Artemis::Adapters::CurbAdapter do
-    let(:adapter) { Artemis::Adapters::CurbAdapter.new('http://localhost:8000', service_name: nil, timeout: 5, pool_size: 5) }
+    let(:adapter) { Artemis::Adapters::CurbAdapter.new('http://localhost:8000', service_name: nil, timeout: 2, pool_size: 5) }
+    let(:timeout_error) { Curl::Err::TimeoutError }
 
     it_behaves_like 'an adapter'
   end
