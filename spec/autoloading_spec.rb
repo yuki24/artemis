@@ -41,6 +41,19 @@ describe "#{GraphQL::Client} Autoloading" do
     GRAPHQL
   end
 
+  it "dynamically loads the matching GraphQL fragment and sets it to a constant" do
+    Metaphysics.send(:remove_const, :ArtistFragment) if Metaphysics.constants.include?(:ArtistFragment)
+
+    query = Metaphysics::ArtistFragment
+
+    expect(query.document.to_query_string).to eq(<<~GRAPHQL.strip)
+      fragment Metaphysics__ArtistFragment on Artist {
+        hometown
+        deathday
+      }
+    GRAPHQL
+  end
+
   it "correctly loads the matching GraphQL query even when the top-level constant with the same name exists" do
     # In Ruby <= 2.4 top-level constants can be looked up through a namespace, which turned out to be a bad practice.
     # This has been removed in 2.5, but in earlier versions still suffer from this behaviour.
@@ -94,6 +107,10 @@ describe "#{GraphQL::Client} Autoloading" do
     expect { Metaphysics.does_not_exist }.to raise_error(NameError)
   end
 
+  it "raises an NameError when the class method name matches a fragment name" do
+    expect { Metaphysics.artist_fragment }.to raise_error(NameError)
+  end
+
   it "responds to a class method that has a matching graphQL file" do
     expect(Metaphysics).to respond_to(:artwork)
   end
@@ -112,6 +129,10 @@ describe "#{GraphQL::Client} Autoloading" do
 
   it "raises an NameError when there is no graphql file that matches the instance method name" do
     expect { Metaphysics.new.does_not_exist }.to raise_error(NameError)
+  end
+
+  it "raises an NameError when the instance method name matches a fragment name" do
+    expect { Metaphysics.new.artist_fragment }.to raise_error(NameError)
   end
 
   it "responds to the method that has a matching graphQL file" do

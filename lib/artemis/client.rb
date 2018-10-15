@@ -104,8 +104,14 @@ module Artemis
         config.after_callbacks << block
       end
 
-      def resolve_graphql_file_path(filename)
-        graphql_file_paths.detect {|path| path.end_with?("#{name.underscore}/#{filename}.graphql") }
+      def resolve_graphql_file_path(filename, fragment: false)
+        namespace = name.underscore
+        filename  = filename.to_s.underscore
+
+        graphql_file_paths.detect do |path|
+          path.end_with?("#{namespace}/#{filename}.graphql") ||
+            (fragment && filename.end_with?('fragment') && path.end_with?("#{namespace}/_#{filename}.graphql"))
+        end
       end
 
       def graphql_file_paths
@@ -119,7 +125,7 @@ module Artemis
       end
 
       def load_constant(const_name)
-        graphql_file = resolve_graphql_file_path(const_name.to_s.underscore)
+        graphql_file = resolve_graphql_file_path(const_name.to_s.underscore, fragment: true)
 
         if graphql_file
           graphql = File.open(graphql_file).read

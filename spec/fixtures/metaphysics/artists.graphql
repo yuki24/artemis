@@ -1,0 +1,8 @@
+query($size: Int!) {
+  artists(size: $size) {
+    name
+    bio
+    birthday
+    ...Metaphysics::ArtistFragment
+  }
+}
