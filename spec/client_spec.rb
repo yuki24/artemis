@@ -72,7 +72,30 @@ describe GraphQL::Client do
     GRAPHQL
   end
 
-  it "can make a GraphQL request with a query that contains fragments"
+  it "can make a GraphQL request with a query that contains fragments" do
+    Metaphysics.artists(size: 10)
+
+    request = requests[0]
+
+    expect(request.operation_name).to eq('Metaphysics__Artists')
+    expect(request.variables).to eq('size' => 10)
+    expect(request.context).to eq({})
+    expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
+      query Metaphysics__Artists($size: Int!) {
+        artists(size: $size) {
+          name
+          bio
+          birthday
+          ...Metaphysics__ArtistFragment
+        }
+      }
+
+      fragment Metaphysics__ArtistFragment on Artist {
+        hometown
+        deathday
+      }
+    GRAPHQL
+  end
 
   it "assigns context to the request when provided as an argument" do
     context = { headers: { Authorization: 'bearer ...' } }
