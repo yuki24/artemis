@@ -154,6 +154,15 @@ There are four adapter options available. Choose the adapter that best fits on y
 | `:net_http_persistent` | HTTP/1.1 only            | **Yes**     | **Fast**    | [`net-http-persistent 3.0.0+`](nhp)
 | `:test`                | N/A (See Testing)
 
+## Rake tasks
+
+Artemis also adds a useful `rake graphql:schema:update` rake task that downloads the GraphQL schema using the
+`Introspection` query.
+
+| Task Name                    | Options   | Description |
+| ---------------------------- | --------- | ------------|
+| `graphql:schema:update` | `SERVICE`: Service name the schema is downloaded from<br>`AUTHORIZATION`: HTTTP `Authroization` header value used to download the schema| Downloads and saves the GraphQL schema
+
 ## Testing
 
 **The testing support is incomplete, but there are some examples [available in Artemis' client spec](https://github.com/yuki24/artemis/blob/74095f3acb050e87251439aed5f8b17778ffdd06/spec/client_spec.rb#L36-L54).**
