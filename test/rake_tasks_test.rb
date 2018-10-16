@@ -11,13 +11,7 @@ module ApplicationTests
       setup do
         build_app
         FileUtils.rm_rf "#{app_path}/config/environments"
-      end
 
-      teardown do
-        teardown_app
-      end
-
-      test "`rake graphql:schema:update` saves GraphQL schema to vendor/graphql/schema/service_name.json" do
         FileUtils.mkdir "#{app_path}/app/operations"
         File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
           f.puts <<-YAML
@@ -25,7 +19,13 @@ module ApplicationTests
             end
           YAML
         end
+      end
 
+      teardown do
+        teardown_app
+      end
+
+      test "`rake graphql:schema:update` saves GraphQL schema to vendor/graphql/schema/service_name.json" do
         File.open("#{app_path}/config/graphql.yml", "w") do |f|
           f.puts <<-YAML
             development:
@@ -42,14 +42,6 @@ module ApplicationTests
       end
 
       test "`rake graphql:schema:update` respects the schema_path config in config/graphql.yml" do
-        FileUtils.mkdir "#{app_path}/app/operations"
-        File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
-          f.puts <<-YAML
-            class Metaphysics < Artemis::Client
-            end
-          YAML
-        end
-
         File.open("#{app_path}/config/graphql.yml", "w") do |f|
           f.puts <<-YAML
             development:
@@ -67,7 +59,6 @@ module ApplicationTests
       end
 
       test "`rake graphql:schema:update` takes SERVICE argument" do
-        FileUtils.mkdir "#{app_path}/app/operations"
         File.open("#{app_path}/app/operations/github.rb", "w") do |f|
           f.puts <<-YAML
             class Github < Artemis::Client
@@ -93,14 +84,6 @@ module ApplicationTests
       end
 
       test "`rake graphql:schema:update` takes AUTHORIZATION argument" do
-        FileUtils.mkdir "#{app_path}/app/operations"
-        File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
-          f.puts <<-YAML
-            class Metaphysics < Artemis::Client
-            end
-          YAML
-        end
-
         File.open("#{app_path}/config/graphql.yml", "w") do |f|
           f.puts <<-YAML
             development:
