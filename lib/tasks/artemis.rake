@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+require 'json'
+
+require 'active_support/core_ext/string/inflections'
+require 'graphql/client'
+
 namespace :graphql do
   namespace :schema do
     desc "Downloads and saves the GraphQL schema (options: SERVICE=service_name AUTHORIZATION='token ...')"
