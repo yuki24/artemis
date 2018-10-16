@@ -6,8 +6,8 @@ require "artemis/version"
 Gem::Specification.new do |spec|
   spec.name          = "artemis"
   spec.version       = Artemis::VERSION
-  spec.authors       = ["Yuki Nishijima"]
-  spec.email         = ["yk.nishijima@gmail.com"]
+  spec.authors       = ["Jon Allured", "Yuki Nishijima"]
+  spec.email         = ["jon.allured@gmail.com", "yk.nishijima@gmail.com"]
   spec.summary       = %q{GraphQL on Rails}
   spec.description   = %q{GraphQL client on Rails + Convention over Configuration = ❤️}
   spec.homepage      = "https://github.com/yuki24/artemis"
