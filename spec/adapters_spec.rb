@@ -27,7 +27,7 @@ describe 'Adapters' do
   }
 
   before :all do
-    Artemis::Adapters::AbstractAdapter.attr_writer :uri, :timeout
+    Artemis::Adapters::AbstractAdapter.send(:attr_writer, :uri, :timeout)
 
     @server_thread = Thread.new do
       Rack::Handler::WEBrick.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
