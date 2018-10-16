@@ -41,6 +41,31 @@ module ApplicationTests
         assert File.exist?("#{app_path}/vendor/graphql/schema/metaphysics.json"), "did not create vendor/graphql/schema/metaphysics.json"
       end
 
+      test "`rake graphql:schema:update` respects the schema_path config in config/graphql.yml" do
+        FileUtils.mkdir "#{app_path}/app/operations"
+        File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
+          f.puts <<-YAML
+            class Metaphysics < Artemis::Client
+            end
+          YAML
+        end
+
+        File.open("#{app_path}/config/graphql.yml", "w") do |f|
+          f.puts <<-YAML
+            development:
+              metaphysics:
+                url: http://localhost:8000
+                schema_path: tmp/schema.json
+          YAML
+        end
+
+        assert_equal <<~MESSAGE, run_rake("graphql:schema:update")
+          saved schema to: tmp/schema.json
+        MESSAGE
+
+        assert File.exist?("#{app_path}/tmp/schema.json"), "did not create tmp/schema.json"
+      end
+
       test "`rake graphql:schema:update` takes SERVICE argument" do
         FileUtils.mkdir "#{app_path}/app/operations"
         File.open("#{app_path}/app/operations/github.rb", "w") do |f|

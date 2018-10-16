@@ -16,22 +16,24 @@ namespace :graphql do
                   end
                 end
 
-      headers = ENV['AUTHORIZATION'] ? { Authorization: ENV['AUTHORIZATION'] } : {}
-      schema  = service.camelize.constantize.connection
-                  .execute(
-                    document: GraphQL::Client::IntrospectionDocument,
-                    operation_name: "IntrospectionQuery",
-                    variables: {},
-                    context: { headers: headers }
-                  ).to_h
+      headers          = ENV['AUTHORIZATION'] ? { Authorization: ENV['AUTHORIZATION'] } : {}
+      service_class    = service.camelize.constantize
+      schema_path      = service_class.endpoint.schema_path
+      schema           = service_class.connection
+                           .execute(
+                             document: GraphQL::Client::IntrospectionDocument,
+                             operation_name: "IntrospectionQuery",
+                             variables: {},
+                             context: { headers: headers }
+                           ).to_h
 
       if schema['errors'].nil? || schema['errors'].empty?
-        FileUtils.mkdir_p("vendor/graphql/schema/")
-        File.open("vendor/graphql/schema/#{service.underscore}.json", 'w') do |file|
+        FileUtils.mkdir_p(File.dirname(schema_path))
+        File.open(schema_path, 'w') do |file|
           file.write(JSON.pretty_generate(schema))
         end
 
-        puts "saved schema to: vendor/graphql/schema/#{service.underscore}.json"
+        puts "saved schema to: #{schema_path.gsub("#{Dir.pwd}/", '')}"
       else
         raise "received error from server: #{schema}\n\n"
       end
