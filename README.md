@@ -22,14 +22,14 @@ Once you run `bundle install` on your Rails app, you will be able to run the fol
 
 
 ```sh
-$ rails g graphql:install artsy https://metaphysics-production.artsy.net/
+$ rails g artemis:install artsy https://metaphysics-production.artsy.net/
 ```
 
 It is common that a GraphQL server requires an OAuth access token. If it is the case, use the `--authorization` option
 to assign a token so the installer can properly download the GraphQL schema for the service:
 
 ```sh
-$ rails g graphql:install github https://api.github.com/graphql --authorization 'token ...'
+$ rails g artemis:install github https://api.github.com/graphql --authorization 'token ...'
 ```
 
 ## The convention
