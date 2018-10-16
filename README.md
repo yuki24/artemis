@@ -149,9 +149,9 @@ There are four adapter options available. Choose the adapter that best fits on y
 
 | Adapter                | Protocol                 | Keep-alive  | Performance | Dependencies |
 | ---------------------- | ------------------------ | ----------- | ----------- | ------------ |
-| `:curb`                | HTTP/1.1, **HTTP/2.0**   | **Yes**     | **Fastest** | [`curb 0.9.6+`](curb)<br>[`libcurl 7.64.0+`](curl)<br>[`nghttp2 1.0.0+`](nghttp)
+| `:curb`                | HTTP/1.1, **HTTP/2.0**   | **Yes**     | **Fastest** | [`curb 0.9.6+`][curb]<br>[`libcurl 7.64.0+`][curl]<br>[`nghttp2 1.0.0+`][nghttp]
 | `:net_http` (default)  | HTTP/1.1 only            | No          | Slow        | **None**
-| `:net_http_persistent` | HTTP/1.1 only            | **Yes**     | **Fast**    | [`net-http-persistent 3.0.0+`](nhp)
+| `:net_http_persistent` | HTTP/1.1 only            | **Yes**     | **Fast**    | [`net-http-persistent 3.0.0+`][nhp]
 | `:test`                | N/A (See Testing)
 
 ## Rake tasks
@@ -185,6 +185,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 Everyone interacting in the Artemis project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/artemis/blob/master/CODE_OF_CONDUCT.md).
 
+[curb]: https://rubygems.org/gems/curb
 [curl]: https://curl.haxx.se/docs/http2.html
 [nghttp]: https://nghttp2.org/
 [nhp]: https://rubygems.org/gems/net-http-persistent
