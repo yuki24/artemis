@@ -15,8 +15,9 @@ describe "#{GraphQL::Client} Autoloading" do
 
   describe ".preload!" do
     it "preloads all the graphQL files in the query paths" do
-      Metaphysics.send(:remove_const, :Artist)  if Metaphysics.constants.include?(:Artist)
-      Metaphysics.send(:remove_const, :Artwork) if Metaphysics.constants.include?(:Artwork)
+      %i(Artist Artwork ArtistFragment)
+        .select {|const_name| Metaphysics.constants.include?(const_name) }
+        .each {|const_name| Metaphysics.send(:remove_const, const_name) }
 
       Metaphysics.preload!
 
