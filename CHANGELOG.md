@@ -1,6 +1,7 @@
 ## Unreleased
 
  * Add a new entry here
+ * [#39](https://github.com/yuki24/artemis/pull/39): Installer now adds a new service if config/graphql.yml is present
 
 ## [v0.1.0: First release!](https://github.com/yuki24/artemis/tree/v0.1.0)
 
