@@ -46,6 +46,53 @@ class GeneratorTest < Rails::Generators::TestCase
     end
   end
 
+  test "GraphQL client set up is added to the existing config" do
+    mkdir_p("#{destination_root}/config")
+    File.open("#{destination_root}/config/graphql.yml", "w") do |f|
+      f.puts <<~YAML
+        development:
+          github:
+            <<: *default
+            url: https://api.github.com/graphql
+
+        test:
+
+        production:
+      YAML
+    end
+
+    stub_any_instance generator_class, instance: generator do |instance|
+      instance.stub(:rake, Minitest::Mock.new) { run_generator }
+    end
+
+    assert_file "config/graphql.yml" do |yaml|
+      assert_match(<<~YAML.strip, yaml)
+        development:
+          metaphysics:
+            <<: *default
+            url: https://metaphysics-production.artsy.net
+
+          github:
+            <<: *default
+            url: https://api.github.com/graphql
+      YAML
+
+      assert_match(<<~YAML.strip, yaml)
+        test:
+          metaphysics:
+            <<: *default
+            url: https://metaphysics-production.artsy.net
+      YAML
+
+      assert_match(<<~YAML.strip, yaml)
+        production:
+          metaphysics:
+            <<: *default
+            url: https://metaphysics-production.artsy.net
+      YAML
+    end
+  end
+
   test "GraphQL client set up is done with authorization" do
     stub_any_instance generator_class, instance: generator(default_arguments, { authorization: "token token" }) do |instance|
       mock = Minitest::Mock.new
