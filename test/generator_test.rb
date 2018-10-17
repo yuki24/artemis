@@ -24,12 +24,10 @@ class GeneratorTest < Rails::Generators::TestCase
     end
 
     assert_file "config/graphql.yml" do |yaml|
+      assert_match 'adapter: :net_http', yaml
+      assert_match 'timeout: 10', yaml
+      assert_match 'pool_size: 25', yaml
       assert_match(<<~YAML.strip, yaml)
-        default: &default
-          adapter: :net_http
-          timeout: 10
-          pool_size: 25
-
         development:
           metaphysics:
             <<: *default

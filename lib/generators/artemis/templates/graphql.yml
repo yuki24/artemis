@@ -1,6 +1,21 @@
 default: &default
+  # The underlying client library that actually makes an HTTP request.
+  # Available adapters are :net_http, :net_http_persistent, :curb, and :test.
+  #
+  # It is set to :net_http by default.
   adapter: :net_http
+
+  # HTTP timeout set for the adapter in seconds. This will be set to both
+  # `read_timeout` and `write_timeout` and there is no way to configure them
+  # with a different value as of writing (PRs welcome!)
+  #
+  # It is set to 10 by default.
   timeout: 10
+
+  # The number of keep-alive connections. The `:net_http` adapter will ignore
+  # this option.
+  #
+  # It is set to 25 by default.
   pool_size: 25
 
 development:

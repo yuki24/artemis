@@ -31,7 +31,7 @@ module Artemis
 
     attr_reader :name, :url, :adapter, :timeout, :schema_path, :pool_size
 
-    def initialize(name, url: , adapter: :net_http, timeout: 30, schema_path: nil, pool_size: 5)
+    def initialize(name, url: , adapter: :net_http, timeout: 10, schema_path: nil, pool_size: 25)
       @name, @url, @adapter, @timeout, @schema_path, @pool_size = name.to_s, url, adapter, timeout, schema_path, pool_size
 
       @mutex_for_schema     = Mutex.new
