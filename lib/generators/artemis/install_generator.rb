@@ -17,6 +17,24 @@ class Artemis::InstallGenerator < Rails::Generators::NamedBase
     in_root do
       if behavior == :invoke && !File.exist?(config_file_name)
         template "graphql.yml", config_file_name
+      else
+        inject_into_file config_file_name, <<-YAML, after: "development:\n"
+  #{file_name}:
+    <<: *default
+    url: #{endpoint_url}\n
+YAML
+
+        inject_into_file config_file_name, <<-YAML, after: "test:\n", force: true
+  #{file_name}:
+    <<: *default
+    url: #{endpoint_url}\n
+YAML
+
+        inject_into_file config_file_name, <<-YAML, after: "production:\n", force: true
+  #{file_name}:
+    <<: *default
+    url: #{endpoint_url}\n
+YAML
       end
     end
   end
