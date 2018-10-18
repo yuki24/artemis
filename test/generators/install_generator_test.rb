@@ -1,4 +1,4 @@
-require 'isolated_test_helper'
+require 'test_helper'
 require 'rails/generators/test_case'
 
 require 'generators/artemis/install/install_generator'
