@@ -2,7 +2,7 @@ Description:
     Generates a client stub and config files and downloads the schema from the given endpoint.
 
 Example:
-    rails generate install Artsy https://metaphysics-production.artsy.net
+    rails generate artemis:install Artsy https://metaphysics-production.artsy.net
 
     This will create:
         app/operations/artsy.rb

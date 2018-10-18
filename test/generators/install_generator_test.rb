@@ -1,12 +1,12 @@
 require 'isolated_test_helper'
 require 'rails/generators/test_case'
 
-require 'generators/artemis/install_generator'
+require 'generators/artemis/install/install_generator'
 
 class GeneratorTest < Rails::Generators::TestCase
   tests Artemis::InstallGenerator
   arguments %w(metaphysics https://metaphysics-production.artsy.net)
-  destination File.join(File.expand_path('../', File.dirname(__FILE__)), "tmp")
+  destination File.join(Dir.pwd, "tmp")
   setup :prepare_destination
 
   test "GraphQL client set up is done" do
