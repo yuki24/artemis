@@ -3,7 +3,7 @@ require 'rails/generators/test_case'
 
 require 'generators/artemis/install/install_generator'
 
-class GeneratorTest < Rails::Generators::TestCase
+class InstallGeneratorTest < Rails::Generators::TestCase
   tests Artemis::InstallGenerator
   arguments %w(metaphysics https://metaphysics-production.artsy.net)
   destination File.join(Dir.pwd, "tmp")

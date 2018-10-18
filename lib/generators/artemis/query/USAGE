@@ -1,0 +1,27 @@
+Description:
+    Generates a query stub.
+
+    rails g artemis:query QUERY_TYPE [FILE_NAME]
+
+Example:
+    rails g artemis:query artist
+
+    This will create:
+        app/operations/artsy.rb
+        app/operations/artsy/artist.graphql
+
+    The GraphQL file name could be specified by giving the third argument:
+
+      rails g artemis:query artist artist_in_tooltip
+
+    This will create:
+        app/operations/artsy.rb
+        app/operations/artsy/artist_in_tooltip.graphql
+
+    If there are multiple services registered, the service could be specified with +--service+ option:
+
+       rails g artemis:query repository --service github
+
+    This will create:
+        app/operations/github.rb
+        app/operations/github/repository.graphql
