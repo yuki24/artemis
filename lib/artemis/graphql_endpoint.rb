@@ -27,6 +27,13 @@ module Artemis
       def register!(service_name, configurations)
         ENDPOINT_INSTANCES[service_name.to_s.underscore] = new(service_name.to_s, configurations.symbolize_keys)
       end
+
+      ##
+      # Returns the registered services as an array.
+      #
+      def registered_services
+        ENDPOINT_INSTANCES.keys
+      end
     end
 
     attr_reader :name, :url, :adapter, :timeout, :schema_path, :pool_size
