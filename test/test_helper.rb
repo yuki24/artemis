@@ -25,3 +25,5 @@ rescue LoadError
   ActiveSupport::TestCase.test_order = :sorted
 end
 
+Artemis::GraphQLEndpoint.register!(:metaphysics, adapter: :test, url: '', schema_path: 'spec/fixtures/metaphysics/schema.json')
+Artemis::GraphQLEndpoint.lookup(:metaphysics).load_schema!
