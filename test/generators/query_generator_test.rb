@@ -3,9 +3,6 @@ require 'rails/generators/test_case'
 
 require 'generators/artemis/query/query_generator'
 
-Artemis::GraphQLEndpoint.register!(:metaphysics, adapter: :test, url: '', schema_path: 'spec/fixtures/metaphysics/schema.json')
-Artemis::GraphQLEndpoint.lookup(:metaphysics).load_schema!
-
 require_relative '../../spec/fixtures/metaphysics'
 
 class QueryGeneratorTest < Rails::Generators::TestCase

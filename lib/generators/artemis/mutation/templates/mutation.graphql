@@ -1,0 +1,5 @@
+mutation<%= arguments.present? && "(#{ arguments.map {|name, type| "$#{name}: #{type.type}" }.join(", ") })" %> {
+  <%= target_mutation.name %><%= arguments.present? && "(#{ arguments.map {|name, type| "#{name}: $#{name}" }.join(", ") })" %> {
+    # Add fields here...
+  }
+}
