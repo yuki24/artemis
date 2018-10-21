@@ -75,6 +75,8 @@ class QueryGeneratorWithServiceOptionTest < Rails::Generators::TestCase
   setup :prepare_destination
 
   test "A new GraphQL file is created with the name specified" do
+    Artemis::GraphQLEndpoint.register!(:fake_service, url: '')
+
     run_generator
 
     assert_file "app/operations/metaphysics/artist_on_artwork.graphql" do |graphql|
