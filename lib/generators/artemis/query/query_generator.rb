@@ -2,9 +2,10 @@
 
 require 'graphql/schema/finder'
 
-class Artemis::QueryGenerator < Rails::Generators::NamedBase
+class Artemis::QueryGenerator < Rails::Generators::Base
   source_root File.expand_path('../templates', __FILE__)
 
+  argument :query_type,        type: :string, required: true,                banner: "Query type"
   argument :graphql_file_name, type: :string, required: false, default: nil, banner: "The name of the GraphQL file to be generated"
 
   class_option :service, type: :string, default: nil, aliases: "-A"
@@ -15,18 +16,12 @@ class Artemis::QueryGenerator < Rails::Generators::NamedBase
 
   private
 
-  alias query_type file_name
-
   def query_name
     query_type.underscore
   end
 
   def graphql_file_path
-    if mountable_engine?
-      "app/operations/#{namespaced_path}/#{service_name.underscore}/#{graphql_file_name.presence || query_name}.graphql"
-    else
-      "app/operations/#{service_name.underscore}/#{graphql_file_name.presence || query_name}.graphql"
-    end
+    "app/operations/#{service_name.underscore}/#{graphql_file_name.presence || query_name}.graphql"
   end
 
   def arguments
@@ -39,7 +34,6 @@ class Artemis::QueryGenerator < Rails::Generators::NamedBase
   end
 
   def schema
-
     service_name.camelize.constantize.endpoint.schema
   end
 
