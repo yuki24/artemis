@@ -6,7 +6,9 @@
   once in production and it'll never affect runtime performance. Comes with options that enable persistent connections
    and even HTTP/2.0, the next-gen high-performance protocol.
 
-### Getting started
+<img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battled-tested at (Artsy)[https://www.artsy.net]
+
+## Getting started
 
 Add this line to your application's Gemfile:
 
@@ -32,9 +34,48 @@ to assign a token so the installer can properly download the GraphQL schema for 
 $ rails g artemis:install github https://api.github.com/graphql --authorization 'token ...'
 ```
 
+### Genearting your first query
+
+Artemis comes with a very handy query generator. Let's say you have a client for Artsy's GraphQL API. Then you can run the query generator specifying the `artist` query type:
+
+```sh
+$ rails g artemis:query artist
+```
+
+Then this will generate the following file with the following content:
+
+```graphql
+# app/operations/artist.graphql
+query($id: String!) {
+  artist(id: $id) {
+    # Add fields here...
+  }
+}
+```
+
+Once you add a field or two you can make a GraphQL call by calling the class method called that has the matching name `artist`:
+
+```ruby
+Artsy.artist(id: "pablo-picasso")
+# => makes a GraphQL query that's in app/operations/artist.graphql
+```
+
+You can also specify a file name if 
+
+```sh
+$ rails g artemis:query artist artist_details_on_artwork
+# => generates app/operations/artist_details_on_artwork.graphql
+```
+
+Then you can make a query in `artist_details_on_artwork.graphql` with:
+
+```ruby
+Artsy.artist_details_on_artwork(id: "pablo-picasso")
+```
+
 ## The convention
 
-Artemis assumes that the files related to GraphQL are organized with the following structure:
+Artemis assumes that the files related to GraphQL are organized in a certain way. For example, a service that talks to Artsy's GraphQL API could have the following structure:
 
 ```
 ├──app/operations
@@ -46,59 +87,6 @@ Artemis assumes that the files related to GraphQL are organized with the followi
 │   └── artsy.rb
 ├──config/graphql.yml
 └──vendor/graphql/schema/artsy.json
-```
-
-## Examples
-
-```yml
-# config/graphql.yml
-development:
-  artsy:
-    url: https://metaphysics-production.artsy.net/
-```
-
-```ruby
-# app/queries/artsy.rb
-class Artsy < Artemis::Client
-end
-```
-
-```graphql
-# app/queries/artsy/artwork.graphql
-query($id: String!) {
-  artwork(id: $id) {
-    title
-  }
-}
-
-# app/queries/artsy/me.graphql
-query {
-  me {
-    name
-  }
-}
-```
-
-```ruby
-results = Artsy.artwork(id: "andy-warhol-john-wayne-1986-number-377-cowboys-and-indians")
-results.data
-# => {
-#      "data": {
-#        "artwork": {
-#          "title": "John Wayne, 1986 (#377, Cowboys & Indians)"
-#        }
-#      }
-#    }
-
-results = Artsy.with_context(headers: { "X-ACCESS-TOKEN": "..." }).me
-results.data
-# => {
-#      "data": {
-#        "me": {
-#          "name": "Yuki Nishijima"
-#        }
-#      }
-#    }
 ```
 
 ## Callbacks
