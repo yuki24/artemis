@@ -49,6 +49,14 @@ describe 'Adapters' do
   end
 
   shared_examples 'an adapter' do
+    describe '#initialize' do
+      it 'requires an url' do
+        expect do
+          adapter.class.new(nil, service_name: nil, timeout: 2, pool_size: 5)
+        end.to raise_error(ArgumentError, "url is required (given `nil')")
+      end
+    end
+
     describe '#execute' do
       it 'makes an actual HTTP request' do
         response = adapter.execute(

@@ -36,7 +36,7 @@ class RailtieTest < ActiveSupport::TestCase
         development:
           metaphysics:
             url: https://metaphysics-production.artsy.net
-            adapter: :test
+            adapter: :curb
             timeout: 5
             pool_size: 25
       YAML
@@ -51,9 +51,27 @@ class RailtieTest < ActiveSupport::TestCase
 
     assert_equal GraphQL::Schema, endpoint.schema.class
     assert_equal "https://metaphysics-production.artsy.net", endpoint.url
-    assert_equal :test,     endpoint.adapter
+    assert_equal :curb,     endpoint.adapter
     assert_equal 5,         endpoint.timeout
     assert_equal 25,        endpoint.pool_size
+  end
+
+  test "test adapter does not require url" do
+    File.open("#{app_path}/config/graphql.yml", "w") do |f|
+      f.puts <<-YAML
+        development:
+          metaphysics:
+            adapter: :test
+      YAML
+    end
+
+    boot_rails
+
+    endpoint = Artemis::GraphQLEndpoint.lookup(:metaphysics)
+
+    assert_nil endpoint.url
+    assert_not_nil endpoint.connection
+    assert_equal :test, endpoint.adapter
   end
 
   test "adds a reloader that watches *.graphql files" do
