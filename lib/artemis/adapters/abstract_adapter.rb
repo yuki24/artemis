@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/object/blank'
 require 'graphql/client/http'
 
 module Artemis
@@ -10,6 +11,8 @@ module Artemis
       EMPTY_HEADERS = {}.freeze
 
       def initialize(uri, service_name: , timeout: , pool_size: )
+        raise ArgumentError, "url is required (given `#{uri.inspect}')" if uri.blank?
+
         super(uri) # Do not pass in the block to avoid getting #headers and #connection overridden.
 
         @service_name = service_name.to_s
