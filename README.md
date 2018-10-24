@@ -6,7 +6,7 @@
   once in production and it'll never affect runtime performance. Comes with options that enable persistent connections
    and even HTTP/2.0, the next-gen high-performance protocol.
 
-<img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battled-tested at (Artsy)[https://www.artsy.net]
+<img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battled-tested at [Artsy](https://www.artsy.net)
 
 ## Getting started
 
