@@ -20,29 +20,28 @@ And then execute:
 
     $ bundle
 
-Once you run `bundle install` on your Rails app, you will be able to run the following command:
+Once you run `bundle install` on your Rails app, run the install command:
 
 
 ```sh
 $ rails g artemis:install artsy https://metaphysics-production.artsy.net/
 ```
 
-It is common that a GraphQL server requires an OAuth access token. If it is the case, use the `--authorization` option
-to assign a token so the installer can properly download the GraphQL schema for the service:
+You could also use the `--authorization` option to assign a token so the installer can download the GraphQL schema:
 
 ```sh
 $ rails g artemis:install github https://api.github.com/graphql --authorization 'token ...'
 ```
 
-### Genearting your first query
+### Generating your first query
 
-Artemis comes with a very handy query generator. Let's say you have a client for Artsy's GraphQL API. Then you can run the query generator specifying the `artist` query type:
+Artemis comes with a query generator. For exmaple, you could use the query generator to generate a query stub for `artist`:
 
 ```sh
 $ rails g artemis:query artist
 ```
 
-Then this will generate the following file with the following content:
+Then this will generate:
 
 ```graphql
 # app/operations/artist.graphql
@@ -53,14 +52,14 @@ query($id: String!) {
 }
 ```
 
-Once you add a field or two you can make a GraphQL call by calling the class method called that has the matching name `artist`:
+Then you could the class method that has the matching name `artist`:
 
 ```ruby
 Artsy.artist(id: "pablo-picasso")
 # => makes a GraphQL query that's in app/operations/artist.graphql
 ```
 
-You can also specify a file name if 
+You can also specify a file name:
 
 ```sh
 $ rails g artemis:query artist artist_details_on_artwork
