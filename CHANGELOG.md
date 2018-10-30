@@ -1,6 +1,7 @@
 ## Unreleased
 
  * Add a new entry here
+ * [#43](https://github.com/yuki24/artemis/pull/43): Keep persistent connections open for 30 minutes
  * [#42](https://github.com/yuki24/artemis/pull/42): Allow for setting up the test adapter without `url`
  * [#41](https://github.com/yuki24/artemis/pull/41): Add a mutation generator
  * [#40](https://github.com/yuki24/artemis/pull/40): Add a query generator
