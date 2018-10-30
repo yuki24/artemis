@@ -6,7 +6,7 @@
 
 _<sup>released at 2018-10-30 02:09:59 UTC</sup>_
 
-## Features
+#### Features
 
 - [#43](https://github.com/yuki24/artemis/pull/43): Keep persistent connections open for 30 minutes
 - [#42](https://github.com/yuki24/artemis/pull/42): Allow for setting up the test adapter without `url`
