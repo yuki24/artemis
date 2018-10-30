@@ -30,7 +30,7 @@ module Artemis
         _connection
       end
 
-      class ConnectionWrapper < SimpleDelegator
+      class ConnectionWrapper < SimpleDelegator #:nodoc:
         def initialize(obj, url)
           super(obj)
 

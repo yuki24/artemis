@@ -44,13 +44,13 @@ module Artemis
     #   }
     #
     #   # app/operations/github.rb
-    #   class GitHub < Artemis::Client
+    #   class Github < Artemis::Client
     #   end
     #
-    #   github = GitHub.new
+    #   github = Github.new
     #   github.user(id: 'yuki24').data.user.name # => "Yuki Nishijima"
     #
-    #   github = GitHub.new(context: { headers: { Authorization: "bearer ..." } })
+    #   github = Github.new(context: { headers: { Authorization: "bearer ..." } })
     #   github.user(id: 'yuki24').data.user.name # => "Yuki Nishijima"
     #
     def initialize(context = {})
@@ -60,12 +60,65 @@ module Artemis
     class << self
       delegate :query_paths, :default_context, :query_paths=, :default_context=, to: :config
 
+      # Creates a new instance of the GraphQL client for the service.
+      #
+      #   # app/operations/github/user.graphql
+      #   query($id: String!) {
+      #     user(login: $id) {
+      #       name
+      #     }
+      #   }
+      #
+      #   # app/operations/github.rb
+      #   class Github < Artemis::Client
+      #   end
+      #
+      #   github = Github.new
+      #   github.user(id: 'yuki24').data.user.name # => "Yuki Nishijima"
+      #
+      #   github = Github.new(context: { headers: { Authorization: "bearer ..." } })
+      #   github.user(id: 'yuki24').data.user.name # => "Yuki Nishijima"
+      #
       alias with_context new
 
+      # Returns the registered meta data (generally present in +config/graphql.yml+) for the client.
+      #
+      #   # config/graphql.yml
+      #   development:
+      #     github:
+      #       url:     https://api.github.com/graphql
+      #       adapter: :net_http
+      #
+      #   # app/operations/github.rb
+      #   class Github < Artemis::Client
+      #   end
+      #
+      #   Github.endpoint.url     # => "https://api.github.com/graphql"
+      #   Github.endpoint.adapter # => :net_http
+      #
       def endpoint
         Artemis::GraphQLEndpoint.lookup(name)
       end
 
+      # Instantiates a new instance of +GraphQL::Client+ for the service.
+      #
+      #   # app/operations/github/user.graphql
+      #   query($id: String!) {
+      #     user(login: $id) {
+      #       name
+      #     }
+      #   }
+      #
+      #   # app/operations/github.rb
+      #   class Github < Artemis::Client
+      #   end
+      #
+      #   client = Github.instantiate_client
+      #   client.query(Github::User, arguments: { id: 'yuki24' }) # makes a Graphql request
+      #
+      #   client = Github.instantiate_client(context: { headers: { Authorization: "bearer ..." } })
+      #   client.query(Github::User, arguments: { id: 'yuki24' }) # makes a Graphql request with Authorization header
+      #
       def instantiate_client(context = {})
         ::GraphQL::Client.new(schema: endpoint.schema, execute: connection(context))
       end
@@ -73,7 +126,7 @@ module Artemis
       # Defines a callback that will get called right before the
       # client's execute method is executed.
       #
-      #   class GitHub < Artemis::Client
+      #   class Github < Artemis::Client
       #
       #     before_execute do |document, operation_name, variables, context|
       #       Analytics.log(operation_name, variables, context[:user_id])
@@ -89,7 +142,7 @@ module Artemis
       # Defines a callback that will get called right after the
       # client's execute method has finished.
       #
-      #   class GitHub < Artemis::Client
+      #   class Github < Artemis::Client
       #
       #     after_execute do |data, errors, extensions|
       #       if errors.present?
@@ -136,7 +189,6 @@ module Artemis
       end
       alias load_query load_constant
 
-      # @api private
       def connection(context = {})
         Executor.new(endpoint.connection, callbacks, default_context.deep_merge(context))
       end
@@ -157,15 +209,12 @@ module Artemis
         end
       end
 
-      # @api private
-      def respond_to_missing?(method_name, *_, &block)
+      def respond_to_missing?(method_name, *_, &block) #:nodoc:
         resolve_graphql_file_path(method_name) || super
       end
 
-      Callbacks = Struct.new(:before_callbacks, :after_callbacks)
-
-      private_constant :Callbacks
-
+      # Returns a +Callbacks+ collection object that implements the interface for the +Executor+ object.
+      #
       # @api private
       def callbacks
         Callbacks.new(config.before_callbacks, config.after_callbacks)
@@ -194,8 +243,7 @@ module Artemis
       end
     end
 
-    # @api private
-    def respond_to_missing?(method_name, *_, &block)
+    def respond_to_missing?(method_name, *_, &block) #:nodoc:
       self.class.resolve_graphql_file_path(method_name) || super
     end
 
@@ -213,33 +261,40 @@ module Artemis
         end
       RUBY
     end
-  end
 
-  # @api private
-  class Executor < SimpleDelegator
-    def initialize(connection, callbacks, default_context)
-      super(connection)
+    # Internal collection object that holds references to the callback blocks.
+    #
+    # @api private
+    Callbacks = Struct.new(:before_callbacks, :after_callbacks) #:nodoc:
 
-      @callbacks = callbacks
-      @default_context = default_context
-    end
+    # Wrapper object around the adapter that wires up callbacks.
+    #
+    # @api private
+    class Executor < SimpleDelegator
+      def initialize(connection, callbacks, default_context) #:nodoc:
+        super(connection)
 
-    def execute(document:, operation_name: nil, variables: {}, context: {})
-      _context = @default_context.deep_merge(context)
-
-      @callbacks.before_callbacks.each do |callback|
-        callback.call(document, operation_name, variables, _context)
+        @callbacks = callbacks
+        @default_context = default_context
       end
 
-      response = __getobj__.execute(document: document, operation_name: operation_name, variables: variables, context: _context)
+      def execute(document:, operation_name: nil, variables: {}, context: {}) #:nodoc:
+        _context = @default_context.deep_merge(context)
 
-      @callbacks.after_callbacks.each do |callback|
-        callback.call(response['data'], response['errors'], response['extensions'])
+        @callbacks.before_callbacks.each do |callback|
+          callback.call(document, operation_name, variables, _context)
+        end
+
+        response = __getobj__.execute(document: document, operation_name: operation_name, variables: variables, context: _context)
+
+        @callbacks.after_callbacks.each do |callback|
+          callback.call(response['data'], response['errors'], response['extensions'])
+        end
+
+        response
       end
-
-      response
     end
-  end
 
-  private_constant :Executor
+    private_constant :Callbacks, :Executor
+  end
 end
