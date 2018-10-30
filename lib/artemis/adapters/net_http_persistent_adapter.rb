@@ -2,6 +2,7 @@
 
 require 'delegate'
 
+require 'active_support/core_ext/numeric/time'
 require 'net/http/persistent'
 
 require 'artemis/adapters/net_http_adapter'
@@ -17,6 +18,7 @@ module Artemis
         @raw_connection = Net::HTTP::Persistent.new(name: service_name, pool_size: pool_size)
         @raw_connection.open_timeout = timeout
         @raw_connection.read_timeout = timeout
+        @raw_connection.idle_timeout = 30.minutes.to_i # TODO: Make it configurable
 
         @_connection = ConnectionWrapper.new(@raw_connection, uri)
       end
