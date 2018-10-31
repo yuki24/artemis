@@ -74,6 +74,18 @@ class RailtieTest < ActiveSupport::TestCase
     assert_equal :test, endpoint.adapter
   end
 
+  test "booting fails when the config/graphql.yml is malformed" do
+    File.open("#{app_path}/config/graphql.yml", "w") do |f|
+      f.puts <<-YAML
+        development: metaphysics:
+      YAML
+    end
+
+    error = assert_raises(RuntimeError) { boot_rails }
+
+    assert_match "YAML syntax error occurred while parsing", error.message
+  end
+
   test "adds a reloader that watches *.graphql files" do
     FileUtils.mkdir "#{app_path}/app/operations"
     FileUtils.mkdir "#{app_path}/app/operations/metaphysics"

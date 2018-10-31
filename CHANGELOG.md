@@ -1,6 +1,7 @@
 ## Unreleased
 
  * Add a new entry here
+ * [#47](https://github.com/yuki24/artemis/pull/47): Fixes an issue where errors thrown from `config/graphql.yml` get swallowed 
 
 ## [v0.2.0: New generators and small improvements](https://github.com/yuki24/artemis/tree/v0.2.0)
 
