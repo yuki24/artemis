@@ -29,9 +29,10 @@ module Artemis
     end
 
     initializer 'graphql.client.load_config' do |app|
-      # TODO: Remove the +rescue+ call
-      (app.config_for(:graphql) rescue {}).each do |endpoint_name, options|
-        Artemis::GraphQLEndpoint.register!(endpoint_name, { 'schema_path' => app.root.join("vendor/graphql/schema/#{endpoint_name}.json").to_s }.merge(options))
+      if Pathname.new("#{app.paths["config"].existent.first}/graphql.yml").exist?
+        app.config_for(:graphql).each do |endpoint_name, options|
+          Artemis::GraphQLEndpoint.register!(endpoint_name, { 'schema_path' => app.root.join("vendor/graphql/schema/#{endpoint_name}.json").to_s }.merge(options))
+        end
       end
     end
 
