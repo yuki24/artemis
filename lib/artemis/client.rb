@@ -255,7 +255,7 @@ module Artemis
         def #{method_name}(context: {}, **arguments)
           client.query(
             self.class::#{const_name},
-            variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
+            variables: arguments,
             context: context
           )
         end
