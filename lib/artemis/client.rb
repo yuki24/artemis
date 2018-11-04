@@ -177,6 +177,18 @@ module Artemis
         end
       end
 
+      # Looks up the GraphQL file that matches the given +const_name+ and sets it to a constant.
+      #
+      #   # app/operations/github.rb
+      #   class Github < Artemis::Client
+      #   end
+      #
+      #   defined?(Github::User)      # => nil
+      #   Github.load_constant(:User) # => loads an operation definition from app/operations/github/user.graphql
+      #   defined?(Github::User)      # => 'constant'
+      #
+      #   Github.load_constant(:None) # => nil
+      #
       def load_constant(const_name)
         graphql_file = resolve_graphql_file_path(const_name.to_s.underscore, fragment: true)
 
@@ -195,11 +207,33 @@ module Artemis
 
       private
 
+      # Looks up the GraphQL file that matches the given +const_name+ and sets it to a constant. If the files it not
+      # found it will raise an +NameError+.
+      #
+      #   # app/operations/github.rb
+      #   class Github < Artemis::Client
+      #   end
+      #
+      #   defined?(Github::User) # => nil
+      #   Github::User           # => loads an operation definition from app/operations/github/user.graphql
+      #   defined?(Github::User) # => 'constant'
+      #
+      #   Github::DoesNotExist   # => raises an NameError
+      #
       # @api private
       def const_missing(const_name)
         load_constant(const_name) || super
       end
 
+      # Delegates a class method call to an instance method call, which in turn looks up the GraphQL file that matches
+      # the given +method_name+ and delegates the call to it.
+      #
+      #   # app/operations/github.rb
+      #   class Github < Artemis::Client
+      #   end
+      #
+      #   Github.user # => delegates to Github.new(default_context).user
+      #
       # @api private
       def method_missing(method_name, *arguments, &block)
         if resolve_graphql_file_path(method_name)
@@ -223,6 +257,15 @@ module Artemis
 
     private
 
+    # Delegates a method call to a GraphQL call.
+    #
+    #   # app/operations/github.rb
+    #   class Github < Artemis::Client
+    #   end
+    #
+    #   github = Github.new
+    #   github.user # => delegates to app/operations/github/user.graphql
+    #
     # @api private
     def method_missing(method_name, context: {}, **arguments)
       if self.class.resolve_graphql_file_path(method_name)
@@ -235,7 +278,7 @@ module Artemis
 
         client.query(
           self.class.const_get(const_name),
-          variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
+          variables: arguments,
           context: context
         )
       else
@@ -245,21 +288,6 @@ module Artemis
 
     def respond_to_missing?(method_name, *_, &block) #:nodoc:
       self.class.resolve_graphql_file_path(method_name) || super
-    end
-
-    # @api private
-    def compile_query_method!(method_name)
-      const_name = method_name.to_s.camelize
-
-      self.class.send(:class_eval, <<-RUBY, __FILE__, __LINE__ + 1)
-        def #{method_name}(context: {}, **arguments)
-          client.query(
-            self.class::#{const_name},
-            variables: arguments,
-            context: context
-          )
-        end
-      RUBY
     end
 
     # Internal collection object that holds references to the callback blocks.
