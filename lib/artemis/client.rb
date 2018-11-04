@@ -278,7 +278,7 @@ module Artemis
 
         client.query(
           self.class.const_get(const_name),
-          variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
+          variables: arguments,
           context: context
         )
       else
@@ -289,7 +289,6 @@ module Artemis
     def respond_to_missing?(method_name, *_, &block) #:nodoc:
       self.class.resolve_graphql_file_path(method_name) || super
     end
-
 
     # Internal collection object that holds references to the callback blocks.
     #
