@@ -290,20 +290,6 @@ module Artemis
       self.class.resolve_graphql_file_path(method_name) || super
     end
 
-    # @api private
-    def compile_query_method!(method_name)
-      const_name = method_name.to_s.camelize
-
-      self.class.send(:class_eval, <<-RUBY, __FILE__, __LINE__ + 1)
-        def #{method_name}(context: {}, **arguments)
-          client.query(
-            self.class::#{const_name},
-            variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
-            context: context
-          )
-        end
-      RUBY
-    end
 
     # Internal collection object that holds references to the callback blocks.
     #
