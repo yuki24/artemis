@@ -276,11 +276,7 @@ module Artemis
           self.class.load_constant(const_name)
         end
 
-        client.query(
-          self.class.const_get(const_name),
-          variables: arguments,
-          context: context
-        )
+        client.query(self.class.const_get(const_name), variables: arguments, context: context)
       else
         super
       end
