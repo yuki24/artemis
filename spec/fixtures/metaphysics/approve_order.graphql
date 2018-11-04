@@ -1,0 +1,14 @@
+mutation($input:ApproveOrderInput!) {
+  ecommerceApproveOrder(input:$input) {
+    orderOrError {
+      __typename
+      ... on OrderWithMutationFailure {
+        error {
+          type
+          code
+          data
+        }
+      }
+    }
+  }
+}

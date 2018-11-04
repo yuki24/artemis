@@ -4,7 +4,9 @@ require 'delegate'
 
 require 'active_support/configurable'
 require 'active_support/core_ext/hash/deep_merge'
+require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/string/inflections'
+require 'graphql/query/variables'
 
 require 'artemis/graphql_endpoint'
 require 'artemis/exceptions'
@@ -257,6 +259,21 @@ module Artemis
 
     private
 
+    # Runs a validation check against +variables+ and raises an exception if there is any. Otherwise does nothing.
+    # Clients can override this method if client-side validations are unnecessary.
+    def validate_variables!(ast_variables, variables: )
+      validation_errors =
+        GraphQL::Query::Variables.new(self.class.endpoint.null_context, ast_variables, variables).errors
+
+      if !validation_errors.empty?
+        error   = validation_errors.first
+        message = error.validation_result.problems.dig(0, "explanation")
+        message &&= "Input validation error for `#{error.ast_node.name}': #{message} (given `#{variables.inspect}')"
+
+        raise error, message || error.message
+      end
+    end
+
     # Delegates a method call to a GraphQL call.
     #
     #   # app/operations/github.rb
@@ -276,6 +293,8 @@ module Artemis
           self.class.load_constant(const_name)
         end
 
+        validate_variables!(self.class.const_get(const_name).definition_node.variables, variables: arguments.deep_stringify_keys)
+
         client.query(
           self.class.const_get(const_name),
           variables: arguments.deep_transform_keys {|key| key.to_s.camelize(:lower) },
@@ -289,7 +308,6 @@ module Artemis
     def respond_to_missing?(method_name, *_, &block) #:nodoc:
       self.class.resolve_graphql_file_path(method_name) || super
     end
-
 
     # Internal collection object that holds references to the callback blocks.
     #

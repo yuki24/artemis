@@ -97,6 +97,24 @@ describe GraphQL::Client do
     GRAPHQL
   end
 
+  it "raises an exception when the argument validation fails" do
+    expect { Metaphysics.artists(Size: 1) }.to raise_error(GraphQL::Query::VariableValidationError)
+
+    exception = (Metaphysics.artists(Size: 1) rescue $!)
+
+    expect(exception.message).to eq("Input validation error for `size': Expected value to not be null (given `{\"Size\"=>1}')")
+    expect(exception.validation_result.problems).to eq([{ "explanation" => "Expected value to not be null", "path" => [] }])
+  end
+
+  it "raises an exception when the argument can not be coerced" do
+    expect { Metaphysics.artists(size: true) }.to raise_error(GraphQL::Query::VariableValidationError)
+
+    exception = (Metaphysics.artists(size: true) rescue $!)
+
+    expect(exception.message).to eq("Input validation error for `size': Could not coerce value true to Int (given `{\"size\"=>true}')")
+    expect(exception.validation_result.problems).to eq([{ "explanation" => "Could not coerce value true to Int", "path" => [] }])
+  end
+
   it "assigns context to the request when provided as an argument" do
     context = { headers: { Authorization: 'bearer ...' } }
 

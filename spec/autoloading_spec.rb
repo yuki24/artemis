@@ -64,7 +64,7 @@ describe "#{GraphQL::Client} Autoloading" do
     begin
       Object.send(:const_set, :Artist, 1)
 
-      Metaphysics.artist
+      Metaphysics.artist(id: 'leonardo-da-vinci')
     ensure
       Object.send(:remove_const, :Artist)
     end

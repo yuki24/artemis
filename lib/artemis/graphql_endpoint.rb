@@ -57,5 +57,15 @@ module Artemis
         @connection ||= ::Artemis::Adapters.lookup(adapter).new(url, service_name: name, timeout: timeout, pool_size: pool_size)
       end
     end
+
+    # Returns an object of +GraphQL::Query::NullContext+ but with the +#schema+ set to the instance variable.
+    #
+    def null_context
+      @null_context ||= begin
+                          ctx = GraphQL::Query::NullContext.new
+                          ctx.instance_variable_set(:@schema, schema)
+                          ctx
+                        end
+    end
   end
 end
