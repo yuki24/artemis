@@ -1,0 +1,12 @@
+{
+  "the_last_supper": {
+    "data": {
+      "artwork": {
+        "title": "The Last Supper",
+        "artist": {
+          "name": "Leonardo da Vinci"
+        }
+      }
+    }
+  }
+}

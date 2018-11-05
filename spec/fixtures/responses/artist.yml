@@ -1,0 +1,11 @@
+yayoi_kusama:
+  data:
+    artist:
+      name: Yayoi Kusama
+      birthday: 1929/03/22
+
+leonardo_da_vinci:
+  data:
+    artist:
+      name: Leonardo da Vinci
+      birthday: 1452/04/15
