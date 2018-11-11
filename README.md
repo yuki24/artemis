@@ -1,10 +1,12 @@
 # Artemis [![Build Status](https://travis-ci.org/yuki24/artemis.svg?branch=master)](https://travis-ci.org/yuki24/artemis)
 
+Artemis is a GraphQL client that is designed to fit well on Rails.
+
  * **Convention over Configuration**: You'll never have to make trivial decisions or spend time on boring setup. Start
   making a GraphQL request in literally 30sec.
  * **Performant by default**: You can't do wrong when it comes to performance. All GraphQL files are pre-loaded only
   once in production and it'll never affect runtime performance. Comes with options that enable persistent connections
-   and even HTTP/2.0, the next-gen high-performance protocol.
+   and even HTTP/2, the next-gen high-performance protocol.
 
 <img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battled-tested at [Artsy](https://www.artsy.net)
 
@@ -136,7 +138,7 @@ There are four adapter options available. Choose the adapter that best fits on y
 
 | Adapter                | Protocol                 | Keep-alive  | Performance | Dependencies |
 | ---------------------- | ------------------------ | ----------- | ----------- | ------------ |
-| `:curb`                | HTTP/1.1, **HTTP/2.0**   | **Yes**     | **Fastest** | [`curb 0.9.6+`][curb]<br>[`libcurl 7.64.0+`][curl]<br>[`nghttp2 1.0.0+`][nghttp]
+| `:curb`                | HTTP/1.1, **HTTP/2**     | **Yes**     | **Fastest** | [`curb 0.9.6+`][curb]<br>[`libcurl 7.64.0+`][curl]<br>[`nghttp2 1.0.0+`][nghttp]
 | `:net_http` (default)  | HTTP/1.1 only            | No          | Slow        | **None**
 | `:net_http_persistent` | HTTP/1.1 only            | **Yes**     | **Fast**    | [`net-http-persistent 3.0.0+`][nhp]
 | `:test`                | N/A (See Testing)
