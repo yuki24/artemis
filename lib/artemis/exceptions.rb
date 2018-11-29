@@ -11,6 +11,9 @@ module Artemis
   class GraphQLFileNotFound < Error
   end
 
+  class FixtureNotFound < Error
+  end
+
   class GraphQLError < Error
   end
 
