@@ -2,6 +2,11 @@ require 'active_support/file_update_checker'
 
 module Artemis
   class Railtie < ::Rails::Railtie #:nodoc:
+    config.artemis = ActiveSupport::OrderedOptions.new
+    config.artemis.query_path         = "app/operations"
+    config.artemis.schema_path        = "vendor/graphql/schema"
+    config.artemis.graphql_extentions = ["graphql"]
+
     initializer 'graphql.client.attach_log_subscriber' do
       if !defined?(GraphQL::Client::LogSubscriber)
         require "graphql/client/log_subscriber"
@@ -10,13 +15,15 @@ module Artemis
     end
 
     initializer 'graphql.client.set_query_paths' do |app|
-      app.paths.add "app/operations"
+      query_path = config.artemis.query_path
 
-      Artemis::Client.query_paths = app.paths["app/operations"].existent
+      app.paths.add query_path
+
+      Artemis::Client.query_paths = app.paths[query_path].existent
     end
 
     initializer 'graphql.client.set_reloader', after: 'graphql.client.set_query_paths' do |app|
-      files_to_watch = Artemis::Client.query_paths.map {|path| [path, ["graphql"]] }.to_h
+      files_to_watch = Artemis::Client.query_paths.map {|path| [path, config.artemis.graphql_extentions] }.to_h
 
       app.reloaders << ActiveSupport::FileUpdateChecker.new([], files_to_watch) do
         endpoint_names = app.config_for(:graphql).keys
@@ -31,7 +38,9 @@ module Artemis
     initializer 'graphql.client.load_config' do |app|
       if Pathname.new("#{app.paths["config"].existent.first}/graphql.yml").exist?
         app.config_for(:graphql).each do |endpoint_name, options|
-          Artemis::GraphQLEndpoint.register!(endpoint_name, { 'schema_path' => app.root.join("vendor/graphql/schema/#{endpoint_name}.json").to_s }.merge(options))
+          Artemis::GraphQLEndpoint.register!(endpoint_name, {
+            'schema_path' => app.root.join(config.artemis.schema_path, "#{endpoint_name}.json").to_s
+          }.merge(options))
         end
       end
     end
