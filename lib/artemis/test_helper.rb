@@ -50,6 +50,8 @@ module Artemis
       Artemis::Adapters::TestAdapter.requests
     end
 
+    private
+
     def graphql_responses #:nodoc:
       Artemis::Adapters::TestAdapter.responses
     end
@@ -68,8 +70,6 @@ module Artemis
                               .select {|file| ::File.file?(file) }
                               .map    {|file| GraphQLFixture.new(File.basename(file, File.extname(file)), file, read_erb_yaml(file)) }
     end
-
-    private
 
     def read_erb_yaml(path) #:nodoc:
       YAML.load(ERB.new(File.read(path)).result)
