@@ -4,6 +4,7 @@ module Artemis
   class Railtie < ::Rails::Railtie #:nodoc:
     config.artemis = ActiveSupport::OrderedOptions.new
     config.artemis.query_path         = "app/operations"
+    config.artemis.fixture_path       = "test/fixtures/graphql"
     config.artemis.schema_path        = "vendor/graphql/schema"
     config.artemis.graphql_extentions = ["graphql"]
 
@@ -20,6 +21,13 @@ module Artemis
       app.paths.add query_path
 
       Artemis::Client.query_paths = app.paths[query_path].existent
+    end
+
+    initializer 'graphql.test_helper' do |app|
+      if !Rails.env.production?
+        require 'artemis/test_helper'
+        Artemis::TestHelper.__graphql_fixture_path__ = app.root.join(config.artemis.fixture_path)
+      end
     end
 
     initializer 'graphql.client.set_reloader', after: 'graphql.client.set_query_paths' do |app|

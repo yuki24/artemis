@@ -74,6 +74,42 @@ class RailtieTest < ActiveSupport::TestCase
     assert_equal :test, endpoint.adapter
   end
 
+  test "test helper can load fixtures" do
+    FileUtils.mkdir_p "#{app_path}/test/fixtures/graphql"
+    FileUtils.touch "#{app_path}/test/fixtures/graphql/artist.yml"
+
+    File.open("#{app_path}/test/fixtures/graphql/artist.yml", "w") do |f|
+      f.puts <<-YAML
+        leonardo_da_vinci:
+          data:
+            artist:
+              name: Leonardo da Vinci
+      YAML
+    end
+
+    require 'artemis/test_helper'
+    boot_rails
+
+    actual = Class.new { include Artemis::TestHelper }.new.send(:graphql_fixtures, :artist)
+
+    expected = {
+      "leonardo_da_vinci" => {
+        "data" => {
+          "artist" => {
+            "name" => "Leonardo da Vinci",
+          }
+        }
+      }
+    }
+
+    assert_equal "artist", actual.name
+    assert_equal expected, actual.data
+    assert actual.path.end_with?("test/fixtures/graphql/artist.yml"),
+           "Fixture path does not match:\n" \
+           "  Expected: #{app_path}/test/fixtures/graphql/artist.yml\n" \
+           "  Actual:   #{actual.path}"
+  end
+
   test "booting fails when the config/graphql.yml is malformed" do
     File.open("#{app_path}/config/graphql.yml", "w") do |f|
       f.puts <<-YAML
