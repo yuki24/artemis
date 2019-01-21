@@ -1,4 +1,5 @@
 require 'artemis/test_helper'
+require 'date'
 
 describe GraphQL::Client do
   include Artemis::TestHelper
@@ -19,6 +20,14 @@ describe GraphQL::Client do
 
     expect(response.data.artist.name).to eq("Yayoi Kusama")
     expect(response.data.artist.birthday).to eq("1929/03/22")
+  end
+
+  it "can mock a GraphQL request with an ERB-enabled fixture" do
+    stub_graphql(Metaphysics, :artist).to_return(:yuki)
+
+    response = Metaphysics.artist(id: "yuki")
+
+    expect(response.data.artist.birthday).to eq("#{Date.today.year}/01/01")
   end
 
   it "can mock a GraphQL request with variables using exact match" do

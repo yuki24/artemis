@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'erb'
+
 require 'active_support/core_ext/module/attribute_accessors'
 
 require 'artemis/exceptions'
@@ -64,7 +66,13 @@ module Artemis
     def graphql_fixture_files #:nodoc:
       @graphql_fixture_sets ||= Dir["#{graphql_fixture_path}/{**,*}/*.{yml,json}"]
                               .select {|file| ::File.file?(file) }
-                              .map    {|file| GraphQLFixture.new(File.basename(file, File.extname(file)), file, YAML.load_file(file)) }
+                              .map    {|file| GraphQLFixture.new(File.basename(file, File.extname(file)), file, read_erb_yaml(file)) }
+    end
+
+    private
+
+    def read_erb_yaml(path) #:nodoc:
+      YAML.load(ERB.new(File.read(path)).result)
     end
 
     class StubbingDSL #:nodoc:

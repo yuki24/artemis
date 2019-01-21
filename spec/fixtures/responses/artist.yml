@@ -9,3 +9,9 @@ leonardo_da_vinci:
     artist:
       name: Leonardo da Vinci
       birthday: 1452/04/15
+
+yuki:
+  data:
+    artist:
+      name: Yuki Nishijima
+      birthday: <%= Date.today.year %>/01/01
