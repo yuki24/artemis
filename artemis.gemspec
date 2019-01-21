@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activesupport", ">= 4.2.0"
-  spec.add_dependency "graphql", ">= 1.6"
+  spec.add_dependency "graphql", ">= 1.8"
   spec.add_dependency "graphql-client", ">= 0.13.0"
   spec.add_dependency "railties", ">= 4.2.0"
 
