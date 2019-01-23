@@ -10,7 +10,26 @@ Artemis is a GraphQL client that is designed to fit well on Rails.
  * **First-class support for testing**: Testing and stubbing GraphQL requests couldn't be simpler. No need to add
   external dependencies to test well.
 
-<img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battled-tested at [Artsy](https://www.artsy.net)
+<img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battle-tested at [Artsy](https://www.artsy.net)
+
+## Quick start
+
+You could set up Artemis with just a few commands. See it in action:
+
+```bash
+$ bundle add artemis
+$ rails g artemis:install artsy https://metaphysics-production.artsy.net/
+$ echo '
+query($id: String!) {
+  artist(id: $id) {
+    name
+    birthday
+   }
+}' > app/operations/artsy/artist.graphql
+$ rails c
+> Artsy.artist(id: "leonardo-da-vinci").data.artist.name     # => "Leonardo da Vinci"
+> Artsy.artist(id: "leonardo-da-vinci").data.artist.birthday # => "1452/04/15"
+```
 
 ## Getting started
 
