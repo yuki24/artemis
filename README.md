@@ -3,10 +3,12 @@
 Artemis is a GraphQL client that is designed to fit well on Rails.
 
  * **Convention over Configuration**: You'll never have to make trivial decisions or spend time on boring setup. Start
-  making a GraphQL request in literally 30sec.
+  making a GraphQL request in literally 30s.
  * **Performant by default**: You can't do wrong when it comes to performance. All GraphQL files are pre-loaded only
   once in production and it'll never affect runtime performance. Comes with options that enable persistent connections
    and even HTTP/2, the next-gen high-performance protocol.
+ * **First-class support for testing**: Testing and stubbing GraphQL requests couldn't be simpler. No need to add
+  external dependencies to test well.
 
 <img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battled-tested at [Artsy](https://www.artsy.net)
 
@@ -87,6 +89,11 @@ Artemis assumes that the files related to GraphQL are organized in a certain way
 │   │   └── artists.graphql
 │   └── artsy.rb
 ├──config/graphql.yml
+├──test/fixtures/graphql
+│   └── artsy
+│       ├── artwork.yml
+│       ├── artist.yml
+│       └── artists.yml
 └──vendor/graphql/schema/artsy.json
 ```
 
@@ -154,7 +161,73 @@ Artemis also adds a useful `rake graphql:schema:update` rake task that downloads
 
 ## Testing
 
-**The testing support is incomplete, but there are some examples [available in Artemis' client spec](https://github.com/yuki24/artemis/blob/74095f3acb050e87251439aed5f8b17778ffdd06/spec/client_spec.rb#L36-L54).**
+Given that you have `app/operations/artsy/artist.graphql` and fixture file for the `artist.yml`:
+
+```yml
+# test/fixtures/graphql/artist.yml:
+leonardo_da_vinci:
+  data:
+    artist:
+      name: Leonardo da Vinci
+      birthday: 1452/04/15
+
+yayoi_kusama:
+  data:
+    artist:
+      name: Yayoi Kusama
+      birthday: 1929/03/22
+```
+
+Then you can stub the request with the `stub_graphql` DSL:
+
+```ruby
+stub_graphql(Artsy, :artist, id: "yayoi-kusama").to_return(:yayoi_kusama)
+stub_graphql(Artsy, :artist, id: "leonardo-da-vinci").to_return(:leonardo_da_vinci)
+
+yayoi_kusama = Artsy.artist(id: "yayoi-kusama")
+yayoi_kusama.data.artist.name     # => "Yayoi Kusama"
+yayoi_kusama.data.artist.birthday # => "1452/04/15"
+
+da_vinci = Artsy.artist(id: "leonardo-da-vinci")
+da_vinci.data.artist.name     # => "Leonardo da Vinci"
+da_vinci.data.artist.birthday # => "1452/04/15"
+```
+
+You can also use JSON instead of YAML. See [example fixtures](https://github.com/yuki24/artemis/tree/master/spec/fixtures/responses)
+and [test cases](https://github.com/yuki24/artemis/blob/master/spec/test_helper_spec.rb#L16-L51).
+
+### MiniTest
+
+Setting up the test helper with Artemis is very easy and simple. Just add the following code to the
+`test/test_helper.rb` in your app:
+
+```ruby
+# spec/test_helper.rb
+require 'artemis/test_helper'
+
+class ActiveSupport::TestCase
+  setup do
+    graphql_requests.clear
+    graphql_responses.clear
+  end
+end
+```
+
+### RSpec
+
+Artemis also comes with a script that wires up helper methods on Rspec. Because it is more common to use the `spec/`
+directory to organize spec files in RSpec, the `config.artemis.fixture_path` config needs to point to
+`spec/fixtures/graphql`. Other than that, it is very straightforward to set it up:
+
+```ruby
+# config/application.rb
+config.artemis.fixture_path = 'spec/fixtures/graphql'
+```
+
+```ruby
+# Add this to your spec/rails_helper.rb or spec_helper.rb if you don't have rails_helper.rb
+require 'artemis/rspec'
+```
 
 ## Development
 
