@@ -12,6 +12,10 @@ Artemis is a GraphQL client that is designed to fit well on Rails.
 
 <img width="24" height="24" src="https://avatars1.githubusercontent.com/u/541332?s=48&amp;v=4"> Battle-tested at [Artsy](https://www.artsy.net)
 
+Here is a simple comparion of GraphQL Clients implemented in different gems for [the SWAPI GraphQL Wrapper](https://github.com/graphql/swapi-graphql).
+
+![graphql-client vs Artemis](https://raw.githubusercontent.com/yuki24/artemis/master/banner.png "graphql-client vs Artemis")
+
 ## Quick start
 
 You could set up Artemis with just a few commands. See it in action:
