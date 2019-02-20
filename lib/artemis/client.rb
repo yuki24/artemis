@@ -23,12 +23,22 @@ module Artemis
     # List of before callbacks that get invoked in every +execute+ call.
     #
     # @api  private
-    config.before_callbacks = []
+    config.before_execute_callbacks = []
 
     # List of after callbacks that get invoked in every +execute+ call.
     #
     # @api private
-    config.after_callbacks = []
+    config.after_execute_callbacks = []
+
+    # List of before request callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    config.before_request_callbacks = []
+
+    # List of after request callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    config.after_request_callbacks = []
 
     # Returns a plain +GraphQL::Client+ object. For more details please refer to the official documentation for
     # {the +graphql-client+ gem}[https://github.com/github/graphql-client].
@@ -157,6 +167,37 @@ module Artemis
         config.after_callbacks << block
       end
 
+      # Defines a callback that will get called right before making the
+      # client's request
+      #
+      #   class Github < Artemis::Client
+      #
+      #     before_request do |request, headers, body, context|
+      #       request.headers[:Authorization] = generate_signature(request, context[:access_id])
+      #     end
+      #
+      #     ...
+      #   end
+      def before_request(&block)
+        config.before_request << block
+      end
+
+      # Defines a callback that will get called right after making
+      # the client's request
+      #
+      #   class Github < Artemis::Client
+      #
+      #     after_request do |response, status, headers, body, context|
+      #       Rails.logger.error(errors.to_json) if status == 500
+      #     end
+      #
+      #     ...
+      #   end
+      #
+      def after_request(&block)
+        config.after_request << block
+      end
+
       def resolve_graphql_file_path(filename, fragment: false)
         namespace = name.underscore
         filename  = filename.to_s.underscore
@@ -251,7 +292,10 @@ module Artemis
       #
       # @api private
       def callbacks
-        Callbacks.new(config.before_callbacks, config.after_callbacks)
+        Callbacks.new(config.before_execute_callbacks,
+          config.after_execute_callbacks,
+          config.before_request_callbacks,
+          config.after_request_callbacks)
       end
     end
 
@@ -289,7 +333,8 @@ module Artemis
     # Internal collection object that holds references to the callback blocks.
     #
     # @api private
-    Callbacks = Struct.new(:before_callbacks, :after_callbacks) #:nodoc:
+    Callbacks = Struct.new(:before_execute_callbacks, :after_execute_callbacks,
+      :before_request_callbacks, :after_request_callbacks) #:nodoc:
 
     # Wrapper object around the adapter that wires up callbacks.
     #
@@ -303,15 +348,20 @@ module Artemis
       end
 
       def execute(document:, operation_name: nil, variables: {}, context: {}) #:nodoc:
-        _context = @default_context.deep_merge(context)
+        context = @default_context.deep_merge(context)
 
-        @callbacks.before_callbacks.each do |callback|
-          callback.call(document, operation_name, variables, _context)
+        @callbacks.before_execute_callbacks.each do |callback|
+          callback.call(document, operation_name, variables, context)
         end
 
-        response = __getobj__.execute(document: document, operation_name: operation_name, variables: variables, context: _context)
+        response = __getobj__.execute(
+          document: document,
+          operation_name: operation_name,
+          variables: variables,
+          callbacks: @callbacks,
+          context: context)
 
-        @callbacks.after_callbacks.each do |callback|
+        @callbacks.after_execute_callbacks.each do |callback|
           callback.call(response['data'], response['errors'], response['extensions'])
         end
 

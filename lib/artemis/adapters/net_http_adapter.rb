@@ -10,7 +10,7 @@ module Artemis
   module Adapters
     class NetHttpAdapter < AbstractAdapter
       # Makes an HTTP request for GraphQL query.
-      def execute(document:, operation_name: nil, variables: {}, context: {})
+      def execute(document:, operation_name: nil, variables: {}, callbacks:, context: {})
         request = Net::HTTP::Post.new(uri.request_uri)
 
         request.basic_auth(uri.user, uri.password) if uri.user || uri.password
@@ -25,7 +25,15 @@ module Artemis
         body["operationName"] = operation_name if operation_name
         request.body = JSON.generate(body)
 
+        callbacks.before_request_callbacks.each do |callback|
+          callback.call(request, request.to_hash, request.body, context)
+        end
+
         response = connection.request(request)
+
+        callbacks.after_request_callbacks.each do |callback|
+          callback.call(response, response.code.to_i, response.body, context)
+        end
 
         case response.code.to_i
         when 200, 400

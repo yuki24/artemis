@@ -23,8 +23,8 @@ module Artemis
       # Public: Extension point for subclasses to set custom request headers.
       #
       # Returns Hash of String header names and values.
-      def headers(_context)
-        _context[:headers] || EMPTY_HEADERS
+      def headers(context)
+        context[:headers] || EMPTY_HEADERS
       end
 
       # Public: Make an HTTP request for GraphQL query.
