@@ -146,7 +146,7 @@ module Artemis
       #   end
       #
       def before_execute(&block)
-        config.before_callbacks << block
+        config.before_execute_callbacks << block
       end
 
       # Defines a callback that will get called right after the
@@ -164,7 +164,7 @@ module Artemis
       #   end
       #
       def after_execute(&block)
-        config.after_callbacks << block
+        config.after_execute_callbacks << block
       end
 
       # Defines a callback that will get called right before making the
@@ -179,7 +179,7 @@ module Artemis
       #     ...
       #   end
       def before_request(&block)
-        config.before_request << block
+        config.before_request_callbacks << block
       end
 
       # Defines a callback that will get called right after making
@@ -195,7 +195,7 @@ module Artemis
       #   end
       #
       def after_request(&block)
-        config.after_request << block
+        config.after_request_callbacks << block
       end
 
       def resolve_graphql_file_path(filename, fragment: false)
