@@ -20,7 +20,7 @@ module Artemis
         @multi.pipeline = Curl::CURLPIPE_MULTIPLEX if defined?(Curl::CURLPIPE_MULTIPLEX)
       end
 
-      def execute(document:, operation_name: nil, variables: {}, callbacks:, context: {})
+      def execute(document:, operation_name: nil, variables: {}, callbacks: nil, context: {})
         easy = Curl::Easy.new(uri.to_s)
 
         body = {}
@@ -40,13 +40,13 @@ module Artemis
           easy.version = Curl::HTTP_2_0
         end
 
-        callbacks.before_request_callbacks.each do |callback|
+        Array(callbacks&.before_request_callbacks).each do |callback|
           callback.call(easy, easy.headers, easy.post_body, context)
         end
 
         easy.http_post
 
-        request_callbacks.after_request_callbacks.each do |callback|
+        Array(callbacks&.after_request_callbacks).each do |callback|
           callback.call(easy, easy.response_code, easy.body, context)
         end
 
