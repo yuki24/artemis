@@ -348,10 +348,10 @@ module Artemis
       end
 
       def execute(document:, operation_name: nil, variables: {}, context: {}) #:nodoc:
-        context = @default_context.deep_merge(context)
+        merged_context = @default_context.deep_merge(context)
 
         @callbacks.before_execute_callbacks.each do |callback|
-          callback.call(document, operation_name, variables, context)
+          callback.call(document, operation_name, variables, merged_context)
         end
 
         response = __getobj__.execute(
@@ -359,7 +359,7 @@ module Artemis
           operation_name: operation_name,
           variables: variables,
           callbacks: @callbacks,
-          context: context)
+          context: merged_context)
 
         @callbacks.after_execute_callbacks.each do |callback|
           callback.call(response['data'], response['errors'], response['extensions'])
