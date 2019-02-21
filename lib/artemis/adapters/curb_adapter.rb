@@ -40,7 +40,7 @@ module Artemis
           easy.version = Curl::HTTP_2_0
         end
 
-        Array(callbacks&.before_request_callbacks).each do |callback|
+        callbacks&.before_request_callbacks&.each do |callback|
           callback.call(easy, easy.headers, easy.post_body, context)
         end
 
