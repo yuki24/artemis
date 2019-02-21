@@ -25,13 +25,13 @@ module Artemis
         body["operationName"] = operation_name if operation_name
         request.body = JSON.generate(body)
 
-        Array(callbacks&.before_request_callbacks).each do |callback|
+        request_callbacks&.before_request_callbacks&.each do |callback|
           callback.call(request, request.to_hash, request.body, context)
         end
 
         response = connection.request(request)
 
-        Array(callbacks&.after_request_callbacks).each do |callback|
+        request_callbacks&.after_request_callbacks&.each do |callback|
           callback.call(response, response.code.to_i, response.body, context)
         end
 

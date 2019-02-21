@@ -18,6 +18,14 @@ module Artemis
       def initialize(*)
       end
 
+      # Main entry point for an Adapter, it receives the callbacks, set them and clears them after
+      def call(document:, operation_name:, variables:, context: {}, callbacks: nil)
+        @request_callbacks = callbacks
+        result = execute(document: document, operation_name: operation_name, variables: variables, context: context)
+        @request_callbacks = nil
+        result
+      end
+
       def execute(**arguments)
         self.requests << Request.new(*arguments.values_at(:document, :operation_name, :variables, :context))
 
