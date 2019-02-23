@@ -5,7 +5,7 @@ describe 'Adapters' do
   FakeServer = ->(env) {
     case env['PATH_INFO']
     when '/slow_server'
-      sleep 2.1
+      sleep 1.1
 
       [200, {}, ['{}']]
     when '/500'
@@ -92,14 +92,14 @@ describe 'Adapters' do
   end
 
   describe Artemis::Adapters::NetHttpAdapter do
-    let(:adapter) { Artemis::Adapters::NetHttpAdapter.new('http://localhost:8000', service_name: nil, timeout: 2, pool_size: 5) }
+    let(:adapter) { Artemis::Adapters::NetHttpAdapter.new('http://localhost:8000', service_name: nil, timeout: 0.5, pool_size: 5) }
     let(:timeout_error) { Net::ReadTimeout }
 
     it_behaves_like 'an adapter'
   end
 
   describe Artemis::Adapters::NetHttpPersistentAdapter do
-    let(:adapter) { Artemis::Adapters::NetHttpPersistentAdapter.new('http://localhost:8000', service_name: nil, timeout: 2, pool_size: 5) }
+    let(:adapter) { Artemis::Adapters::NetHttpPersistentAdapter.new('http://localhost:8000', service_name: nil, timeout: 0.5, pool_size: 5) }
     let(:timeout_error) { Net::HTTP::Persistent::Error }
 
     it_behaves_like 'an adapter'
