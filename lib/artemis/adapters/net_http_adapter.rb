@@ -15,9 +15,7 @@ module Artemis
 
         request.basic_auth(uri.user, uri.password) if uri.user || uri.password
 
-        request["Accept"] = "application/json"
-        request["Content-Type"] = "application/json"
-        headers(context).each { |name, value| request[name] = value }
+        DEFAULT_HEADERS.merge(headers(context)).each { |name, value| request[name] = value }
 
         body = {}
         body["query"] = document.to_query_string

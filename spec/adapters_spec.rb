@@ -14,7 +14,7 @@ describe 'Adapters' do
       body = {
         data: {
           body: JSON.parse(env['rack.input'].read),
-          headers: env.select {|key, val| key.start_with?('HTTP_') }
+          headers: env.select {|key, val| key.match("^HTTP.*|^CONTENT.*|^AUTHORIZATION.*") }
                      .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
                      .to_h,
         },
@@ -69,6 +69,8 @@ describe 'Adapters' do
         expect(response['data']['body']['query']).to eq(GraphQL::Client::IntrospectionDocument.to_query_string)
         expect(response['data']['body']['variables']).to eq('id' => 'yayoi-kusama')
         expect(response['data']['body']['operationName']).to eq('IntrospectionQuery')
+        expect(response['data']['headers']['CONTENT_TYPE']).to eq('application/json')
+        expect(response['data']['headers']['ACCEPT']).to eq('application/json')
         expect(response['errors']).to eq([])
         expect(response['extensions']).to eq({})
       end

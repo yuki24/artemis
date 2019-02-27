@@ -30,7 +30,7 @@ module Artemis
 
         easy.timeout     = timeout
         easy.multi       = multi
-        easy.headers     = headers(context) || {}
+        easy.headers     = DEFAULT_HEADERS.merge(headers(context))
         easy.post_body   = JSON.generate(body)
 
         if defined?(Curl::CURLPIPE_MULTIPLEX)

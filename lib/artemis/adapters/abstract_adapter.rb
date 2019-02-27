@@ -10,6 +10,11 @@ module Artemis
 
       EMPTY_HEADERS = {}.freeze
 
+      DEFAULT_HEADERS = {
+        "Accept" => "application/json",
+        "Content-Type" => "application/json"
+      }.freeze
+
       def initialize(uri, service_name: , timeout: , pool_size: )
         raise ArgumentError, "url is required (given `#{uri.inspect}')" if uri.blank?
 
