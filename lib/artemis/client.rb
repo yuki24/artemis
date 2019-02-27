@@ -23,12 +23,22 @@ module Artemis
     # List of before callbacks that get invoked in every +execute+ call.
     #
     # @api  private
-    config.before_callbacks = []
+    config.before_execute_callbacks = []
 
     # List of after callbacks that get invoked in every +execute+ call.
     #
     # @api private
-    config.after_callbacks = []
+    config.after_execute_callbacks = []
+
+    # List of before request callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    config.before_request_callbacks = []
+
+    # List of after request callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    config.after_request_callbacks = []
 
     # Returns a plain +GraphQL::Client+ object. For more details please refer to the official documentation for
     # {the +graphql-client+ gem}[https://github.com/github/graphql-client].
@@ -136,7 +146,7 @@ module Artemis
       #   end
       #
       def before_execute(&block)
-        config.before_callbacks << block
+        config.before_execute_callbacks << block
       end
 
       # Defines a callback that will get called right after the
@@ -154,12 +164,43 @@ module Artemis
       #   end
       #
       def after_execute(&block)
-        config.after_callbacks << block
+        config.after_execute_callbacks << block
+      end
+
+      # Defines a callback that will get called right before making the
+      # client's request
+      #
+      #   class Github < Artemis::Client
+      #
+      #     before_request do |request, headers, body, context|
+      #       request.headers[:Authorization] = generate_signature(request, context[:access_id])
+      #     end
+      #
+      #     ...
+      #   end
+      def before_request(&block)
+        config.before_request_callbacks << block
+      end
+
+      # Defines a callback that will get called right after making
+      # the client's request
+      #
+      #   class Github < Artemis::Client
+      #
+      #     after_request do |response, status, headers, body, context|
+      #       Rails.logger.error(errors.to_json) if status == 500
+      #     end
+      #
+      #     ...
+      #   end
+      #
+      def after_request(&block)
+        config.after_request_callbacks << block
       end
 
       def resolve_graphql_file_path(filename, fragment: false)
         namespace = name.underscore
-        filename  = filename.to_s.underscore
+        filename = filename.to_s.underscore
 
         graphql_file_paths.detect do |path|
           path.end_with?("#{namespace}/#{filename}.graphql") ||
@@ -168,7 +209,7 @@ module Artemis
       end
 
       def graphql_file_paths
-        @graphql_file_paths ||= query_paths.flat_map {|path| Dir["#{path}/#{name.underscore}/*.graphql"] }
+        @graphql_file_paths ||= query_paths.flat_map { |path| Dir["#{path}/#{name.underscore}/*.graphql"] }
       end
 
       def preload!
@@ -194,15 +235,16 @@ module Artemis
 
         if graphql_file
           graphql = File.open(graphql_file).read
-          ast     = instantiate_client.parse(graphql)
+          ast = instantiate_client.parse(graphql)
 
           const_set(const_name, ast)
         end
       end
+
       alias load_query load_constant
 
       def connection(context = {})
-        Executor.new(endpoint.connection, callbacks, default_context.deep_merge(context))
+        Executor.new(endpoint.connection, execute_callbacks, request_callbacks, default_context.deep_merge(context))
       end
 
       private
@@ -247,11 +289,18 @@ module Artemis
         resolve_graphql_file_path(method_name) || super
       end
 
-      # Returns a +Callbacks+ collection object that implements the interface for the +Executor+ object.
+      # Returns a +ExecuteCallbacks+ collection object that implements the interface for the +Executor+ object.
       #
       # @api private
-      def callbacks
-        Callbacks.new(config.before_callbacks, config.after_callbacks)
+      def execute_callbacks
+        ExecuteCallbacks.new(config.before_execute_callbacks, config.after_execute_callbacks)
+      end
+
+      # Returns a +RequestCallbacks+ collection object that implements the interface for the +Adapter+ object.
+      #
+      # @api private
+      def request_callbacks
+        RequestCallbacks.new(config.before_request_callbacks, config.after_request_callbacks)
       end
     end
 
@@ -286,32 +335,46 @@ module Artemis
       self.class.resolve_graphql_file_path(method_name) || super
     end
 
-    # Internal collection object that holds references to the callback blocks.
+    # Internal collection object that holds references to the execute callback blocks.
     #
     # @api private
-    Callbacks = Struct.new(:before_callbacks, :after_callbacks) #:nodoc:
+    ExecuteCallbacks = Struct.new(:before_execute_callbacks, :after_execute_callbacks) #:nodoc:
+
+    # Internal collection object that holds references to the request callback blocks.
+    #
+    # @api private
+    RequestCallbacks = Struct.new(:before_request_callbacks, :after_request_callbacks) #:nodoc:
 
     # Wrapper object around the adapter that wires up callbacks.
     #
     # @api private
     class Executor < SimpleDelegator
-      def initialize(connection, callbacks, default_context) #:nodoc:
+      attr_reader :execute_callbacks, :request_callbacks, :default_context
+
+      def initialize(connection, execute_callbacks, request_callbacks, default_context) #:nodoc:
         super(connection)
 
-        @callbacks = callbacks
+        @execute_callbacks = execute_callbacks
+        @request_callbacks = request_callbacks
         @default_context = default_context
       end
 
       def execute(document:, operation_name: nil, variables: {}, context: {}) #:nodoc:
-        _context = @default_context.deep_merge(context)
+        merged_context = default_context.deep_merge(context)
 
-        @callbacks.before_callbacks.each do |callback|
-          callback.call(document, operation_name, variables, _context)
+        execute_callbacks.before_execute_callbacks.each do |callback|
+          callback.call(document, operation_name, variables, merged_context)
         end
 
-        response = __getobj__.execute(document: document, operation_name: operation_name, variables: variables, context: _context)
+        response = __getobj__.call(
+          document: document,
+          operation_name: operation_name,
+          variables: variables,
+          context: merged_context,
+          callbacks: request_callbacks
+        )
 
-        @callbacks.after_callbacks.each do |callback|
+        execute_callbacks.after_execute_callbacks.each do |callback|
           callback.call(response['data'], response['errors'], response['extensions'])
         end
 
@@ -319,6 +382,6 @@ module Artemis
       end
     end
 
-    private_constant :Callbacks, :Executor
+    private_constant :ExecuteCallbacks, :RequestCallbacks, :Executor
   end
 end

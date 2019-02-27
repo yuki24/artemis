@@ -12,7 +12,7 @@ module Artemis
     class NetHttpPersistentAdapter < NetHttpAdapter
       attr_reader :_connection, :raw_connection
 
-      def initialize(uri, service_name: , timeout: , pool_size: )
+      def initialize(uri, service_name:, timeout:, pool_size:)
         super
 
         @raw_connection = Net::HTTP::Persistent.new(name: service_name, pool_size: pool_size)
