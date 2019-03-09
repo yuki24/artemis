@@ -181,7 +181,7 @@ This is a comminuty-maintained adapter. Want to add yours? Send us a pull reques
 
 ### Writing your own adapter
 
-When the built-in adapters do not satisfy your needs, you may want to implement and use your own adapter. You could do so by following the steps. Let's take a look at the [`::net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master) adapter as an example.
+When the built-in adapters do not satisfy your needs, you may want to implement your own adapter. You could do so by following the steps below. Let's implement the [`::net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master) adapter as an example.
 
  1. Define `NetHttpHmacAdapter` under the `Artemis::Adapters` namespace and implement [the `#execute` method](https://github.com/github/graphql-client/blob/master/guides/remote-queries.md):
 
