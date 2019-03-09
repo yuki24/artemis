@@ -2,6 +2,7 @@
 
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/hash/keys'
+require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/string/inflections'
 require 'graphql/client'
@@ -11,6 +12,13 @@ require 'artemis/exceptions'
 
 module Artemis
   class GraphQLEndpoint
+
+    # Whether or not to suppress warnings on schema load. Use it with caution.
+    #
+    # @private
+    cattr_accessor :suppress_warnings_on_schema_load
+    self.suppress_warnings_on_schema_load = false
+
     # Hash object that holds references to adapter instances.
     ENDPOINT_INSTANCES = {}
 
@@ -46,9 +54,13 @@ module Artemis
     end
 
     def schema
+      org, $stderr = $stderr, File.new("/dev/null", "w") if self.class.suppress_warnings_on_schema_load
+
       @schema || @mutex_for_schema.synchronize do
         @schema ||= ::GraphQL::Client.load_schema(schema_path.presence || connection)
       end
+    ensure
+      $stderr = org if self.class.suppress_warnings_on_schema_load
     end
     alias load_schema! schema
 

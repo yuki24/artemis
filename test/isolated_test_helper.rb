@@ -97,6 +97,8 @@ Generation.initialize_app
 
 require 'artemis'
 
+Artemis::GraphQLEndpoint.suppress_warnings_on_schema_load = true
+
 require 'rack'
 require 'json'
 
