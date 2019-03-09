@@ -47,8 +47,8 @@ module Artemis
       if Pathname.new("#{app.paths["config"].existent.first}/graphql.yml").exist?
         app.config_for(:graphql).each do |endpoint_name, options|
           Artemis::GraphQLEndpoint.register!(endpoint_name, {
-            'schema_path' => app.root.join(config.artemis.schema_path, "#{endpoint_name}.json").to_s
-          }.merge(options))
+            schema_path: app.root.join(config.artemis.schema_path, "#{endpoint_name}.json").to_s
+          }.merge(options.symbolize_keys))
         end
       end
     end
