@@ -141,14 +141,13 @@ class RailtieTest < ActiveSupport::TestCase
 
     boot_rails
 
-    # Assuming that if the constant is removed the newly loaded constant won't have ref to the ivar.
-    Metaphysics.instance_variable_set(:@retained, true)
+    old_object_id = Metaphysics.object_id
 
     # The touch call simulates a file change and the get simulates a page reload.
     FileUtils.touch "#{app_path}/app/operations/metaphysics/query.graphql"
     get "/"
 
-    assert_nil Metaphysics.instance_variable_get(:@retained)
+    assert_not_equal old_object_id, Metaphysics.object_id
   end
 
   test "preload the *.graphql files when eager_load is true" do
