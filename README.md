@@ -171,6 +171,44 @@ There are four adapter options available. Choose the adapter that best fits on y
 | `:net_http_persistent` | HTTP/1.1 only            | **Yes**     | **Fast**    | [`net-http-persistent 3.0.0+`][nhp]
 | `:test`                | N/A (See Testing)
 
+### Third-party adapters
+
+This is a comminuty-maintained adapter. Want to add yours? Send us a pull request!
+
+| Adapter                | Description |
+| ---------------------- | ------------|
+| [`::net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master)      | provides a new Adapter for the Artemis GraphQL ruby client to support HMAC Authentication using [ApiAuth](https://github.com/mgomes/api_auth). |
+
+### Writing your own adapter
+
+When the built-in adapters do not satisfy your needs, you may want to implement and use your own adapter. You could do so by following the steps. Let's take a look at the [`::net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master) adapter as an example.
+
+ 1. Define `NetHttpHmacAdapter` under the `Artemis::Adapters` namespace and implement [the `#execute` method](https://github.com/github/graphql-client/blob/master/guides/remote-queries.md):
+
+    ```ruby
+    # lib/artemis/adapters/net_http_hmac_adapter.rb
+    module Artemis::Adapters
+      class NetHttpHmacAdapter
+        def execute(document:, operation_name: nil, variables: {}, context: {})
+          # Makes an HTTP request for GraphQL query.
+        end
+      end
+    end
+    ```
+
+ 2. Load the adapter in `config/initializers/artemis.rb` (or any place that gets loaded before Rails runs initializers):
+
+    ```ruby
+    require 'artemis/adapters/net_http_hmac_adapter'
+    ```
+
+ 3. Specify the adapter name in `config/graphql.yml`:
+
+    ```yml
+    default: &default
+      adapter: :net_http_hmac
+    ```
+
 ## Rake tasks
 
 Artemis also adds a useful `rake graphql:schema:update` rake task that downloads the GraphQL schema using the
