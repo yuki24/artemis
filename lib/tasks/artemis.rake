@@ -22,7 +22,7 @@ namespace :graphql do
                 end
 
       headers          = ENV['AUTHORIZATION'] ? { Authorization: ENV['AUTHORIZATION'] } : {}
-      service_class    = service.camelize.constantize
+      service_class    = service.to_s.camelize.constantize
       schema_path      = service_class.endpoint.schema_path
       schema           = service_class.connection
                            .execute(
