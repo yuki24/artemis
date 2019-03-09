@@ -97,6 +97,31 @@ describe GraphQL::Client do
     GRAPHQL
   end
 
+  it "can make a GraphQL request with #execute" do
+    Metaphysics.execute(:artist, id: "yayoi-kusama")
+
+    request = requests[0]
+
+    expect(request.operation_name).to eq('Metaphysics__Artist')
+    expect(request.variables).to eq('id' => 'yayoi-kusama')
+    expect(request.context).to eq({})
+    expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
+      query Metaphysics__Artist($id: String!) {
+        artist(id: $id) {
+          name
+          bio
+          birthday
+        }
+      }
+    GRAPHQL
+  end
+
+  it "can make a GraphQL request with #execute" do
+    expect { Metaphysics.execute(:does_not_exist) }
+      .to raise_error(Artemis::GraphQLFileNotFound)
+      .with_message(/Query does_not_exist\.graphql not found/)
+  end
+
   it "assigns context to the request when provided as an argument" do
     context = { headers: { Authorization: 'bearer ...' } }
 

@@ -205,6 +205,10 @@ module Artemis
         Executor.new(endpoint.connection, callbacks, default_context.deep_merge(context))
       end
 
+      def execute(query, context: {}, **arguments)
+        new(default_context).execute(query, context: context, **arguments)
+      end
+
       private
 
       # Looks up the GraphQL file that matches the given +const_name+ and sets it to a constant. If the files it not
@@ -255,6 +259,28 @@ module Artemis
       end
     end
 
+    # Executes a given query, raises if we didn't define the operation
+    #
+    # @param [String] operation
+    # @param [Hash] context
+    # @param [Hash] arguments
+    #
+    # @return [GraphQL::Client::Response]
+    def execute(query, context: {}, **arguments)
+      if self.class.resolve_graphql_file_path(query)
+        const_name = query.to_s.camelize
+
+        # This check will be unnecessary once we drop support for Ruby 2.4 and earlier
+        if !self.class.const_get(const_name).is_a?(GraphQL::Client::OperationDefinition)
+          self.class.load_constant(const_name)
+        end
+
+        client.query(self.class.const_get(const_name), variables: arguments, context: context)
+      else
+        raise GraphQLFileNotFound.new("Query #{query}.graphql not found in: #{config.query_paths.join(", ")}")
+      end
+    end
+
     private
 
     # Delegates a method call to a GraphQL call.
@@ -268,18 +294,9 @@ module Artemis
     #
     # @api private
     def method_missing(method_name, context: {}, **arguments)
-      if self.class.resolve_graphql_file_path(method_name)
-        const_name = method_name.to_s.camelize
-
-        # This check will be unnecessary once we drop support for Ruby 2.4 and earlier
-        if !self.class.const_get(const_name).is_a?(GraphQL::Client::OperationDefinition)
-          self.class.load_constant(const_name)
-        end
-
-        client.query(self.class.const_get(const_name), variables: arguments, context: context)
-      else
-        super
-      end
+      execute(method_name, context: context, **arguments)
+    rescue GraphQLFileNotFound
+      super
     end
 
     def respond_to_missing?(method_name, *_, &block) #:nodoc:
