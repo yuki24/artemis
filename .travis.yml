@@ -3,7 +3,7 @@ script: bundle exec rake
 cache:  bundler
 sudo:   false
 
-before_install: gem install bundler -v 1.16.1
+before_install: gem install bundler -v 1.17.3
 
 rvm:
   - 2.6.1
