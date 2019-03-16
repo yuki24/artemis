@@ -1,4 +1,4 @@
-nguage: ruby
+language: ruby
 script: bundle exec rake
 cache:  bundler
 sudo:   false
