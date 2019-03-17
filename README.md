@@ -216,7 +216,7 @@ Artemis also adds a useful `rake graphql:schema:update` rake task that downloads
 
 | Task Name                    | Options   | Description |
 | ---------------------------- | --------- | ------------|
-| `graphql:schema:update` | `SERVICE`: Service name the schema is downloaded from<br>`AUTHORIZATION`: HTTTP `Authroization` header value used to download the schema| Downloads and saves the GraphQL schema
+| `graphql:schema:update` | `SERVICE`: Service name the schema is downloaded from<br>`AUTHORIZATION`: HTTP `Authorization` header value used to download the schema| Downloads and saves the GraphQL schema
 
 ## Testing
 
