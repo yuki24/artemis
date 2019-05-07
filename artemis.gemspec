@@ -15,10 +15,10 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject {|f| f.match(%r{^(test)/}) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activesupport", ">= 4.2.0"
+  spec.add_dependency "activesupport", ">= 4.0.0"
+  spec.add_dependency "railties", ">= 4.0.0"
   spec.add_dependency "graphql", ">= 1.8"
   spec.add_dependency "graphql-client", ">= 0.13.0"
-  spec.add_dependency "railties", ">= 4.2.0"
 
   spec.add_development_dependency "appraisal", "~> 2.2"
   spec.add_development_dependency "bundler", ">= 1.16"
