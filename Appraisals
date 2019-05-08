@@ -24,10 +24,10 @@ appraise "rails_50" do
   gem "activesupport", '~> 5.0'
 end
 
-appraise "rails_40" do
-  gem "rails", '~> 4.0'
-  gem "railties", '~> 4.0'
-  gem "activesupport", '~> 4.0'
+appraise "rails_42" do
+  gem "rails", '~> 4.2'
+  gem "railties", '~> 4.2'
+  gem "activesupport", '~> 4.2'
   gem "minitest", '5.10.3'
 end
 
@@ -38,9 +38,9 @@ appraise "rails_41" do
   gem "minitest", '5.10.3'
 end
 
-appraise "rails_42" do
-  gem "rails", '~> 4.2'
-  gem "railties", '~> 4.2'
-  gem "activesupport", '~> 4.2'
+appraise "rails_40" do
+  gem "rails", '~> 4.0'
+  gem "railties", '~> 4.0'
+  gem "activesupport", '~> 4.0'
   gem "minitest", '5.10.3'
 end

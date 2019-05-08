@@ -18,9 +18,9 @@ gemfile:
   - gemfiles/rails_52.gemfile
   - gemfiles/rails_51.gemfile
   - gemfiles/rails_50.gemfile
-  - gemfiles/rails_40.gemfile
-  - gemfiles/rails_41.gemfile
   - gemfiles/rails_42.gemfile
+  - gemfiles/rails_41.gemfile
+  - gemfiles/rails_40.gemfile
   - gemfiles/rails_edge.gemfile
 
 matrix:
@@ -37,21 +37,21 @@ matrix:
     - rvm: ruby-head
       gemfile: gemfiles/rails_42.gemfile
     - rvm: 2.6.2
-      gemfile: gemfiles/rails_40.gemfile
-    - rvm: 2.6.2
-      gemfile: gemfiles/rails_41.gemfile
+      gemfile: gemfiles/rails_50.gemfile
     - rvm: 2.6.2
       gemfile: gemfiles/rails_42.gemfile
     - rvm: 2.6.2
-      gemfile: gemfiles/rails_50.gemfile
-    - rvm: 2.5.5
+      gemfile: gemfiles/rails_41.gemfile
+    - rvm: 2.6.2
       gemfile: gemfiles/rails_40.gemfile
     - rvm: 2.5.5
-      gemfile: gemfiles/rails_41.gemfile
+      gemfile: gemfiles/rails_50.gemfile
     - rvm: 2.5.5
       gemfile: gemfiles/rails_42.gemfile
     - rvm: 2.5.5
-      gemfile: gemfiles/rails_50.gemfile
+      gemfile: gemfiles/rails_41.gemfile
+    - rvm: 2.5.5
+      gemfile: gemfiles/rails_40.gemfile
     - rvm: 2.4.5
       gemfile: gemfiles/rails_edge.gemfile
     - rvm: 2.3.8
