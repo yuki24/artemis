@@ -15,6 +15,7 @@ rvm:
   # - jruby-head
 
 gemfile:
+  - gemfiles/rails_60.gemfile
   - gemfiles/rails_52.gemfile
   - gemfiles/rails_51.gemfile
   - gemfiles/rails_50.gemfile
@@ -54,5 +55,9 @@ matrix:
       gemfile: gemfiles/rails_40.gemfile
     - rvm: 2.4.5
       gemfile: gemfiles/rails_edge.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/rails_60.gemfile
     - rvm: 2.3.8
       gemfile: gemfiles/rails_edge.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails_60.gemfile
