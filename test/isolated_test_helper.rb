@@ -21,7 +21,7 @@ rescue LoadError
   # FIXME: we have tests that depend on run order, we should fix that and
   # remove this method call.
   require 'active_support/test_case'
-  ActiveSupport::TestCase.test_order = :sorted
+  ActiveSupport::TestCase.test_order = :sorted if ActiveSupport::TestCase.respond_to?(:test_order=)
 end
 
 module Paths

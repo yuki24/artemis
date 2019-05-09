@@ -56,7 +56,7 @@ YAML
   end
 
   def client_file_name
-    if mountable_engine?
+    if respond_to?(:mountable_engine?) && mountable_engine?
       "app/operations/#{namespaced_path}/#{file_name}.rb"
     else
       "app/operations/#{file_name}.rb"
@@ -64,7 +64,7 @@ YAML
   end
 
   def query_dir_gitkeep
-    if mountable_engine?
+    if respond_to?(:mountable_engine?) && mountable_engine?
       "app/operations/#{namespaced_path}/#{file_name}/.gitkeep"
     else
       "app/operations/#{file_name}/.gitkeep"

@@ -9,7 +9,7 @@ require 'artemis/exceptions'
 module Artemis
   # TODO: Write documentation for +TestHelper+
   module TestHelper
-    cattr_accessor :__graphql_fixture_path__
+    mattr_accessor :__graphql_fixture_path__
 
     # Creates an object that stubs a GraphQL request for the given +service+. No mock response is registered until the
     # +to_return+ method.

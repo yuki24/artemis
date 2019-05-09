@@ -103,4 +103,8 @@ class InstallGeneratorTest < Rails::Generators::TestCase
       assert_mock mock
     end
   end
+
+  def assert_mock(mock)
+    assert mock.verify
+  end if !respond_to?(:assert_mock)
 end

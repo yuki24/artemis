@@ -2,7 +2,7 @@
 
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/hash/keys'
-require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/class/attribute_accessors'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/string/inflections'
 require 'graphql/client'
