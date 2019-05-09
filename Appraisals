@@ -28,6 +28,7 @@ appraise "rails_50" do
   gem "rails", '~> 5.0.0'
   gem "railties", '~> 5.0.0'
   gem "activesupport", '~> 5.0.0'
+  gem "minitest", '5.10.3'
 end
 
 appraise "rails_42" do
