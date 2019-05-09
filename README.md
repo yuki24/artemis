@@ -14,25 +14,6 @@ Artemis is a GraphQL client that is designed to fit well on Rails.
 
 ![graphql-client vs Artemis](https://raw.githubusercontent.com/yuki24/artemis/master/banner.png "graphql-client vs Artemis")
 
-## Quick start
-
-You could set up Artemis with just a few commands. See it in action:
-
-```bash
-$ bundle add artemis
-$ rails g artemis:install artsy https://metaphysics-production.artsy.net/
-$ echo '
-query($id: String!) {
-  artist(id: $id) {
-    name
-    birthday
-   }
-}' > app/operations/artsy/artist.graphql
-$ rails c
-> Artsy.artist(id: "leonardo-da-vinci").data.artist.name     # => "Leonardo da Vinci"
-> Artsy.artist(id: "leonardo-da-vinci").data.artist.birthday # => "1452/04/15"
-```
-
 ## Getting started
 
 Add this line to your application's Gemfile:
@@ -41,20 +22,13 @@ Add this line to your application's Gemfile:
 gem 'artemis'
 ```
 
-And then execute:
-
-    $ bundle
-
 Once you run `bundle install` on your Rails app, run the install command:
 
 
 ```sh
 $ rails g artemis:install artsy https://metaphysics-production.artsy.net/
-```
 
-You could also use the `--authorization` option to assign a token so the installer can download the GraphQL schema:
-
-```sh
+# or if you need to specify the `--authorization` header:
 $ rails g artemis:install github https://api.github.com/graphql --authorization 'token ...'
 ```
 
@@ -177,11 +151,11 @@ This is a comminuty-maintained adapter. Want to add yours? Send us a pull reques
 
 | Adapter                | Description |
 | ---------------------- | ------------|
-| [`::net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master)      | provides a new Adapter for the Artemis GraphQL ruby client to support HMAC Authentication using [ApiAuth](https://github.com/mgomes/api_auth). |
+| [`:net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master)      | provides a new Adapter for the Artemis GraphQL ruby client to support HMAC Authentication using [ApiAuth](https://github.com/mgomes/api_auth). |
 
 ### Writing your own adapter
 
-When the built-in adapters do not satisfy your needs, you may want to implement your own adapter. You could do so by following the steps below. Let's implement the [`::net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master) adapter as an example.
+When the built-in adapters do not satisfy your needs, you may want to implement your own adapter. You could do so by following the steps below. Let's implement the [`:net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master) adapter as an example.
 
  1. Define `NetHttpHmacAdapter` under the `Artemis::Adapters` namespace and implement [the `#execute` method](https://github.com/github/graphql-client/blob/master/guides/remote-queries.md):
 
@@ -214,9 +188,25 @@ When the built-in adapters do not satisfy your needs, you may want to implement 
 Artemis also adds a useful `rake graphql:schema:update` rake task that downloads the GraphQL schema using the
 `Introspection` query.
 
-| Task Name                    | Options   | Description |
-| ---------------------------- | --------- | ------------|
-| `graphql:schema:update` | `SERVICE`: Service name the schema is downloaded from<br>`AUTHORIZATION`: HTTP `Authorization` header value used to download the schema| Downloads and saves the GraphQL schema
+### `graphql:schema:update`
+
+Downloads and saves the GraphQL schema.
+
+| Option Name        | Description |
+| ------------------ | ------------|
+| `SERVICE`          | Service name the schema is downloaded from.| 
+| `AUTHORIZATION`    | HTTP `Authorization` header value used to download the schema with.|
+
+
+#### Examples
+
+```
+$ rake graphql:schema:update
+# => downloads schema from the service. fails if there are multiple services in config/graphql.yml.
+
+$ rake graphql:schema:update SERVICE=github AUTHORIZATION="token ..."
+# => downloads schema from the `github` service using the HTTP header "AUTHORIZATION: token ..."
+```
 
 ## Testing
 
