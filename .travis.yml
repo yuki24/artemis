@@ -30,6 +30,8 @@ matrix:
     # - rvm: jruby-9.2.3.0
     # - rvm: jruby-head
     - gemfile: gemfiles/rails_edge.gemfile
+    - gemfile: gemfiles/rails_41.gemfile
+    - gemfile: gemfiles/rails_40.gemfile
   exclude:
     - rvm: ruby-head
       gemfile: gemfiles/rails_40.gemfile
