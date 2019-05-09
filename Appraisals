@@ -49,5 +49,4 @@ appraise "rails_40" do
   gem "rails", '~> 4.0.0'
   gem "railties", '~> 4.0.0'
   gem "activesupport", '~> 4.0.0'
-  gem "minitest", '5.10.3'
 end
