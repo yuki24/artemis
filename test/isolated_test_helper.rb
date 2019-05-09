@@ -10,6 +10,11 @@ require 'pry'
 require 'pry-byebug' if RUBY_ENGINE == 'ruby'
 require "rails/railtie"
 
+if Rails::VERSION::STRING <= "4.1"
+  puts "skipping tests in isolation in Rails #{}..."
+  exit 0
+end
+
 begin
   require 'active_support/testing/method_call_assertions'
   ActiveSupport::TestCase.include ActiveSupport::Testing::MethodCallAssertions
