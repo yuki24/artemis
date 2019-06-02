@@ -1,3 +1,17 @@
+## [v0.5.0](https://github.com/yuki24/artemis/tree/v0.5.0)
+
+_<sup>released at 2019-06-02 22:01:57 UTC</sup>_
+
+#### Features
+
+- Add support for Rails 6.0, 4.1, and 4.0
+- [<tt>6701b54</tt>](https://github.com/yuki24/artemis/commit/6701b546a143c22109c7ab30018acf96d67067d1), [#62](https://github.com/yuki24/artemis/issues/62): Allow to dynamically call the operation ([@JanStevens](https://github.com/JanStevens))
+
+#### Fixes
+
+- [#67](https://github.com/yuki24/artemis/pull/67): Fix the wrong test version constraints in `Appraisals` ([@daemonsy](https://github.com/daemonsy))
+- [#60](https://github.com/yuki24/artemis/pull/60): Fix an issue where not all adapters send required HTTP headers
+
 ## [v0.4.0](https://github.com/yuki24/artemis/tree/v0.4.0)
 
 _<sup>released at 2019-01-30 03:42:14 UTC</sup>_
