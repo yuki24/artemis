@@ -12,7 +12,7 @@ namespace :graphql do
       service = if ENV['SERVICE']
                   ENV['SERVICE']
                 else
-                  services = Rails.application.config_for(:graphql).keys
+                  services = Artemis.config_for_graphql(Rails.application).keys
 
                   if services.size == 1
                     services.first
