@@ -31,13 +31,15 @@ module Artemis
     end
 
     initializer 'graphql.client.set_reloader', after: 'graphql.client.set_query_paths' do |app|
-      files_to_watch = Artemis::Client.query_paths.map {|path| [path, config.artemis.graphql_extentions] }.to_h
+      if !config.respond_to?(:autoloader) || config.autoloader != :zeitwerk
+        files_to_watch = Artemis::Client.query_paths.map {|path| [path, config.artemis.graphql_extentions] }.to_h
 
-      app.reloaders << ActiveSupport::FileUpdateChecker.new([], files_to_watch) do
-        endpoint_names = app.config_for(:graphql).keys
-        endpoint_names.each do |endpoint_name|
-          Artemis::Client.query_paths.each do |path|
-            FileUtils.touch("#{path}/#{endpoint_name}.rb")
+        app.reloaders << ActiveSupport::FileUpdateChecker.new([], files_to_watch) do
+          endpoint_names = app.config_for(:graphql).keys
+          endpoint_names.each do |endpoint_name|
+            Artemis::Client.query_paths.each do |path|
+              FileUtils.touch("#{path}/#{endpoint_name}.rb")
+            end
           end
         end
       end
