@@ -54,7 +54,7 @@ module Artemis
     end
 
     initializer 'graphql.client.preload', after: 'graphql.client.load_config' do |app|
-      if app.config.eager_load
+      if app.config.eager_load && app.config.cache_classes
         app.config_for(:graphql).keys.each do |endpoint_name|
           endpoint_name.to_s.camelize.constantize.preload!
         end

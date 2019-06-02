@@ -181,6 +181,7 @@ class RailtieTest < ActiveSupport::TestCase
     end
 
     add_to_config <<-RUBY
+      config.cache_classes = true
       config.eager_load = true
 
       initializer 'add_middleware' do |app|
