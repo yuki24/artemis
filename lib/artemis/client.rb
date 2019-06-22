@@ -2,16 +2,35 @@
 
 require 'delegate'
 
+require 'active_support/configurable'
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/string/inflections'
 
-require 'artemis/configuration'
 require 'artemis/graphql_endpoint'
 require 'artemis/exceptions'
 
 module Artemis
   class Client
+    include ActiveSupport::Configurable
+
+    # The paths in which the Artemis client looks for files that have the +.graphql+ extension.
+    # In a rails app, this value will be set to +["app/operations"]+ by Artemis' +Artemis::Railtie+.
+    config.query_paths = []
+
+    # Default context that is appended to every GraphQL request for the client.
+    config.default_context = {}
+
+    # List of before callbacks that get invoked in every +execute+ call.
+    #
+    # @api  private
+    config.before_callbacks = []
+
+    # List of after callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    config.after_callbacks = []
+
     # Returns a plain +GraphQL::Client+ object. For more details please refer to the official documentation for
     # {the +graphql-client+ gem}[https://github.com/github/graphql-client].
     attr_reader :client
@@ -39,18 +58,8 @@ module Artemis
       @client = self.class.instantiate_client(context)
     end
 
-    # @return [Artemis::Configuration] Artemis client current configuration
-    def config
-      self.class.config
-    end
-
     class << self
       delegate :query_paths, :default_context, :query_paths=, :default_context=, to: :config
-
-      # @return [Artemis::Configuration] Artemis client current configuration
-      def config
-        @config ||= Configuration.new
-      end
 
       # Creates a new instance of the GraphQL client for the service.
       #

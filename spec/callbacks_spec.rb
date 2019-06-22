@@ -6,8 +6,6 @@ describe "#{GraphQL::Client} Callbacks" do
       'Metaphysics'
     end
 
-    self.query_paths = [File.join(__dir__, 'fixtures')]
-
     mattr_accessor :before_callback, :after_callback
     self.before_callback = nil
     self.after_callback = nil
