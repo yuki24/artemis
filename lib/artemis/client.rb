@@ -286,7 +286,7 @@ module Artemis
 
         client.query(self.class.const_get(const_name), variables: arguments, context: context)
       else
-        raise GraphQLFileNotFound.new("Query #{query}.graphql not found in: #{config.query_paths.join(", ")}")
+        raise GraphQLFileNotFound.new("Query #{query}.graphql not found in: #{query_paths.join(", ")}")
       end
     end
 
