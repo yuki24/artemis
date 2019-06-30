@@ -5,6 +5,7 @@ require 'delegate'
 require 'active_support/configurable'
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/module/delegation'
+require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/string/inflections'
 
 require 'artemis/graphql_endpoint'
@@ -16,10 +17,10 @@ module Artemis
 
     # The paths in which the Artemis client looks for files that have the +.graphql+ extension.
     # In a rails app, this value will be set to +["app/operations"]+ by Artemis' +Artemis::Railtie+.
-    config.query_paths = []
+    cattr_accessor :query_paths
 
     # Default context that is appended to every GraphQL request for the client.
-    config.default_context = {}
+    config.default_context = nil
 
     # List of before callbacks that get invoked in every +execute+ call.
     #
@@ -59,7 +60,7 @@ module Artemis
     end
 
     class << self
-      delegate :query_paths, :default_context, :query_paths=, :default_context=, to: :config
+      delegate :default_context, :default_context=, to: :config
 
       # Creates a new instance of the GraphQL client for the service.
       #
@@ -137,7 +138,7 @@ module Artemis
       #   end
       #
       def before_execute(&block)
-        config.before_callbacks << block
+        config.before_callbacks = [*config.before_callbacks, block]
       end
 
       # Defines a callback that will get called right after the
@@ -155,7 +156,14 @@ module Artemis
       #   end
       #
       def after_execute(&block)
-        config.after_callbacks << block
+        config.after_callbacks = [*config.after_callbacks, block]
+      end
+
+      # Returns the default configured context or an empty hash by default
+      #
+      # @return [Hash]
+      def default_context
+        config.default_context || {}
       end
 
       def resolve_graphql_file_path(filename, fragment: false)
@@ -278,7 +286,7 @@ module Artemis
 
         client.query(self.class.const_get(const_name), variables: arguments, context: context)
       else
-        raise GraphQLFileNotFound.new("Query #{query}.graphql not found in: #{config.query_paths.join(", ")}")
+        raise GraphQLFileNotFound.new("Query #{query}.graphql not found in: #{query_paths.join(", ")}")
       end
     end
 
