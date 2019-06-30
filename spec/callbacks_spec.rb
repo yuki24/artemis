@@ -19,6 +19,20 @@ describe "#{GraphQL::Client} Callbacks" do
     end
   end
 
+  Spotify = Class.new(Artemis::Client) do
+    def self.name
+      'Spotify'
+    end
+
+    before_execute do
+      raise "this callback should not get invoked"
+    end
+
+    after_execute do
+      raise "this callback should not get invoked"
+    end
+  end
+
   describe ".before_execute" do
     it "gets invoked before executing" do
       Client.artist(id: 'yayoi-kusama', context: { user_id: 'yuki24' })
