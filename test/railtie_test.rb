@@ -91,7 +91,7 @@ class RailtieTest < ActiveSupport::TestCase
     require 'artemis/test_helper'
     boot_rails
 
-    actual = Class.new { include Artemis::TestHelper }.new.send(:graphql_fixtures, :artist)
+    actual = Class.new { include Artemis::TestHelper }.new.send(:graphql_fixtures, :metaphysics, :artist)
 
     expected = {
       "leonardo_da_vinci" => {
