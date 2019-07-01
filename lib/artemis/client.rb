@@ -60,7 +60,7 @@ module Artemis
     end
 
     class << self
-      delegate :default_context, :default_context=, to: :config
+      delegate :default_context=, to: :config
 
       # Creates a new instance of the GraphQL client for the service.
       #
