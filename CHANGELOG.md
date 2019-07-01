@@ -1,3 +1,12 @@
+## [v0.5.1](https://github.com/yuki24/artemis/tree/v0.5.1)
+
+_<sup>released at 2019-07-01 14:25:35 UTC</sup>_
+
+#### Fixes
+
+- Fixes an issue where callbacks are shared across all clients ([@JanStevens](https://github.com/JanStevens), issue: [#69](https://github.com/yuki24/artemis/issues/69), PR: [#70](https://github.com/yuki24/artemis/pull/70))
+- Fixes an issue where fixtures with the same name cause a conflict ([@JanStevens](https://github.com/JanStevens), Issue: [#68](https://github.com/yuki24/artemis/issues/68), commit: [<tt>e1f57f4</tt>](https://github.com/yuki24/artemis/commit/e1f57f49ebb032553d7a6f70e48422fc9825c119))
+
 ## [v0.5.0](https://github.com/yuki24/artemis/tree/v0.5.0)
 
 _<sup>released at 2019-06-02 22:01:57 UTC</sup>_
