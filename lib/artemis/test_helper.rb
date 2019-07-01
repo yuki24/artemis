@@ -3,6 +3,7 @@
 require 'erb'
 
 require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/string/inflections'
 
 require 'artemis/exceptions'
 
@@ -41,7 +42,7 @@ module Artemis
     #   da_vinci.data.artist.name      # => "Leonardo da Vinci"
     #
     def stub_graphql(service, query_name, arguments =  :__unspecified__)
-      StubbingDSL.new(service.to_s, graphql_fixtures(query_name), arguments)
+      StubbingDSL.new(service.to_s, graphql_fixtures(service.to_s.underscore, query_name), arguments)
     end
 
     # Returns out-going GraphQL requests.
@@ -60,15 +61,21 @@ module Artemis
       __graphql_fixture_path__ || raise(Artemis::ConfigurationError, "GraphQL fixture path is unset")
     end
 
-    def graphql_fixtures(query_name) #:nodoc:
-      graphql_fixture_files.detect {|fixture| fixture.name == query_name.to_s } || \
-        raise(Artemis::FixtureNotFound, "Fixture file `#{File.join(graphql_fixture_path, "#{query_name}.{yml,json}")}' not found")
+    def graphql_fixtures(service, query_name) #:nodoc:
+      graphql_fixture_files[service]&.detect {|fixture| fixture.name == query_name.to_s } || \
+        raise(Artemis::FixtureNotFound, "Fixture file `#{File.join(graphql_fixture_path, "#{service}/#{query_name}.{yml,json}")}' not found")
     end
 
     def graphql_fixture_files #:nodoc:
       @graphql_fixture_sets ||= Dir["#{graphql_fixture_path}/{**,*}/*.{yml,json}"]
-                              .select {|file| ::File.file?(file) }
-                              .map    {|file| GraphQLFixture.new(File.basename(file, File.extname(file)), file, read_erb_yaml(file)) }
+                              .select { |file| ::File.file?(file) }
+                              .map do |file|
+        GraphQLFixture.new(
+          File.basename(File.dirname(file)),
+          File.basename(file, File.extname(file)),
+          file,
+          read_erb_yaml(file))
+      end.group_by(&:service)
     end
 
     def read_erb_yaml(path) #:nodoc:
@@ -96,7 +103,7 @@ module Artemis
     end
 
     TestResponse      = Struct.new(:operation_name, :arguments, :data) #:nodoc:
-    GraphQLFixture    = Struct.new(:name, :path, :data) #:nodoc
+    GraphQLFixture    = Struct.new(:service, :name, :path, :data) #:nodoc
 
     private_constant :GraphQLFixture, :StubbingDSL, :TestResponse
   end

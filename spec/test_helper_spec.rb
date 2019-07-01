@@ -54,11 +54,11 @@ describe GraphQL::Client do
 
   it "raises an exception if the specified fixture file does not exist" do
     expect { stub_graphql(Metaphysics, :does_not_exist) }
-      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/does_not_exist.{yml,json}|)
+      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/metaphysics/does_not_exist.{yml,json}|)
   end
 
   it "raises an exception if the specified fixture file exists but fixture key does not exist" do
     expect { stub_graphql(Metaphysics, :artist).to_return(:does_not_exist) }
-      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/artist.yml|)
+      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/metaphysics/artist.yml|)
   end
 end
