@@ -15,3 +15,10 @@ yuki:
     artist:
       name: Yuki Nishijima
       birthday: <%= Date.today.year %>/01/01
+
+yoshiki:
+  data:
+    artist:
+      id: artist-yoshiki
+      name: Artist Yoshiki
+      birthday: null

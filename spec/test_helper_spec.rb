@@ -1,7 +1,7 @@
 require 'artemis/test_helper'
 require 'date'
 
-describe GraphQL::Client do
+describe Artemis::TestHelper do
   include Artemis::TestHelper
 
   def graphql_fixture_path
@@ -53,12 +53,33 @@ describe GraphQL::Client do
   it "can mock a GraphQL request for a query that has a query name"
 
   it "raises an exception if the specified fixture file does not exist" do
-    expect { stub_graphql(Metaphysics, :does_not_exist) }
-      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/does_not_exist.{yml,json}|)
+    expect { stub_graphql(Metaphysics, :does_not_exist).to_return(:data) }
+      .to raise_error(Artemis::FixtureNotFound, %r|does_not_exist.{yml,json}|)
   end
 
   it "raises an exception if the specified fixture file exists but fixture key does not exist" do
     expect { stub_graphql(Metaphysics, :artist).to_return(:does_not_exist) }
-      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/artist.yml|)
+      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/metaphysics/artist.yml|)
+  end
+
+  it "picks up the fixture for the given different service if multiple services have the exact same fixture" do
+    stub_graphql(Metaphysics, :artist).to_return(:yoshiki)
+
+    yoshiki = Metaphysics.artist(id: "artist-yoshiki")
+
+    expect(yoshiki.data.artist.name).to eq("Artist Yoshiki")
+  end
+
+  it "allows to get raw fixture data as a Hash" do
+    data = stub_graphql("Spotify", :artist).get(:yoshiki)
+
+    expect(data).to eq({
+      "data" => {
+        "artist" => {
+          "id" => "pianist-yoshiki",
+          "name" => "Pianist Yoshiki"
+        }
+      }
+    })
   end
 end

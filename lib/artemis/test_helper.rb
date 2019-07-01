@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'erb'
+require 'yaml'
 
 require 'active_support/core_ext/module/attribute_accessors'
 
@@ -41,7 +42,7 @@ module Artemis
     #   da_vinci.data.artist.name      # => "Leonardo da Vinci"
     #
     def stub_graphql(service, query_name, arguments =  :__unspecified__)
-      StubbingDSL.new(service.to_s, graphql_fixtures(query_name), arguments)
+      StubbingDSL.new(service.to_s, query_name, graphql_fixture_files, arguments)
     end
 
     # Returns out-going GraphQL requests.
@@ -60,15 +61,11 @@ module Artemis
       __graphql_fixture_path__ || raise(Artemis::ConfigurationError, "GraphQL fixture path is unset")
     end
 
-    def graphql_fixtures(query_name) #:nodoc:
-      graphql_fixture_files.detect {|fixture| fixture.name == query_name.to_s } || \
-        raise(Artemis::FixtureNotFound, "Fixture file `#{File.join(graphql_fixture_path, "#{query_name}.{yml,json}")}' not found")
-    end
-
     def graphql_fixture_files #:nodoc:
       @graphql_fixture_sets ||= Dir["#{graphql_fixture_path}/{**,*}/*.{yml,json}"]
-                              .select {|file| ::File.file?(file) }
-                              .map    {|file| GraphQLFixture.new(File.basename(file, File.extname(file)), file, read_erb_yaml(file)) }
+                                  .uniq
+                                  .select {|file| ::File.file?(file) }
+                                  .map    {|file| GraphQLFixture.new(File.basename(file, File.extname(file)), file, read_erb_yaml(file)) }
     end
 
     def read_erb_yaml(path) #:nodoc:
@@ -76,15 +73,30 @@ module Artemis
     end
 
     class StubbingDSL #:nodoc:
-      attr_reader :service_name, :fixture_set, :arguments
+      attr_reader :service_name, :query_name, :fixture_sets, :arguments
 
-      def initialize(service_name, fixture_set, arguments) #:nodoc:
-        @service_name, @fixture_set, @arguments = service_name, fixture_set, arguments
+      def initialize(service_name, query_name, fixture_sets, arguments) #:nodoc:
+        @service_name, @query_name, @fixture_sets, @arguments = service_name, query_name, fixture_sets, arguments
+      end
+
+      def get(fixture_key)
+        fixture_set = find_fixture_set(fixture_key)
+        fixture     = fixture_set.data[fixture_key.to_s]
+
+        if fixture.nil?
+          raise Artemis::FixtureNotFound, "Fixture `#{fixture_key}' not found in #{fixture_set.path}"
+        end
+
+        fixture
       end
 
       def to_return(fixture_key) #:nodoc:
-        fixture = fixture_set.data[fixture_key.to_s] || \
-          raise(Artemis::FixtureNotFound, "Fixture `#{fixture_key}' not found in #{fixture_set.path}")
+        fixture_set = find_fixture_set(fixture_key)
+        fixture     = fixture_set.data[fixture_key.to_s]
+
+        if fixture.nil?
+          raise Artemis::FixtureNotFound, "Fixture `#{fixture_key}' not found in #{fixture_set.path}"
+        end
 
         Artemis::Adapters::TestAdapter.responses <<
           TestResponse.new(
@@ -92,6 +104,20 @@ module Artemis
             arguments.respond_to?(:deep_stringify_keys) ? arguments.deep_stringify_keys : arguments,
             fixture
           )
+      end
+
+      private
+
+      def find_fixture_set(fixture_key)
+        fixture_set = fixture_sets
+                        .detect { |fixture| %r{#{service_name.downcase}/#{query_name}\.(yml|json)\z} =~ fixture.path }
+        fixture_set ||= fixture_sets.detect { |fixture| fixture.name == query_name.to_s }
+
+        if fixture_set.nil?
+          raise Artemis::FixtureNotFound, "Fixture file `#{query_name}.{yml,json}' not found"
+        end
+
+        fixture_set
       end
     end
 
