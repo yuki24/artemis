@@ -80,7 +80,7 @@ module Artemis
       end
 
       def get(fixture_key)
-        fixture_set = find_fixture_set(fixture_key)
+        fixture_set = find_fixture_set
         fixture     = fixture_set.data[fixture_key.to_s]
 
         if fixture.nil?
@@ -91,7 +91,7 @@ module Artemis
       end
 
       def to_return(fixture_key) #:nodoc:
-        fixture_set = find_fixture_set(fixture_key)
+        fixture_set = find_fixture_set
         fixture     = fixture_set.data[fixture_key.to_s]
 
         if fixture.nil?
@@ -108,7 +108,7 @@ module Artemis
 
       private
 
-      def find_fixture_set(fixture_key)
+      def find_fixture_set
         fixture_set = fixture_sets
                         .detect { |fixture| %r{#{service_name.downcase}/#{query_name}\.(yml|json)\z} =~ fixture.path }
         fixture_set ||= fixture_sets.detect { |fixture| fixture.name == query_name.to_s }
