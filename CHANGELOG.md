@@ -1,3 +1,11 @@
+## [v0.5.2](https://github.com/yuki24/artemis/tree/v0.5.2)
+
+_<sup>released at 2019-07-26 03:21:43 UTC</sup>_
+
+#### Fixes
+
+- Fixes an issue where fixtures can not be looked up properly when the client has two or more words in its name ([@JanStevens](https://github.com/JanStevens), issue: [#72](https://github.com/yuki24/artemis/issues/72), PR: [#73](https://github.com/yuki24/artemis/pull/73))
+
 ## [v0.5.1](https://github.com/yuki24/artemis/tree/v0.5.1)
 
 _<sup>released at 2019-07-01 14:25:35 UTC</sup>_
