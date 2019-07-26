@@ -4,6 +4,7 @@ require 'erb'
 require 'yaml'
 
 require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/string/inflections'
 
 require 'artemis/exceptions'
 
@@ -110,7 +111,7 @@ module Artemis
 
       def find_fixture_set
         fixture_set = fixture_sets
-                        .detect { |fixture| %r{#{service_name.downcase}/#{query_name}\.(yml|json)\z} =~ fixture.path }
+                        .detect { |fixture| %r{#{service_name.underscore}/#{query_name}\.(yml|json)\z} =~ fixture.path }
         fixture_set ||= fixture_sets.detect { |fixture| fixture.name == query_name.to_s }
 
         if fixture_set.nil?

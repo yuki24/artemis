@@ -71,7 +71,7 @@ describe Artemis::TestHelper do
   end
 
   it "allows to get raw fixture data as a Hash" do
-    data = stub_graphql("Spotify", :artist).get(:yoshiki)
+    data = stub_graphql("SpotifyClient", :artist).get(:yoshiki)
 
     expect(data).to eq({
       "data" => {
