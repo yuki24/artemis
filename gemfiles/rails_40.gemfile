@@ -7,5 +7,6 @@ gem "pry"
 gem "pry-byebug", platforms: :mri
 gem "railties", "~> 4.0.0"
 gem "activesupport", "~> 4.0.0"
+gem "graphql-client", "0.15.0" if RUBY_VERSION < "2.4.0"
 
 gemspec path: "../"
