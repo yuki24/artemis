@@ -248,9 +248,9 @@ module Artemis
       #   Github.user # => delegates to Github.new(default_context).user
       #
       # @api private
-      def method_missing(method_name, *arguments, &block)
+      def method_missing(method_name, **arguments, &block)
         if resolve_graphql_file_path(method_name)
-          new(default_context).public_send(method_name, *arguments, &block)
+          new(default_context).public_send(method_name, **arguments, &block)
         else
           super
         end

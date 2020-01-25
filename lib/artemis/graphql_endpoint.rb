@@ -33,7 +33,7 @@ module Artemis
       end
 
       def register!(service_name, configurations)
-        ENDPOINT_INSTANCES[service_name.to_s.underscore] = new(service_name.to_s, configurations.symbolize_keys)
+        ENDPOINT_INSTANCES[service_name.to_s.underscore] = new(service_name.to_s, **configurations.symbolize_keys)
       end
 
       ##
