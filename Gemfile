@@ -7,3 +7,4 @@ gemspec
 
 gem 'pry'
 gem 'pry-byebug', platforms: :mri
+gem 'curb', '>= 0.9.6' if RUBY_ENGINE == 'ruby'
