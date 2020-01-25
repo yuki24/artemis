@@ -40,21 +40,21 @@ matrix:
       gemfile: gemfiles/rails_41.gemfile
     - rvm: ruby-head
       gemfile: gemfiles/rails_42.gemfile
-    - rvm: 2.6.2
+    - rvm: 2.6.5
       gemfile: gemfiles/rails_50.gemfile
-    - rvm: 2.6.2
+    - rvm: 2.6.5
       gemfile: gemfiles/rails_42.gemfile
-    - rvm: 2.6.2
+    - rvm: 2.6.5
       gemfile: gemfiles/rails_41.gemfile
-    - rvm: 2.6.2
+    - rvm: 2.6.5
       gemfile: gemfiles/rails_40.gemfile
-    - rvm: 2.5.5
+    - rvm: 2.5.7
       gemfile: gemfiles/rails_50.gemfile
-    - rvm: 2.5.5
+    - rvm: 2.5.7
       gemfile: gemfiles/rails_42.gemfile
-    - rvm: 2.5.5
+    - rvm: 2.5.7
       gemfile: gemfiles/rails_41.gemfile
-    - rvm: 2.5.5
+    - rvm: 2.5.7
       gemfile: gemfiles/rails_40.gemfile
     - rvm: 2.4.9
       gemfile: gemfiles/rails_edge.gemfile
