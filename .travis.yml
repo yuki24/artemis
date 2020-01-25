@@ -35,11 +35,27 @@ matrix:
     - gemfile: gemfiles/rails_40.gemfile
   exclude:
     - rvm: ruby-head
-      gemfile: gemfiles/rails_40.gemfile
+      gemfile: gemfiles/rails_52.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails_51.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails_50.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails_42.gemfile
     - rvm: ruby-head
       gemfile: gemfiles/rails_41.gemfile
     - rvm: ruby-head
+      gemfile: gemfiles/rails_40.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails_51.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails_50.gemfile
+    - rvm: 2.7.0
       gemfile: gemfiles/rails_42.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails_41.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails_40.gemfile
     - rvm: 2.6.5
       gemfile: gemfiles/rails_50.gemfile
     - rvm: 2.6.5
