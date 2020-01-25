@@ -195,6 +195,17 @@ class RailtieTest < ActiveSupport::TestCase
     assert defined?(Metaphysics::Artist), "Constant Metaphysics::Artist was not loaded"
   end
 
+  test "avoid crashing when eager_load is true but without config/graphql.yml" do
+    add_to_config <<-RUBY
+      config.cache_classes = true
+      config.eager_load = true
+    RUBY
+
+    assert_nothing_raised {
+      boot_rails
+    }
+  end
+
   private
 
   def app
