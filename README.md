@@ -51,7 +51,7 @@ query($id: String!) {
 }
 ```
 
-Then you could the class method that has the matching name `artist`:
+Then you could call the class method that has the matching name `artist`:
 
 ```ruby
 Artsy.artist(id: "pablo-picasso")
@@ -94,7 +94,7 @@ Artemis assumes that the files related to GraphQL are organized in a certain way
 
 ## Callbacks
 
-Youcan use the `before_execute` callback to intercept outgoing requests and the `after_execute` callback to observe the
+You can use the `before_execute` callback to intercept outgoing requests and the `after_execute` callback to observe the
 response. A common operation that's done in the `before_execute` hook is assigning a token to the header:
 
 ```ruby
@@ -145,7 +145,7 @@ There are four adapter options available. Choose the adapter that best fits on y
 | `:net_http_persistent` | HTTP/1.1 only            | **Yes**     | **Fast**    | [`net-http-persistent 3.0.0+`][nhp]
 | `:test`                | N/A (See Testing)
 
-### Third-party adapters
+#### Third-party adapters
 
 This is a comminuty-maintained adapter. Want to add yours? Send us a pull request!
 
@@ -153,7 +153,7 @@ This is a comminuty-maintained adapter. Want to add yours? Send us a pull reques
 | ---------------------- | ------------|
 | [`:net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master)      | provides a new Adapter for the Artemis GraphQL ruby client to support HMAC Authentication using [ApiAuth](https://github.com/mgomes/api_auth). |
 
-### Writing your own adapter
+#### Writing your own adapter
 
 When the built-in adapters do not satisfy your needs, you may want to implement your own adapter. You could do so by following the steps below. Let's implement the [`:net_http_hmac`](https://github.com/JanStevens/artemis-api-auth/tree/master) adapter as an example.
 
