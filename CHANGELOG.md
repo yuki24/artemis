@@ -1,3 +1,12 @@
+## v0.5.3
+
+_<sup>(unreleased)</sup>_
+
+#### Fixes
+
+ * Address warnings from Ruby 2.7 (408adcb3)
+ * Avoid crashing when config/graphql.yml does not exist (@dlackty, #76)
+
 ## [v0.5.2](https://github.com/yuki24/artemis/tree/v0.5.2)
 
 _<sup>released at 2019-07-26 03:21:43 UTC</sup>_
