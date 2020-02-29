@@ -14,6 +14,10 @@ class Artemis::QueryGenerator < Rails::Generators::Base
     template "query.graphql", graphql_file_path
   end
 
+  def generate_text_fixture_file
+    template "fixture.yml", text_fixture_path
+  end
+
   private
 
   def query_name
@@ -21,7 +25,11 @@ class Artemis::QueryGenerator < Rails::Generators::Base
   end
 
   def graphql_file_path
-    "app/operations/#{service_name.underscore}/#{graphql_file_name.presence || query_name}.graphql"
+    "app/operations/#{service_name.underscore}/#{qualified_name}.graphql"
+  end
+
+  def text_fixture_path
+    File.join(Artemis::Railtie.config.artemis.fixture_path, service_name.underscore, "#{qualified_name}.yml")
   end
 
   def arguments
@@ -48,5 +56,9 @@ class Artemis::QueryGenerator < Rails::Generators::Base
              "  rails g artemis:query #{query_type} #{graphql_file_name} --service SERVICE"
       end
     end
+  end
+
+  def qualified_name
+    graphql_file_name.presence || query_name
   end
 end
