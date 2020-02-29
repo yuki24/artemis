@@ -1,0 +1,19 @@
+# You can stub GraphQL queries by calling the `stub_graphql' method in test:
+#
+#   stub_graphql(<%= service_name.camelize %>, :<%= qualified_name.underscore %>).to_return(:<%= target_query.name %>_1)
+#
+# Or with a arguments matcher:
+#
+#   stub_graphql(<%= service_name.camelize %>, :<%= qualified_name.underscore %>, <%= arguments.map {|name, _| "#{name}: \"...\"" }.join(", ") %>).to_return(:<%= target_query.name %>_2)
+#
+
+<%= target_query.name %>_1:
+  data:
+  <% target_query.type.fields.values.each do |field| -%>
+  <%= field.name %>: # type: <%= field.type %>
+  <% end %>
+<%= target_query.name %>_2:
+  data:
+  <% target_query.type.fields.values.each do |field| -%>
+  <%= field.name %>: # type: <%= field.type %>
+  <% end %>
