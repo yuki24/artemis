@@ -284,7 +284,13 @@ module Artemis
           self.class.load_constant(const_name)
         end
 
-        client.query(self.class.const_get(const_name), variables: arguments, context: context)
+        response = client.query(self.class.const_get(const_name), variables: arguments, context: context)
+
+        config.after_callbacks.each do |callback|
+          callback.call(DataWithHashAccess.new(response.data), response.errors, response.extensions || {})
+        end
+
+        response
       else
         raise GraphQLFileNotFound.new("Query #{query}.graphql not found in: #{query_paths.join(", ")}")
       end
@@ -335,16 +341,37 @@ module Artemis
           callback.call(document, operation_name, variables, _context)
         end
 
-        response = __getobj__.execute(document: document, operation_name: operation_name, variables: variables, context: _context)
-
-        @callbacks.after_callbacks.each do |callback|
-          callback.call(response['data'], response['errors'], response['extensions'])
-        end
-
-        response
+        __getobj__.execute(document: document, operation_name: operation_name, variables: variables, context: _context)
       end
     end
 
-    private_constant :Callbacks, :Executor
+    class DataWithHashAccess < SimpleDelegator
+      def key?(key)
+        warn "Hash access and related methods are deprecated. Please call the `respond_to?(#{key})' method instead."
+
+        __getobj__.to_h.key?(key)
+      end
+
+      def [](key)
+        warn "Hash access and related methods are deprecated. Please call a method `##{key}' instead."
+
+        __getobj__.to_h[key]
+      end
+
+      def fetch(key, *extras)
+        warn "Hash access and related methods are deprecated. Please call a method `##{key}' and use the || or safe " \
+             "operator instead."
+
+        __getobj__.to_h.fetch(key, *extras)
+      end
+
+      def dig(*args)
+        warn "Hash access and related methods are deprecated. Please chain the calls `obj.#{args.join(".")}' instead."
+
+        __getobj__.to_h.dig(*args)
+      end
+    end
+
+    private_constant :Callbacks, :Executor, :DataWithHashAccess
   end
 end
