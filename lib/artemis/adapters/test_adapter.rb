@@ -22,7 +22,7 @@ module Artemis
         self.requests << Request.new(*arguments.values_at(:document, :operation_name, :variables, :context))
 
         response = responses.detect do |mock|
-          arguments[:operation_name] == mock.operation_name && mock.arguments == :__unspecified__ || arguments[:variables] == mock.arguments
+          arguments[:operation_name] == mock.operation_name && (mock.arguments == :__unspecified__ || arguments[:variables] == mock.arguments)
         end
 
         response&.data || {
