@@ -70,6 +70,15 @@ describe Artemis::TestHelper do
     expect(yoshiki.data.artist.name).to eq("Artist Yoshiki")
   end
 
+  it "can mock separate GraphQL queries with the same arguments" do
+    stub_graphql("SpotifyClient", :artist, id: "yoshiki").to_return(:yoshiki)
+    stub_graphql(Metaphysics, :artist, id: "yoshiki").to_return(:yoshiki)
+
+    yoshiki = Metaphysics.artist(id: "yoshiki")
+    
+    expect(yoshiki.data.artist.name).to eq("Artist Yoshiki")
+  end
+
   it "allows to get raw fixture data as a Hash" do
     data = stub_graphql("SpotifyClient", :artist).get(:yoshiki)
 
