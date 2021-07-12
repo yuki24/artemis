@@ -10,10 +10,10 @@
 <%= target_query.name %>_1:
   data:
   <% target_query.type.fields.values.each do |field| -%>
-  <%= field.name %>: # type: <%= field.type %>
+  <%= field.name %>: # type: <%= field.type.to_type_signature %>
   <% end %>
 <%= target_query.name %>_2:
   data:
   <% target_query.type.fields.values.each do |field| -%>
-  <%= field.name %>: # type: <%= field.type %>
+  <%= field.name %>: # type: <%= field.type.to_type_signature %>
   <% end %>

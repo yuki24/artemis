@@ -113,11 +113,7 @@ describe 'Adapters' do
 
   describe Artemis::Adapters::NetHttpPersistentAdapter do
     let(:adapter) { Artemis::Adapters::NetHttpPersistentAdapter.new('http://localhost:8000', service_name: nil, timeout: 0.5, pool_size: 5) }
-    if RUBY_VERSION >= '3.0.0'
-      let(:timeout_error) { Net::ReadTimeout }
-    else
-      let(:timeout_error) { Net::HTTP::Persistent::Error }
-    end
+    let(:timeout_error) { Net::ReadTimeout }
 
     it_behaves_like 'an adapter'
   end
@@ -153,7 +149,7 @@ describe 'Adapters' do
     end
   end
 
-  if RUBY_ENGINE == 'curb'
+  if RUBY_ENGINE == 'ruby'
     describe Artemis::Adapters::CurbAdapter do
       let(:adapter) { Artemis::Adapters::CurbAdapter.new('http://localhost:8000', service_name: nil, timeout: 2, pool_size: 5) }
       let(:timeout_error) { Curl::Err::TimeoutError }

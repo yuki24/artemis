@@ -1,4 +1,4 @@
-query<%= arguments.present? && "(#{ arguments.map {|name, type| "$#{name}: #{type.type}" }.join(", ") })" %> {
+query<%= arguments.present? && "(#{ arguments.map {|name, type| "$#{name}: #{type.type.to_type_signature}" }.join(", ") })" %> {
   <%= target_query.name %><%= arguments.present? && "(#{ arguments.map {|name, type| "#{name}: $#{name}" }.join(", ") })" %> {
     # Add fields here...
   }

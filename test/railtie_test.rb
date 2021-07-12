@@ -50,7 +50,7 @@ class RailtieTest < ActiveSupport::TestCase
 
     endpoint = Artemis::GraphQLEndpoint.lookup(:metaphysics)
 
-    assert_equal GraphQL::Schema, endpoint.schema.class
+    assert endpoint.schema < GraphQL::Schema, "The schema does seem like a GraphQL::Schema object."
     assert_equal "https://metaphysics-production.artsy.net", endpoint.url
     assert_equal :curb,     endpoint.adapter
     assert_equal 5,         endpoint.timeout

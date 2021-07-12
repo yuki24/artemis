@@ -10,5 +10,6 @@ end
 
 gem "pry"
 gem "pry-byebug", platforms: :mri
+gem "curb", ">= 0.9.6"
 
 gemspec path: "../"
