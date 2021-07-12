@@ -1,5 +1,6 @@
 require 'json'
 require 'rack'
+require 'webrick'
 
 describe 'Adapters' do
   FakeServer = ->(env) {
@@ -102,7 +103,11 @@ describe 'Adapters' do
 
   describe Artemis::Adapters::NetHttpPersistentAdapter do
     let(:adapter) { Artemis::Adapters::NetHttpPersistentAdapter.new('http://localhost:8000', service_name: nil, timeout: 0.5, pool_size: 5) }
-    let(:timeout_error) { Net::HTTP::Persistent::Error }
+    if RUBY_VERSION >= '3.0.0'
+      let(:timeout_error) { Net::ReadTimeout }
+    else
+      let(:timeout_error) { Net::HTTP::Persistent::Error }
+    end
 
     it_behaves_like 'an adapter'
   end

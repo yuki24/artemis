@@ -6,16 +6,18 @@ sudo:   false
 before_install: gem install bundler -v 1.17.3
 
 rvm:
-  - 2.7.0
-  - 2.6.5
-  - 2.5.7
-  - 2.4.9
+  - 3.0.2
+  - 2.7.4
+  - 2.6.8
+  - 2.5.8
+  - 2.4.10
   - 2.3.8
   - ruby-head
   # - jruby-9.2.9.0
   # - jruby-head
 
 gemfile:
+  - gemfiles/rails_61.gemfile
   - gemfiles/rails_60.gemfile
   - gemfiles/rails_52.gemfile
   - gemfiles/rails_51.gemfile
