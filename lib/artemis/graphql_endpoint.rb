@@ -44,10 +44,16 @@ module Artemis
       end
     end
 
-    attr_reader :name, :url, :adapter, :timeout, :schema_path, :pool_size
+    attr_reader :name, :url, :adapter, :timeout, :schema_path, :pool_size, :adapter_options
 
-    def initialize(name, url: nil, adapter: :net_http, timeout: 10, schema_path: nil, pool_size: 25)
-      @name, @url, @adapter, @timeout, @schema_path, @pool_size = name.to_s, url, adapter, timeout, schema_path, pool_size
+    def initialize(name, url: nil, adapter: :net_http, timeout: 10, schema_path: nil, pool_size: 25, adapter_options: {})
+      @name            = name.to_s
+      @url             = url
+      @adapter         = adapter
+      @timeout         = timeout
+      @schema_path     = schema_path
+      @pool_size       = pool_size
+      @adapter_options = adapter_options
 
       @mutex_for_schema     = Mutex.new
       @mutex_for_connection = Mutex.new
@@ -66,7 +72,7 @@ module Artemis
 
     def connection
       @connection || @mutex_for_connection.synchronize do
-        @connection ||= ::Artemis::Adapters.lookup(adapter).new(url, service_name: name, timeout: timeout, pool_size: pool_size)
+        @connection ||= ::Artemis::Adapters.lookup(adapter).new(url, service_name: name, timeout: timeout, pool_size: pool_size, adapter_options: adapter_options)
       end
     end
   end

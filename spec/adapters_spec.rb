@@ -11,6 +11,16 @@ describe 'Adapters' do
       [200, {}, ['{}']]
     when '/500'
       [500, {}, ['Server error']]
+    when '/test_multi_domain'
+      body = {
+        data: {
+          body: "Endpoint switched.",
+        },
+        errors: [],
+        extensions: {}
+      }.to_json
+
+      [200, {}, [body]]
     else
       body = {
         data: {
@@ -110,6 +120,37 @@ describe 'Adapters' do
     end
 
     it_behaves_like 'an adapter'
+  end
+
+  describe Artemis::Adapters::MultiDomainAdapter do
+    let(:adapter) { Artemis::Adapters::MultiDomainAdapter.new('ignored', service_name: nil, timeout: 0.5, pool_size: 5, adapter_options: { adapter: :net_http }) }
+
+    it 'makes an actual HTTP request' do
+      response = adapter.execute(document: GraphQL::Client::IntrospectionDocument, context: { url: 'http://localhost:8000/test_multi_domain' })
+
+      expect(response['data']['body']).to eq("Endpoint switched.")
+      expect(response['errors']).to eq([])
+      expect(response['extensions']).to eq({})
+    end
+
+    it 'raises an error when context.url is not specified' do
+      expect do
+        adapter.execute(document: GraphQL::Client::IntrospectionDocument)
+      end.to raise_error(ArgumentError, 'The MultiDomain adapter requires a url on every request. Please specify a ' \
+                                        'url with a context: Client.with_context(url: "https://awesomeshop.domain.conm")')
+    end
+
+    it 'raises an error when it receives a server error' do
+      expect do
+        adapter.execute(document: GraphQL::Client::IntrospectionDocument, context: { url: 'http://localhost:8000/500' })
+      end.to raise_error(Artemis::GraphQLServerError, "Received server error status 500: Server error")
+    end
+
+    it 'allows for overriding timeout' do
+      expect do
+        adapter.execute(document: GraphQL::Client::IntrospectionDocument, context: { url: 'http://localhost:8000/slow_server' })
+      end.to raise_error(Net::ReadTimeout)
+    end
   end
 
   if RUBY_ENGINE == 'curb'

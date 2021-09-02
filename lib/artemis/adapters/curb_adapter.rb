@@ -13,7 +13,7 @@ module Artemis
     class CurbAdapter < AbstractAdapter
       attr_reader :multi
 
-      def initialize(uri, service_name: , timeout: , pool_size: )
+      def initialize(uri, service_name: , timeout: , pool_size: , adapter_options: {})
         super
 
         @multi = Curl::Multi.new

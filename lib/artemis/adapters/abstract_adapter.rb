@@ -15,7 +15,7 @@ module Artemis
         "Content-Type" => "application/json"
       }.freeze
 
-      def initialize(uri, service_name: , timeout: , pool_size: )
+      def initialize(uri, service_name: , timeout: , pool_size: , adapter_options: {})
         raise ArgumentError, "url is required (given `#{uri.inspect}')" if uri.blank?
 
         super(uri) # Do not pass in the block to avoid getting #headers and #connection overridden.

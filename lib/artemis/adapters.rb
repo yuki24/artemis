@@ -7,6 +7,7 @@ module Artemis
     extend ActiveSupport::Autoload
 
     autoload :CurbAdapter
+    autoload :MultiDomainAdapter
     autoload :NetHttpAdapter
     autoload :NetHttpPersistentAdapter
     autoload :TestAdapter
