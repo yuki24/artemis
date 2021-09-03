@@ -1,17 +1,17 @@
-## v0.6.0
+## [v0.6.0](https://github.com/yuki24/artemis/tree/v0.6.0)
 
-_<sup>(unreleased)</sup>_
+_<sup>released at 2021-09-03 04:17:55 UTC</sup>_
 
 #### Features
 
- * Add support for Ruby 3.0 and Rails 6.0, 6.1
- * Add the multi domain adapter (744b8ea3)
+- Add support for Ruby 3.0 and Rails 6.0, 6.1
+- Add the multi domain adapter ([<tt>744b8ea</tt>](https://github.com/yuki24/artemis/commit/744b8ea35795b4e6cc4fdc1ebb63dd9a4e9819f0))
 
 #### Fixes
 
- * ~~Generate fixture YAML files on `rails g artemis:query queryName` (#78)~~ Removed due to a bug for now.
- * Address warnings from Ruby 2.7 (408adcb3)
- * Avoid crashing when config/graphql.yml does not exist (@dlackty, #76)
+- ~~Generate fixture YAML files on `rails g artemis:query queryName` ([#78](https://github.com/yuki24/artemis/pull/78))~~ Removed due to a bug for now.
+- Address warnings from Ruby 2.7 ([<tt>408adcb</tt>](https://github.com/yuki24/artemis/commit/408adcb3f39912f7afb7b3690a52f1d593662b7b))
+- Avoid crashing when config/graphql.yml does not exist ([@dlackty](https://github.com/dlackty), [#76](https://github.com/yuki24/artemis/pull/76))
 
 ## [v0.5.2](https://github.com/yuki24/artemis/tree/v0.5.2)
 
