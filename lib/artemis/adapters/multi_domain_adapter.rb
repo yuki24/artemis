@@ -8,6 +8,10 @@ module Artemis
       attr_reader :adapter
 
       def initialize(_uri, service_name: , timeout: , pool_size: , adapter_options: {})
+        if adapter_options[:adapter] == :multi_domain
+          raise ArgumentError, "You can not use the :multi_domain adapter with the :multi_domain adapter."
+        end
+
         @connection_by_url    = {}
         @service_name         = service_name.to_s
         @timeout              = timeout

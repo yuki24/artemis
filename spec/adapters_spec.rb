@@ -129,6 +129,12 @@ describe 'Adapters' do
       expect(response['extensions']).to eq({})
     end
 
+    it 'raises an error when adapter_options.adapter is set to :multi domain' do
+      expect do
+        Artemis::Adapters::MultiDomainAdapter.new('ignored', service_name: nil, timeout: 0.5, pool_size: 5, adapter_options: { adapter: :multi_domain })
+      end.to raise_error(ArgumentError, 'You can not use the :multi_domain adapter with the :multi_domain adapter.')
+    end
+
     it 'raises an error when context.url is not specified' do
       expect do
         adapter.execute(document: GraphQL::Client::IntrospectionDocument)
