@@ -1,3 +1,7 @@
+## v0.6.1
+
+_<sup>unreleased</sup>_
+
 ## [v0.6.0](https://github.com/yuki24/artemis/tree/v0.6.0)
 
 _<sup>released at 2021-09-03 04:17:55 UTC</sup>_
