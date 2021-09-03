@@ -1,6 +1,11 @@
-## v0.5.3
+## v0.6.0
 
 _<sup>(unreleased)</sup>_
+
+#### Features
+
+ * Add support for Ruby 3.0 and Rails 6.0, 6.1
+ * Add the multi domain adapter (744b8ea3)
 
 #### Fixes
 
