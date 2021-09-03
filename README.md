@@ -121,6 +121,44 @@ class Artsy < Artemis::Client
 end
 ```
 
+## Multi domain support
+
+Services like Shopify provide
+[a different endpoint per customer](https://shopify.dev/api/admin/graphql/reference#graphql-endpoint) (e.g.
+`https://{shop}.myshopify.com`). In order to switch the endpoint on a per-request basis, you will have to use the
+`:multi_domain` adapter. This is a wrapper adapter that relies on an actual HTTP adapter such as `:net_http` and
+`:curb` so that e.g. it can maintain multiple connections for each endpoint if necessary. This could be configured
+as shown below:
+
+```yaml
+default: &default
+  # Specify the :multi_domain adapter:
+  adapter: :multi_domain
+
+  # Other configurations such as `timeout` and `pool_size` are passed down to the underlying adapter:
+  timeout: 10
+  pool_size: 25
+
+  # Additional adapter-specific configurations could be configured as `adapter_options`:
+  adapter_options:
+    # Here you can configure the actual adapter to use. By default, it is set to :net_http. Available adapters are
+    # :net_http, :net_http_persistent, :curb, and :test. You can not nest the use of the `:multi_domain` adapter.
+    adapter: :net_http
+
+development:
+  shopify:
+    <<: *default
+
+...
+```
+
+Upon making a request you will also have to specify the `url` option:
+
+```ruby
+# Makes a request to https://myawesomeshop.myshopify.com:
+Shopify.with_context(url: "https://myawesomeshop.myshopify.com").product(id: "...")
+```
+
 ## Configuration
 
 You can configure the GraphQL client using the following options. Those configurations are found in the
@@ -143,7 +181,8 @@ There are four adapter options available. Choose the adapter that best fits on y
 | `:curb`                | HTTP/1.1, **HTTP/2**     | **Yes**     | **Fastest** | [`curb 0.9.6+`][curb]<br>[`libcurl 7.64.0+`][curl]<br>[`nghttp2 1.0.0+`][nghttp]
 | `:net_http` (default)  | HTTP/1.1 only            | No          | Slow        | **None**
 | `:net_http_persistent` | HTTP/1.1 only            | **Yes**     | **Fast**    | [`net-http-persistent 3.0.0+`][nhp]
-| `:test`                | N/A (See Testing)
+| `:multi_domain`        | See [multi domain support](#multi-domain-support)
+| `:test`                | See [Testing](#testing)
 
 #### Third-party adapters
 
