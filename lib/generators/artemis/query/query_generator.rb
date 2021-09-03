@@ -14,9 +14,9 @@ class Artemis::QueryGenerator < Rails::Generators::Base
     template "query.graphql", graphql_file_path
   end
 
-  def generate_text_fixture_file
-    template "fixture.yml", text_fixture_path
-  end
+  # def generate_text_fixture_file
+  #   template "fixture.yml", text_fixture_path
+  # end
 
   private
 

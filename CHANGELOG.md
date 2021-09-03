@@ -4,7 +4,7 @@ _<sup>(unreleased)</sup>_
 
 #### Fixes
 
- * Generate fixture YAML files on `rails g artemis:query queryName` (#78)
+ * ~~Generate fixture YAML files on `rails g artemis:query queryName` (#78)~~ Removed due to a bug for now.
  * Address warnings from Ruby 2.7 (408adcb3)
  * Avoid crashing when config/graphql.yml does not exist (@dlackty, #76)
 
