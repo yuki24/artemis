@@ -377,6 +377,6 @@ module Artemis
       end
     end
 
-    private_constant :Callbacks, :Executor. :MultiplexQueue
+    private_constant :Callbacks, :Executor, :MultiplexQueue
   end
 end
