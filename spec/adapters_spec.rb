@@ -6,7 +6,7 @@ describe 'Adapters' do
   FakeServer = ->(env) {
     case env['PATH_INFO']
     when '/slow_server'
-      sleep 1.1
+      sleep 2.1
 
       [200, {}, ['{}']]
     when '/500'
@@ -22,18 +22,35 @@ describe 'Adapters' do
 
       [200, {}, [body]]
     else
-      body = {
-        data: {
-          body: JSON.parse(env['rack.input'].read),
-          headers: env.select {|key, val| key.match("^HTTP.*|^CONTENT.*|^AUTHORIZATION.*") }
-                     .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
-                     .to_h,
-        },
-        errors: [],
-        extensions: {}
-      }.to_json
+      request_body = JSON.parse(env['rack.input'].read)
 
-      [200, {}, [body]]
+      response_body = if request_body['_json']
+                        request_body['_json'].map do |query|
+                          {
+                            data: {
+                              body: query,
+                              headers: env.select {|key, val| key.match("^HTTP.*|^CONTENT.*|^AUTHORIZATION.*") }
+                                          .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
+                                          .to_h,
+                            },
+                            errors: [],
+                            extensions: {}
+                          }
+                        end.to_json
+                      else
+                        {
+                          data: {
+                            body: request_body,
+                            headers: env.select {|key, val| key.match("^HTTP.*|^CONTENT.*|^AUTHORIZATION.*") }
+                                        .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
+                                        .to_h,
+                          },
+                          errors: [],
+                          extensions: {}
+                        }.to_json
+                      end
+
+      [200, {}, [response_body]]
     end
   }
 
@@ -99,6 +116,51 @@ describe 'Adapters' do
 
         expect do
           adapter.execute(document: GraphQL::Client::IntrospectionDocument, operation_name: 'IntrospectionQuery')
+        end.to raise_error(timeout_error)
+      end
+    end
+
+    describe '#multiplex' do
+      it 'makes an HTTP request with multiple queries' do
+        response = adapter.multiplex(
+          [
+            {
+              query: GraphQL::Client::IntrospectionDocument.to_query_string,
+              operationName: 'IntrospectionQuery',
+              variables: {
+                id: 'yayoi-kusama'
+              },
+            },
+          ],
+          context: {
+            user_id: 1
+          }
+        )
+
+        introspection_query = response[0]
+
+        expect(introspection_query['data']['body']['query']).to eq(GraphQL::Client::IntrospectionDocument.to_query_string)
+        expect(introspection_query['data']['body']['variables']).to eq('id' => 'yayoi-kusama')
+        expect(introspection_query['data']['body']['operationName']).to eq('IntrospectionQuery')
+        expect(introspection_query['data']['headers']['CONTENT_TYPE']).to eq('application/json')
+        expect(introspection_query['data']['headers']['ACCEPT']).to eq('application/json')
+        expect(introspection_query['errors']).to eq([])
+        expect(introspection_query['extensions']).to eq({})
+      end
+
+      it 'raises an error when it receives a server error' do
+        adapter.uri = URI.parse('http://localhost:8000/500')
+
+        expect do
+          adapter.multiplex([])
+        end.to raise_error(Artemis::GraphQLServerError, "Received server error status 500: Server error")
+      end
+
+      it 'allows for overriding timeout' do
+        adapter.uri = URI.parse('http://localhost:8000/slow_server')
+
+        expect do
+          adapter.multiplex([])
         end.to raise_error(timeout_error)
       end
     end

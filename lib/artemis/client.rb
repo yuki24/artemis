@@ -218,6 +218,19 @@ module Artemis
         new(default_context).execute(query, context: context, **arguments)
       end
 
+      def multiplex(**context, &block)
+        queue            = MultiplexQueue.new
+        wrapped_executor = Executor.new(queue, callbacks, default_context.deep_merge(context))
+        api_client       = ::GraphQL::Client.new(schema: endpoint.schema, execute: wrapped_executor)
+
+        service_client = new
+        service_client.instance_variable_set(:@client, api_client)
+
+        block.call(service_client)
+
+        connection.multiplex(queue.queries, context: context)
+      end
+
       private
 
       # Looks up the GraphQL file that matches the given +const_name+ and sets it to a constant. If the files it not
@@ -345,6 +358,25 @@ module Artemis
       end
     end
 
-    private_constant :Callbacks, :Executor
+    class MultiplexQueue
+      attr_reader :queries
+
+      def initialize
+        @queries = []
+      end
+
+      def execute(document:, operation_name: nil, variables: {}, context: {}) #:nodoc:
+        @queries << {
+          query: document.to_query_string,
+          variables: variables.presence || {},
+          operationName: operation_name,
+          context: context
+        }
+
+        {}
+      end
+    end
+
+    private_constant :Callbacks, :Executor. :MultiplexQueue
   end
 end

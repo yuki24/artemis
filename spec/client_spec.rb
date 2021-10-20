@@ -171,6 +171,42 @@ describe GraphQL::Client do
     end
   end
 
+  it "can batch multiple requests using Multiplex" do
+    responses = Metaphysics.multiplex do |queue|
+      queue.artist(id: "yayoi-kusama", context: { headers: { Authorization: 'bearer ...' } })
+      queue.artwork
+    end
+
+    artist_query, artwork_query = requests[0].queries
+
+    expect(artist_query[:operationName]).to eq('Metaphysics__Artist')
+    expect(artist_query[:variables]).to eq('id' => 'yayoi-kusama')
+    expect(artist_query[:context]).to eq({ headers: { Authorization: 'bearer ...' } })
+    expect(artist_query[:query]).to eq(<<~GRAPHQL.strip)
+      query Metaphysics__Artist($id: String!) {
+        artist(id: $id) {
+          name
+          bio
+          birthday
+        }
+      }
+    GRAPHQL
+
+    expect(artwork_query[:operationName]).to eq('Metaphysics__Artwork')
+    expect(artwork_query[:variables]).to be_empty
+    expect(artwork_query[:context]).to eq({})
+    expect(artwork_query[:query]).to eq(<<~GRAPHQL.strip)
+      query Metaphysics__Artwork {
+        artwork(id: "yayoi-kusama-pumpkin-yellow-and-black") {
+          title
+          artist {
+            name
+          }
+        }
+      }
+    GRAPHQL
+  end
+
   private
 
   def requests

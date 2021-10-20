@@ -12,10 +12,23 @@ module Artemis
       self.responses = []
 
       Request = Struct.new(:document, :operation_name, :variables, :context)
+      Multiplex = Struct.new(:queries, :context)
 
-      private_constant :Request
+      private_constant :Request, :Multiplex
 
       def initialize(*)
+      end
+
+      def multiplex(queries, context: {})
+        self.requests << Multiplex.new(queries, context)
+
+        queries.map do |query|
+          result = responses.detect do |mock|
+            query[:operationName] == mock.operation_name && (mock.arguments == :__unspecified__ || query[:variables] == mock.arguments)
+          end
+
+          result&.data || fake_response
+        end
       end
 
       def execute(**arguments)
@@ -25,7 +38,13 @@ module Artemis
           arguments[:operation_name] == mock.operation_name && (mock.arguments == :__unspecified__ || arguments[:variables] == mock.arguments)
         end
 
-        response&.data || {
+        response&.data || fake_response
+      end
+
+      private
+
+      def fake_response
+        {
           'data' => { 'test' => 'data' },
           'errors' => [],
           'extensions' => {}

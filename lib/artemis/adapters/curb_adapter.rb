@@ -20,18 +20,28 @@ module Artemis
         @multi.pipeline = Curl::CURLPIPE_MULTIPLEX if defined?(Curl::CURLPIPE_MULTIPLEX)
       end
 
-      def execute(document:, operation_name: nil, variables: {}, context: {})
-        easy = Curl::Easy.new(uri.to_s)
+      def multiplex(queries, context: {})
+        make_request({ _json: queries }, context)
+      end
 
+      def execute(document:, operation_name: nil, variables: {}, context: {})
         body = {}
         body["query"] = document.to_query_string
         body["variables"] = variables if variables.any?
         body["operationName"] = operation_name if operation_name
 
-        easy.timeout     = timeout
-        easy.multi       = multi
-        easy.headers     = DEFAULT_HEADERS.merge(headers(context))
-        easy.post_body   = JSON.generate(body)
+        make_request(body, context)
+      end
+
+      private
+
+      def make_request(body, context)
+        easy = Curl::Easy.new(uri.to_s)
+
+        easy.timeout   = timeout
+        easy.multi     = multi
+        easy.headers   = DEFAULT_HEADERS.merge(headers(context))
+        easy.post_body = JSON.generate(body)
 
         if defined?(Curl::CURLPIPE_MULTIPLEX)
           # This ensures libcurl waits for the connection to reveal if it is
