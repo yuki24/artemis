@@ -20,6 +20,17 @@ module Artemis
         @mutex_for_connection = Mutex.new
       end
 
+      def multiplex(queries, context: {})
+        url = context[:url]
+
+        if url.nil?
+          raise ArgumentError, 'The MultiDomain adapter requires a url on every request. Please specify a url with a context: ' \
+                               'Client.multiplex(url: "https://awesomeshop.domain.conm") { ... }'
+        end
+
+        connection_for_url(url).multiplex(queries, context: {})
+      end
+
       # Makes an HTTP request for GraphQL query.
       def execute(document:, operation_name: nil, variables: {}, context: {})
         url = context[:url]

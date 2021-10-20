@@ -191,6 +191,27 @@ describe 'Adapters' do
       expect(response['extensions']).to eq({})
     end
 
+    it 'can make a multiplex (the graphql feature, not HTTP/2) request' do
+      response = adapter.multiplex(
+        [
+          {
+            query: GraphQL::Client::IntrospectionDocument.to_query_string,
+            operationName: 'IntrospectionQuery',
+            variables: {
+              id: 'yayoi-kusama'
+            },
+          },
+        ],
+        context: {
+          url: 'http://localhost:8000/test_multi_domain'
+        }
+      )
+
+      expect(response['data']['body']).to eq("Endpoint switched.")
+      expect(response['errors']).to eq([])
+      expect(response['extensions']).to eq({})
+    end
+
     it 'raises an error when adapter_options.adapter is set to :multi domain' do
       expect do
         Artemis::Adapters::MultiDomainAdapter.new('ignored', service_name: nil, timeout: 0.5, pool_size: 5, adapter_options: { adapter: :multi_domain })
