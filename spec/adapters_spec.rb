@@ -15,6 +15,9 @@ describe 'Adapters' do
       body = {
         data: {
           body: "Endpoint switched.",
+          headers: env.select {|key, val| key.match("^HTTP.*|^CONTENT.*|^AUTHORIZATION.*") }
+                      .collect {|key, val| [key.gsub(/^HTTP_/, ''), val.downcase] }
+                      .to_h,
         },
         errors: [],
         extensions: {}
@@ -210,6 +213,25 @@ describe 'Adapters' do
       expect(response['data']['body']).to eq("Endpoint switched.")
       expect(response['errors']).to eq([])
       expect(response['extensions']).to eq({})
+    end
+
+    it 'can make a multiplex request with custom HTTP headers' do
+      response = adapter.multiplex(
+        [
+          {
+            query: GraphQL::Client::IntrospectionDocument.to_query_string,
+            operationName: 'IntrospectionQuery',
+          },
+        ],
+        context: {
+          headers: {
+            Authorization: "Token token",
+          },
+          url: 'http://localhost:8000/test_multi_domain'
+        }
+      )
+
+      expect(response['data']['headers']['AUTHORIZATION']).to eq("token token")
     end
 
     it 'raises an error when adapter_options.adapter is set to :multi domain' do

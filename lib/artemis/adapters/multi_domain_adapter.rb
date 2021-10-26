@@ -28,7 +28,7 @@ module Artemis
                                'Client.multiplex(url: "https://awesomeshop.domain.conm") { ... }'
         end
 
-        connection_for_url(url).multiplex(queries, context: {})
+        connection_for_url(url).multiplex(queries, context: context)
       end
 
       # Makes an HTTP request for GraphQL query.
