@@ -92,6 +92,32 @@ Artemis assumes that the files related to GraphQL are organized in a certain way
 └──vendor/graphql/schema/artsy.json
 ```
 
+### Fragments
+Fragments are defined in defined in a standard way in a file named `_artwork_fragment.graphql` with the standard convention:
+
+```graphql
+fragment on Artwork {
+  id,
+  name,
+  artist_id
+  # other artwork fields here
+}
+```
+
+The way of calling an Artemis fragment on other queries or models is with a **Rails convention**. Let us suppose we have the Artist model and its corresponding artwork. The way of nesting or calling the artwork on the artist model would look like this:
+
+```graphql
+fragment on Artist {
+  id,
+  name,
+  artworks {
+    ...Artsy::ArtworkFragment
+  }
+}
+```
+
+Where `Artsy` is the name of the folder/module.
+
 ## Callbacks
 
 You can use the `before_execute` callback to intercept outgoing requests and the `after_execute` callback to observe the
