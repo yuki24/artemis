@@ -35,8 +35,7 @@ module Artemis
         files_to_watch = Artemis::Client.query_paths.map {|path| [path, config.artemis.graphql_extentions] }.to_h
 
         app.reloaders << ActiveSupport::FileUpdateChecker.new([], files_to_watch) do
-          endpoint_names = Artemis.config_for_graphql(app).keys
-          endpoint_names.each do |endpoint_name|
+          Artemis.config_for_graphql(app).each_key do |endpoint_name|
             Artemis::Client.query_paths.each do |path|
               FileUtils.touch("#{path}/#{endpoint_name}.rb")
             end
@@ -48,9 +47,12 @@ module Artemis
     initializer 'graphql.client.load_config' do |app|
       if Pathname.new("#{app.paths["config"].existent.first}/graphql.yml").exist?
         Artemis.config_for_graphql(app).each do |endpoint_name, options|
-          Artemis::GraphQLEndpoint.register!(endpoint_name, {
-            schema_path: app.root.join(config.artemis.schema_path, "#{endpoint_name}.json").to_s
-          }.merge(options.symbolize_keys))
+          Artemis::GraphQLEndpoint
+            .register!(
+              endpoint_name,
+              schema_path: app.root.join(config.artemis.schema_path, "#{endpoint_name}.json").to_s,
+              **options.symbolize_keys
+            )
         end
       end
     end
