@@ -2,6 +2,12 @@
 
 require 'delegate'
 
+begin
+  require "active_support/isolated_execution_state"
+rescue LoadError
+  # no-op... Rails 7.0 requires this.
+end
+
 require 'active_support/core_ext/numeric/time'
 require 'net/http/persistent'
 

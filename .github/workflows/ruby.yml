@@ -24,6 +24,10 @@ jobs:
           # - gemfiles/rails_edge.gemfile
         exclude:
           - ruby_version: '3.1'
+            gemfile: gemfiles/rails_61.gemfile
+          - ruby_version: '3.1'
+            gemfile: gemfiles/rails_60.gemfile
+          - ruby_version: '3.1'
             gemfile: gemfiles/rails_52.gemfile
           - ruby_version: '3.1'
             gemfile: gemfiles/rails_51.gemfile

@@ -124,8 +124,8 @@ class RailtieTest < ActiveSupport::TestCase
   end
 
   test "adds a reloader that watches *.graphql files" do
-    if Rails::VERSION::MAJOR == 6
-      skip "For some reason auto-reloading fails in Rails 6 but it works in a real app"
+    if Rails::VERSION::MAJOR >= 6
+      skip "For some reason auto-reloading fails in Rails >= 6 but it works in a real app"
     end
 
     FileUtils.mkdir "#{app_path}/app/operations"
