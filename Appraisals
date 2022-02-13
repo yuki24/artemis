@@ -6,6 +6,12 @@ appraise "rails_edge" do
   end
 end
 
+appraise "rails_70" do
+  gem "rails", '~> 7.0.0'
+  gem "railties", '~> 7.0.0'
+  gem "activesupport", '~> 7.0.0'
+end
+
 appraise "rails_61" do
   gem "rails", '~> 6.1.0'
   gem "railties", '~> 6.1.0'
