@@ -1,4 +1,4 @@
-# Artemis [![Build Status](https://travis-ci.org/yuki24/artemis.svg?branch=master)](https://travis-ci.org/yuki24/artemis)
+# Artemis [![build](https://github.com/yuki24/artemis/actions/workflows/ruby.yml/badge.svg)](https://github.com/yuki24/artemis/actions/workflows/tests.yml) [![Gem Version](https://badge.fury.io/rb/artemis.svg)](https://rubygems.org/gems/artemis)
 
 Artemis is a GraphQL client that is designed to fit well on Rails.
 
