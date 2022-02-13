@@ -37,7 +37,7 @@ class Artemis::QueryGenerator < Rails::Generators::Base
   end
 
   def target_query
-    schema.find("Query").fields[query_type] ||
+    schema.query.fields[query_type] ||
       raise(GraphQL::Schema::Finder::MemberNotFoundError, "Could not find type `#{query_type}` in schema.")
   end
 
