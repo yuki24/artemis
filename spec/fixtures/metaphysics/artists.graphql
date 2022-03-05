@@ -3,6 +3,6 @@ query($size: Int!) {
     name
     bio
     birthday
-    ...Metaphysics::ArtistFragment
+    ...Metaphysics::ArtistFields
   }
 }

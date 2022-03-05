@@ -86,11 +86,11 @@ describe GraphQL::Client do
           name
           bio
           birthday
-          ...Metaphysics__ArtistFragment
+          ...Metaphysics__ArtistFields
         }
       }
 
-      fragment Metaphysics__ArtistFragment on Artist {
+      fragment Metaphysics__ArtistFields on Artist {
         hometown
         deathday
       }

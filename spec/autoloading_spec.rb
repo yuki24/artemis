@@ -43,12 +43,12 @@ describe "#{GraphQL::Client} Autoloading" do
   end
 
   it "dynamically loads the matching GraphQL fragment and sets it to a constant" do
-    Metaphysics.send(:remove_const, :ArtistFragment) if Metaphysics.constants.include?(:ArtistFragment)
+    Metaphysics.send(:remove_const, :ArtistFields) if Metaphysics.constants.include?(:ArtistFields)
 
-    query = Metaphysics::ArtistFragment
+    query = Metaphysics::ArtistFields
 
     expect(query.document.to_query_string).to eq(<<~GRAPHQL.strip)
-      fragment Metaphysics__ArtistFragment on Artist {
+      fragment Metaphysics__ArtistFields on Artist {
         hometown
         deathday
       }

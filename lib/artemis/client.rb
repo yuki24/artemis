@@ -172,7 +172,7 @@ module Artemis
 
         graphql_file_paths.detect do |path|
           path.end_with?("#{namespace}/#{filename}.graphql") ||
-            (fragment && filename.end_with?('fragment') && path.end_with?("#{namespace}/_#{filename}.graphql"))
+            (fragment && path.end_with?("#{namespace}/_#{filename}.graphql"))
         end
       end
 
