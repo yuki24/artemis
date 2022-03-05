@@ -167,17 +167,19 @@ module Artemis
       end
 
       def resolve_graphql_file_path(filename, fragment: false)
-        namespace = name.underscore
-        filename  = filename.to_s.underscore
+        filename = filename.to_s.underscore
 
         graphql_file_paths.detect do |path|
-          path.end_with?("#{namespace}/#{filename}.graphql") ||
-            (fragment && path.end_with?("#{namespace}/_#{filename}.graphql"))
+          path.end_with?("#{namespace}/#{filename}.graphql") || (fragment && path.end_with?("#{namespace}/_#{filename}.graphql"))
         end
       end
 
       def graphql_file_paths
-        @graphql_file_paths ||= query_paths.flat_map {|path| Dir["#{path}/#{name.underscore}/*.graphql"] }
+        @graphql_file_paths ||= query_paths.flat_map {|path| Dir["#{path}/#{namespace}/*.graphql"] }
+      end
+
+      def namespace
+        name.underscore
       end
 
       def preload!
