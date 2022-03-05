@@ -1,6 +1,15 @@
-## v0.6.1
+
+## v0.7.0
 
 _<sup>unreleased</sup>_
+
+#### Features
+
+- Add support for Ruby 3.1 and Rails 7.0
+- Add support for [the Multiplex query](https://graphql-ruby.org/queries/multiplex.html)
+- Do not allow the usage of the `multi_domain` adapter to be nested ([<tt>9b7b520</tt>](https://github.com/yuki24/artemis/commit/9b7b5202c9fbe424d4ca22f05dc9c9759b5202c3))
+- Do not require fragment files to end with `_fragment.graphql` ([<tt>3c6c0fa</tt>](https://github.com/yuki24/artemis/commit/3c6c0fa))
+- Allow for overriding the namespace used for resolving graphql file paths ([<tt>bd18762</tt>](https://github.com/yuki24/artemis/commit/bd18762))
 
 ## [v0.6.0](https://github.com/yuki24/artemis/tree/v0.6.0)
 
