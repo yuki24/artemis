@@ -1,7 +1,10 @@
+## Unreleased
 
-## v0.7.0
+- New entries come here...
 
-_<sup>unreleased</sup>_
+## [v0.7.0](https://github.com/yuki24/artemis/tree/v0.7.0)
+
+_<sup>released at 2022-03-05 08:24:45 UTC</sup>_
 
 #### Features
 
