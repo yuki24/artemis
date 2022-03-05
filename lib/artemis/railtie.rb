@@ -37,7 +37,7 @@ module Artemis
         app.reloaders << ActiveSupport::FileUpdateChecker.new([], files_to_watch) do
           Artemis.config_for_graphql(app).each_key do |endpoint_name|
             Artemis::Client.query_paths.each do |path|
-              FileUtils.touch("#{path}/#{endpoint_name}.rb")
+              FileUtils.touch("#{path}/#{endpoint_name}.rb") if File.exist?("#{path}/#{endpoint_name}.rb")
             end
           end
         end
