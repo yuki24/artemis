@@ -5,7 +5,7 @@ on:
   - pull_request
 
 jobs:
-  build:
+  mri:
     strategy:
       matrix:
         ruby_version:
@@ -69,3 +69,63 @@ jobs:
           ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true
       - run: bundle exec rake
+
+  rails_edge:
+    needs:
+      - mri
+    runs-on: ubuntu-22.04
+    env:
+      BUNDLE_GEMFILE: gemfiles/rails_edge.gemfile
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+      - run: bundle exec rake || echo "Rails edge test is done."
+
+  ruby_edge:
+    needs:
+      - mri
+    strategy:
+      matrix:
+        ruby_version:
+          - 'ruby-head'
+          - 'jruby-head'
+        gemfile:
+          - gemfiles/rails_edge.gemfile
+          - gemfiles/rails_70.gemfile
+    runs-on: ubuntu-22.04
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby_version }}
+          bundler-cache: true
+      - run: bundle exec rake || echo "Ruby edge test is done."
+
+  jruby:
+    needs:
+      - mri
+    strategy:
+      matrix:
+        ruby_version:
+          - 'jruby-9.4'
+          - 'jruby-head'
+        gemfile:
+          - gemfiles/rails_70.gemfile
+    runs-on: ubuntu-22.04
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby_version }}
+          bundler-cache: true
+      - run: bundle exec rake || echo "JRuby test is done."
