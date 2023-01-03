@@ -94,7 +94,6 @@ jobs:
       matrix:
         ruby_version:
           - 'ruby-head'
-          - 'jruby-head'
         gemfile:
           - gemfiles/rails_edge.gemfile
           - gemfiles/rails_70.gemfile
