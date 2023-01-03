@@ -108,24 +108,25 @@ jobs:
           bundler-cache: true
       - run: bundle exec rake || echo "Ruby edge test is done."
 
-  jruby:
-    needs:
-      - mri
-    strategy:
-      matrix:
-        ruby_version:
-          - 'jruby-9.4'
-          - 'jruby-head'
-        gemfile:
-          - gemfiles/rails_70.gemfile
-    runs-on: ubuntu-22.04
-    env:
-      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby_version }}
-          bundler-cache: true
-      - run: bundle exec rake || echo "JRuby test is done."
+#  The curb gem does not work well with JRuby, so skipping for now...
+#  jruby:
+#    needs:
+#      - mri
+#    strategy:
+#      matrix:
+#        ruby_version:
+#          - 'jruby-9.4'
+#          - 'jruby-head'
+#        gemfile:
+#          - gemfiles/rails_70.gemfile
+#    runs-on: ubuntu-22.04
+#    env:
+#      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Set up Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: ${{ matrix.ruby_version }}
+#          bundler-cache: true
+#      - run: bundle exec rake || echo "JRuby test is done."
