@@ -1,6 +1,10 @@
-## Unreleased
+## [v0.8.0](https://github.com/yuki24/artemis/tree/v0.8.0)
 
-- New entries come here...
+_<sup>released at 2023-01-05 05:29:37 UTC</sup>_
+
+#### New Features
+
+- Ruby 3.2 is now officially supported
 
 ## [v0.7.0](https://github.com/yuki24/artemis/tree/v0.7.0)
 
