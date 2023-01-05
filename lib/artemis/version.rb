@@ -1,3 +1,3 @@
 module Artemis
-  VERSION = "0.7.1-alpha"
+  VERSION = "0.8.0"
 end
