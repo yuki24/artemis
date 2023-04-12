@@ -22,6 +22,7 @@ namespace :graphql do
                 end
 
       headers          = ENV['AUTHORIZATION'] ? { Authorization: ENV['AUTHORIZATION'] } : {}
+      headers          = JSON.parse(ENV["ARTEMIS_HEADERS"]) if ENV["ARTEMIS_HEADERS"].present?
       service_class    = service.to_s.camelize.constantize
       schema_path      = service_class.endpoint.schema_path
       schema           = service_class.connection
