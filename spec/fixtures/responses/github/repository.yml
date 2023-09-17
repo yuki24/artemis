@@ -1,0 +1,17 @@
+yuki24_artemis:
+  data:
+    repository:
+      name: artemis
+      nameWithOwner: yuki24/artemis
+
+yuki24_rambulance:
+  data:
+    repository:
+      name: rambulance
+      nameWithOwner: <%= "yuki24" %>/rambulance
+
+yoshiki:
+  data:
+    repository:
+      name: did_you_mean
+      nameWithOwner: ruby/did_you_mean

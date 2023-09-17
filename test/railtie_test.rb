@@ -18,8 +18,8 @@ class RailtieTest < ActiveSupport::TestCase
 
   test "sets query paths" do
     FileUtils.mkdir "#{app_path}/app/operations"
-    FileUtils.mkdir "#{app_path}/app/operations/metaphysics"
-    FileUtils.touch "#{app_path}/app/operations/metaphysics/query.graphql"
+    FileUtils.mkdir "#{app_path}/app/operations/github"
+    FileUtils.touch "#{app_path}/app/operations/github/query.graphql"
 
     add_to_config <<-RUBY
       config.root = "#{app_path}"
@@ -35,8 +35,8 @@ class RailtieTest < ActiveSupport::TestCase
     File.open("#{app_path}/config/graphql.yml", "w") do |f|
       f.puts <<-YAML
         development:
-          metaphysics:
-            url: https://metaphysics-production.artsy.net
+          github:
+            url: https://api.github.com/graphql
             adapter: :curb
             timeout: 5
             pool_size: 25
@@ -44,14 +44,14 @@ class RailtieTest < ActiveSupport::TestCase
     end
 
     FileUtils.mkdir_p "#{app_path}/vendor/graphql/schema"
-    FileUtils.cp_r File.expand_path("spec/fixtures/metaphysics/schema.json"), "#{app_path}/vendor/graphql/schema/metaphysics.json"
+    FileUtils.cp_r File.expand_path("spec/fixtures/github/schema.json"), "#{app_path}/vendor/graphql/schema/github.json"
 
     boot_rails
 
-    endpoint = Artemis::GraphQLEndpoint.lookup(:metaphysics)
+    endpoint = Artemis::GraphQLEndpoint.lookup(:github)
 
     assert endpoint.schema < GraphQL::Schema, "The schema does seem like a GraphQL::Schema object."
-    assert_equal "https://metaphysics-production.artsy.net", endpoint.url
+    assert_equal "https://api.github.com/graphql", endpoint.url
     assert_equal :curb,     endpoint.adapter
     assert_equal 5,         endpoint.timeout
     assert_equal 25,        endpoint.pool_size
@@ -61,14 +61,14 @@ class RailtieTest < ActiveSupport::TestCase
     File.open("#{app_path}/config/graphql.yml", "w") do |f|
       f.puts <<-YAML
         development:
-          metaphysics:
+          github:
             adapter: :test
       YAML
     end
 
     boot_rails
 
-    endpoint = Artemis::GraphQLEndpoint.lookup(:metaphysics)
+    endpoint = Artemis::GraphQLEndpoint.lookup(:github)
 
     assert_nil endpoint.url
     assert_not_nil endpoint.connection
@@ -77,44 +77,44 @@ class RailtieTest < ActiveSupport::TestCase
 
   test "test helper can load fixtures" do
     FileUtils.mkdir_p "#{app_path}/test/fixtures/graphql"
-    FileUtils.touch "#{app_path}/test/fixtures/graphql/artist.yml"
+    FileUtils.touch "#{app_path}/test/fixtures/graphql/user.yml"
 
-    File.open("#{app_path}/test/fixtures/graphql/artist.yml", "w") do |f|
+    File.open("#{app_path}/test/fixtures/graphql/user.yml", "w") do |f|
       f.puts <<-YAML
-        leonardo_da_vinci:
+        yuki24:
           data:
-            artist:
-              name: Leonardo da Vinci
+            user:
+              name: Yuki Nishijima
       YAML
     end
 
     require 'artemis/test_helper'
     boot_rails
 
-    actual = Class.new { include Artemis::TestHelper }.new.stub_graphql('any', :artist).send(:find_fixture_set)
+    actual = Class.new { include Artemis::TestHelper }.new.stub_graphql('any', :user).send(:find_fixture_set)
 
     expected = {
-      "leonardo_da_vinci" => {
+      "yuki24" => {
         "data" => {
-          "artist" => {
-            "name" => "Leonardo da Vinci",
+          "user" => {
+            "name" => "Yuki Nishijima",
           }
         }
       }
     }
 
-    assert_equal "artist", actual.name
+    assert_equal "user", actual.name
     assert_equal expected, actual.data
-    assert actual.path.end_with?("test/fixtures/graphql/artist.yml"),
+    assert actual.path.end_with?("test/fixtures/graphql/user.yml"),
            "Fixture path does not match:\n" \
-           "  Expected: #{app_path}/test/fixtures/graphql/artist.yml\n" \
+           "  Expected: #{app_path}/test/fixtures/graphql/user.yml\n" \
            "  Actual:   #{actual.path}"
   end
 
   test "booting fails when the config/graphql.yml is malformed" do
     File.open("#{app_path}/config/graphql.yml", "w") do |f|
       f.puts <<-YAML
-        development: metaphysics:
+        development: github:
       YAML
     end
 
@@ -129,51 +129,51 @@ class RailtieTest < ActiveSupport::TestCase
     end
 
     FileUtils.mkdir "#{app_path}/app/operations"
-    FileUtils.mkdir "#{app_path}/app/operations/metaphysics"
-    FileUtils.touch "#{app_path}/app/operations/metaphysics/query.graphql"
+    FileUtils.mkdir "#{app_path}/app/operations/github"
+    FileUtils.touch "#{app_path}/app/operations/github/query.graphql"
 
-    File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
+    File.open("#{app_path}/app/operations/github.rb", "w") do |f|
       f.puts <<-YAML
-        class Metaphysics < Artemis::Client
+        class Github < Artemis::Client
         end
       YAML
     end
 
     boot_rails
 
-    old_object_id = Metaphysics.object_id
+    old_object_id = Github.object_id
 
     # The touch call simulates a file change and the get simulates a page reload.
-    FileUtils.touch "#{app_path}/app/operations/metaphysics/query.graphql"
+    FileUtils.touch "#{app_path}/app/operations/github/query.graphql"
     get "/"
 
-    assert_not_equal old_object_id, Metaphysics.object_id
+    assert_not_equal old_object_id, Github.object_id
   end
 
   test "preload the *.graphql files when eager_load is true" do
     FileUtils.mkdir "#{app_path}/app/operations"
-    FileUtils.mkdir "#{app_path}/app/operations/metaphysics"
+    FileUtils.mkdir "#{app_path}/app/operations/github"
 
     File.open("#{app_path}/config/graphql.yml", "w") do |f|
       f.puts <<-YAML
         development:
-          metaphysics:
-            url: https://metaphysics-production.artsy.net
-            schema_path: spec/fixtures/metaphysics/schema.json
+          github:
+            url: https://api.github.com/graphql
+            schema_path: spec/fixtures/github/schema.json
       YAML
     end
 
-    File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
+    File.open("#{app_path}/app/operations/github.rb", "w") do |f|
       f.puts <<-YAML
-        class Metaphysics < Artemis::Client
+        class Github < Artemis::Client
         end
       YAML
     end
 
-    File.open("#{app_path}/app/operations/metaphysics/artist.graphql", "w") do |f|
+    File.open("#{app_path}/app/operations/github/user.graphql", "w") do |f|
       f.puts <<-GRAPHQL
-        query($id: String!) {
-          artist(id: $id) {
+        query($login: String!) {
+          user(login: $login) {
             name
           }
         }
@@ -191,8 +191,8 @@ class RailtieTest < ActiveSupport::TestCase
 
     boot_rails
 
-    assert defined?(Metaphysics),         "Constant Metaphysics was not loaded"
-    assert defined?(Metaphysics::Artist), "Constant Metaphysics::Artist was not loaded"
+    assert defined?(Github), "Constant Github was not loaded"
+    assert defined?(Github::User), "Constant Github::User was not loaded"
   end
 
   test "avoid crashing when eager_load is true but without config/graphql.yml" do

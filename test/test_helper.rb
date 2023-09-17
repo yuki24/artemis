@@ -26,5 +26,5 @@ rescue LoadError
 end
 
 Artemis::GraphQLEndpoint.suppress_warnings_on_schema_load = true
-Artemis::GraphQLEndpoint.register!(:metaphysics, adapter: :test, url: '', schema_path: 'spec/fixtures/metaphysics/schema.json')
-Artemis::GraphQLEndpoint.lookup(:metaphysics).load_schema!
+Artemis::GraphQLEndpoint.register!(:github, adapter: :test, url: '', schema_path: 'spec/fixtures/github/schema.json')
+Artemis::GraphQLEndpoint.lookup(:github).load_schema!

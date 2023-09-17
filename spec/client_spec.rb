@@ -5,119 +5,128 @@ describe GraphQL::Client do
 
   describe ".lookup_graphql_file" do
     it "returns the path to the matching graph file" do
-      expect(Metaphysics.resolve_graphql_file_path("artist")).to eq("#{PROJECT_DIR}/spec/fixtures/metaphysics/artist.graphql")
+      expect(Github.resolve_graphql_file_path("user")).to eq("#{PROJECT_DIR}/spec/fixtures/github/user.graphql")
     end
 
     it "returns nil if the file is missing" do
-      expect(Metaphysics.resolve_graphql_file_path("does_not_exist")).to be_nil
+      expect(Github.resolve_graphql_file_path("does_not_exist")).to be_nil
     end
   end
 
   describe ".graphql_file_paths" do
     it "returns a list of GraphQL files (*.graphql) in the query_paths" do
-      Metaphysics.instance_variable_set :@graphql_file_paths, nil
-      original = Metaphysics.query_paths
+      Github.instance_variable_set :@graphql_file_paths, nil
+      original = Github.query_paths
 
-      Metaphysics.query_paths = [File.join(PROJECT_DIR, 'tmp')]
+      Github.query_paths = [File.join(PROJECT_DIR, 'tmp')]
 
       begin
-        FileUtils.mkdir "./tmp/metaphysics" if !Dir.exist?("./tmp/metaphysics")
+        FileUtils.mkdir "./tmp/github" if !Dir.exist?("./tmp/github")
 
-        with_files "./tmp/metaphysics/text.txt", "./tmp/metaphysics/sale.graphql" do
-          expect(Metaphysics.graphql_file_paths).to eq(["#{PROJECT_DIR}/tmp/metaphysics/sale.graphql"])
+        with_files "./tmp/github/text.txt", "./tmp/github/sale.graphql" do
+          expect(Github.graphql_file_paths).to eq(["#{PROJECT_DIR}/tmp/github/sale.graphql"])
         end
       ensure
-        Metaphysics.instance_variable_set :@graphql_file_paths, nil
-        Metaphysics.query_paths = original
+        Github.instance_variable_set :@graphql_file_paths, nil
+        Github.query_paths = original
       end
     end
   end
 
   it "can make a GraphQL request without variables" do
-    Metaphysics.artwork
+    Github.user
 
     request = requests[0]
 
-    expect(request.operation_name).to eq('Metaphysics__Artwork')
+    expect(request.operation_name).to eq('Github__User')
     expect(request.variables).to be_empty
     expect(request.context).to eq({})
     expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
-      query Metaphysics__Artwork {
-        artwork(id: "yayoi-kusama-pumpkin-yellow-and-black") {
-          title
-          artist {
-            name
-          }
+      query Github__User {
+        user(login: "yuki24") {
+          id
+          name
         }
       }
     GRAPHQL
   end
 
   it "can make a GraphQL request with variables" do
-    Metaphysics.artist(id: "yayoi-kusama")
+    Github.repository(owner: "yuki24", name: "artemis")
 
     request = requests[0]
 
-    expect(request.operation_name).to eq('Metaphysics__Artist')
-    expect(request.variables).to eq('id' => 'yayoi-kusama')
+    expect(request.operation_name).to eq('Github__Repository')
+    expect(request.variables).to eq("owner" => "yuki24", "name" => "artemis")
     expect(request.context).to eq({})
     expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
-      query Metaphysics__Artist($id: String!) {
-        artist(id: $id) {
+      query Github__Repository($owner: String!, $name: String!) {
+        repository(owner: $owner, name: $name) {
           name
-          bio
-          birthday
+          nameWithOwner
         }
       }
     GRAPHQL
   end
 
   it "can make a GraphQL request with a query that contains fragments" do
-    Metaphysics.artists(size: 10)
+    Github.user_repositories(login: "yuki24", size: 10)
 
     request = requests[0]
 
-    expect(request.operation_name).to eq('Metaphysics__Artists')
-    expect(request.variables).to eq('size' => 10)
+    expect(request.operation_name).to eq('Github__UserRepositories')
+    expect(request.variables).to eq('login' => 'yuki24', 'size' => 10)
     expect(request.context).to eq({})
     expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
-      query Metaphysics__Artists($size: Int!) {
-        artists(size: $size) {
+      query Github__UserRepositories($login: String!, $size: Int!) {
+        user(login: $login) {
+          id
           name
-          bio
-          birthday
-          ...Metaphysics__ArtistFields
+          repositories(first: $size) {
+            nodes {
+              name
+              description
+              ...Github__RepositoryFields
+            }
+          }
         }
       }
 
-      fragment Metaphysics__ArtistFields on Artist {
-        hometown
-        deathday
-      }
-    GRAPHQL
-  end
-
-  it "can make a GraphQL request with #execute" do
-    Metaphysics.execute(:artist, id: "yayoi-kusama")
-
-    request = requests[0]
-
-    expect(request.operation_name).to eq('Metaphysics__Artist')
-    expect(request.variables).to eq('id' => 'yayoi-kusama')
-    expect(request.context).to eq({})
-    expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
-      query Metaphysics__Artist($id: String!) {
-        artist(id: $id) {
-          name
-          bio
-          birthday
+      fragment Github__RepositoryFields on Repository {
+        name
+        nameWithOwner
+        url
+        updatedAt
+        languages(first: 1) {
+          nodes {
+            name
+            color
+          }
         }
       }
     GRAPHQL
   end
 
   it "can make a GraphQL request with #execute" do
-    expect { Metaphysics.execute(:does_not_exist) }
+    Github.execute(:repository, owner: "yuki24", name: "artemis")
+
+    request = requests[0]
+
+    expect(request.operation_name).to eq('Github__Repository')
+    expect(request.variables).to eq("owner" => "yuki24", "name" => "artemis")
+    expect(request.context).to eq({})
+    expect(request.document.to_query_string).to eq(<<~GRAPHQL.strip)
+      query Github__Repository($owner: String!, $name: String!) {
+        repository(owner: $owner, name: $name) {
+          name
+          nameWithOwner
+        }
+      }
+    GRAPHQL
+  end
+
+  it "raises an error when the specified graphql file does not exist" do
+    expect { Github.execute(:does_not_exist) }
       .to raise_error(Artemis::GraphQLFileNotFound)
       .with_message(/Query does_not_exist\.graphql not found/)
   end
@@ -125,17 +134,17 @@ describe GraphQL::Client do
   it "assigns context to the request when provided as an argument" do
     context = { headers: { Authorization: 'bearer ...' } }
 
-    Metaphysics.artist(id: "yayoi-kusama", context: context)
+    Github.repository(owner: "yuki24", name: "artemis", context: context)
 
     expect(requests[0].context).to eq(context)
   end
 
   it "can create a client that always assigns the provided context to the request" do
     context   = { headers: { Authorization: 'bearer ...' } }
-    client    = Metaphysics.with_context(context)
+    client    = Github.with_context(context)
 
-    client.artist(id: "yayoi-kusama")
-    client.artist(id: "yayoi-kusama")
+    client.repository(owner: "yuki24", name: "artemis")
+    client.repository(owner: "yuki24", name: "artemis")
 
     expect(requests[0].context).to eq(context)
     expect(requests[1].context).to eq(context)
@@ -143,21 +152,21 @@ describe GraphQL::Client do
 
   it "assigns the default context to a GraphQL request if present" do
     begin
-      Metaphysics.default_context = { headers: { Authorization: 'bearer ...' } }
-      Metaphysics.artist(id: "yayoi-kusama")
+      Github.default_context = { headers: { Authorization: 'bearer ...' } }
+      Github.repository(owner: "yuki24", name: "artemis")
 
       expect(requests[0].context).to eq(headers: { Authorization: 'bearer ...' })
     ensure
-      Metaphysics.default_context = { }
+      Github.default_context = { }
     end
   end
 
   it "can make a GraphQL request with all of .default_context, with_context(...) and the :context argument" do
     begin
-      Metaphysics.default_context = { headers: { 'User-Agent': 'Artemis', 'X-key': 'value', Authorization: 'token ...' } }
-      Metaphysics
+      Github.default_context = { headers: { 'User-Agent': 'Artemis', 'X-key': 'value', Authorization: 'token ...' } }
+      Github
           .with_context({ headers: { 'X-key': 'overridden' } })
-          .artist(id: "yayoi-kusama", context: { headers: { Authorization: 'bearer ...' } })
+          .repository(owner: "yuki24", name: "artemis", context: { headers: { Authorization: 'bearer ...' } })
 
       expect(requests[0].context).to eq(
         headers: {
@@ -167,41 +176,38 @@ describe GraphQL::Client do
         }
       )
     ensure
-      Metaphysics.default_context = { }
+      Github.default_context = { }
     end
   end
 
   it "can batch multiple requests using Multiplex" do
-    responses = Metaphysics.multiplex do |queue|
-      queue.artist(id: "yayoi-kusama", context: { headers: { Authorization: 'bearer ...' } })
-      queue.artwork
+    Github.multiplex do |queue|
+      queue.repository(owner: "yuki24", name: "artemis", context: { headers: { Authorization: 'bearer ...' } })
+      queue.user
     end
 
-    artist_query, artwork_query = requests[0].queries
+    repository_query, user_query = requests[0].queries
 
-    expect(artist_query[:operationName]).to eq('Metaphysics__Artist')
-    expect(artist_query[:variables]).to eq('id' => 'yayoi-kusama')
-    expect(artist_query[:context]).to eq({ headers: { Authorization: 'bearer ...' } })
-    expect(artist_query[:query]).to eq(<<~GRAPHQL.strip)
-      query Metaphysics__Artist($id: String!) {
-        artist(id: $id) {
+    expect(repository_query[:operationName]).to eq('Github__Repository')
+    expect(repository_query[:variables]).to eq("owner" => "yuki24", "name" => "artemis")
+    expect(repository_query[:context]).to eq({ headers: { Authorization: 'bearer ...' } })
+    expect(repository_query[:query]).to eq(<<~GRAPHQL.strip)
+      query Github__Repository($owner: String!, $name: String!) {
+        repository(owner: $owner, name: $name) {
           name
-          bio
-          birthday
+          nameWithOwner
         }
       }
     GRAPHQL
 
-    expect(artwork_query[:operationName]).to eq('Metaphysics__Artwork')
-    expect(artwork_query[:variables]).to be_empty
-    expect(artwork_query[:context]).to eq({})
-    expect(artwork_query[:query]).to eq(<<~GRAPHQL.strip)
-      query Metaphysics__Artwork {
-        artwork(id: "yayoi-kusama-pumpkin-yellow-and-black") {
-          title
-          artist {
-            name
-          }
+    expect(user_query[:operationName]).to eq('Github__User')
+    expect(user_query[:variables]).to be_empty
+    expect(user_query[:context]).to eq({})
+    expect(user_query[:query]).to eq(<<~GRAPHQL.strip)
+      query Github__User {
+        user(login: "yuki24") {
+          id
+          name
         }
       }
     GRAPHQL

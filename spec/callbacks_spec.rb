@@ -3,7 +3,7 @@ require 'active_support/core_ext/module/attribute_accessors'
 describe "#{GraphQL::Client} Callbacks" do
   Client = Class.new(Artemis::Client) do
     def self.name
-      'Metaphysics'
+      'Github'
     end
 
     mattr_accessor :before_callback, :after_callback
@@ -35,20 +35,20 @@ describe "#{GraphQL::Client} Callbacks" do
 
   describe ".before_execute" do
     it "gets invoked before executing" do
-      Client.artist(id: 'yayoi-kusama', context: { user_id: 'yuki24' })
+      Client.repository(owner: "yuki24", name: "artemis", context: { user_id: 'yuki24' })
 
       document, operation_name, variables, context = Client.before_callback
 
-      expect(document).to eq(Client::Artist.document)
-      expect(operation_name).to eq('Client__Artist')
-      expect(variables).to eq('id' => 'yayoi-kusama')
+      expect(document).to eq(Client::Repository.document)
+      expect(operation_name).to eq('Client__Repository')
+      expect(variables).to eq("name" => "artemis", "owner" => "yuki24")
       expect(context).to eq(user_id: 'yuki24')
     end
   end
 
   describe ".after_execute" do
     it "gets invoked after executing" do
-      Client.artwork
+      Client.user
 
       data, errors, extensions = Client.after_callback
 

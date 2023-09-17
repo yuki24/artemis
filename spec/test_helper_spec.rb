@@ -14,79 +14,79 @@ describe Artemis::TestHelper do
   end
 
   it "can mock a GraphQL request" do
-    stub_graphql(Metaphysics, :artist).to_return(:yayoi_kusama)
+    stub_graphql(Github, :repository).to_return(:yuki24_artemis)
 
-    response = Metaphysics.artist(id: "yayoi-kusama")
+    response = Github.repository(owner: "yuki24", name: "artemis")
 
-    expect(response.data.artist.name).to eq("Yayoi Kusama")
-    expect(response.data.artist.birthday).to eq("1929/03/22")
+    expect(response.data.repository.name).to eq("artemis")
+    expect(response.data.repository.name_with_owner).to eq("yuki24/artemis")
   end
 
   it "can mock a GraphQL request with an ERB-enabled fixture" do
-    stub_graphql(Metaphysics, :artist).to_return(:yuki)
+    stub_graphql(Github, :repository).to_return(:yuki24_rambulance)
 
-    response = Metaphysics.artist(id: "yuki")
+    response = Github.repository(owner: "yuki24", name: "rambulance")
 
-    expect(response.data.artist.birthday).to eq("#{Date.today.year}/01/01")
+    expect(response.data.repository.name_with_owner).to eq("yuki24/rambulance")
   end
 
   it "can mock a GraphQL request with variables using exact match" do
-    stub_graphql(Metaphysics, :artist, id: "yayoi-kusama").to_return(:yayoi_kusama)
-    stub_graphql(Metaphysics, :artist, id: "leonardo-da-vinci").to_return(:leonardo_da_vinci)
+    stub_graphql(Github, :repository, owner: "yuki24", name: "artemis").to_return(:yuki24_artemis)
+    stub_graphql(Github, :repository, owner: "yuki24", name: "rambulance").to_return(:yuki24_rambulance)
 
-    yayoi_kusama = Metaphysics.artist(id: "yayoi-kusama")
-    da_vinci     = Metaphysics.artist(id: "leonardo-da-vinci")
+    yuki24_artemis    = Github.repository(owner: "yuki24", name: "artemis")
+    yuki24_rambulance = Github.repository(owner: "yuki24", name: "rambulance")
 
-    expect(yayoi_kusama.data.artist.name).to eq("Yayoi Kusama")
-    expect(da_vinci.data.artist.name).to eq("Leonardo da Vinci")
+    expect(yuki24_artemis.data.repository.name).to eq("artemis")
+    expect(yuki24_rambulance.data.repository.name).to eq("rambulance")
   end
 
   it "can mock a GraphQL request with a JSON file" do
-    stub_graphql(Metaphysics, :artwork).to_return(:the_last_supper)
+    stub_graphql(Github, :user).to_return(:yuki24)
 
-    response = Metaphysics.artwork(id: "leonardo-da-vinci-the-last-supper")
+    response = Github.user
 
-    expect(response.data.artwork.title).to eq("The Last Supper")
-    expect(response.data.artwork.artist.name).to eq("Leonardo da Vinci")
+    expect(response.data.user.id).to eq("foobar")
+    expect(response.data.user.name).to eq("Yuki Nishijima")
   end
 
   it "can mock a GraphQL request for a query that has a query name"
 
   it "raises an exception if the specified fixture file does not exist" do
-    expect { stub_graphql(Metaphysics, :does_not_exist).to_return(:data) }
+    expect { stub_graphql(Github, :does_not_exist).to_return(:data) }
       .to raise_error(Artemis::FixtureNotFound, %r|does_not_exist.{yml,json}|)
   end
 
   it "raises an exception if the specified fixture file exists but fixture key does not exist" do
-    expect { stub_graphql(Metaphysics, :artist).to_return(:does_not_exist) }
-      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/metaphysics/artist.yml|)
+    expect { stub_graphql(Github, :repository).to_return(:does_not_exist) }
+      .to raise_error(Artemis::FixtureNotFound, %r|spec/fixtures/responses/github/repository.yml|)
   end
 
-  it "picks up the fixture for the given different service if multiple services have the exact same fixture" do
-    stub_graphql(Metaphysics, :artist).to_return(:yoshiki)
+  it "picks up the fixture for the given service if multiple services have the exact same fixture" do
+    stub_graphql(Github, :repository).to_return(:yoshiki)
 
-    yoshiki = Metaphysics.artist(id: "artist-yoshiki")
+    yoshiki = Github.repository(owner: "ruby", name: "did_you_mean")
 
-    expect(yoshiki.data.artist.name).to eq("Artist Yoshiki")
+    expect(yoshiki.data.repository.name).to eq("did_you_mean")
   end
 
   it "can mock separate GraphQL queries with the same arguments" do
-    stub_graphql("SpotifyClient", :artist, id: "yoshiki").to_return(:yoshiki)
-    stub_graphql(Metaphysics, :artist, id: "yoshiki").to_return(:yoshiki)
+    stub_graphql("SpotifyClient", :repository, id: "yoshiki").to_return(:yoshiki)
+    stub_graphql(Github, :repository, id: "yoshiki").to_return(:yoshiki)
 
-    yoshiki = Metaphysics.artist(id: "yoshiki")
+    yoshiki = Github.repository(id: "yoshiki")
     
-    expect(yoshiki.data.artist.name).to eq("Artist Yoshiki")
+    expect(yoshiki.data.repository.name).to eq("did_you_mean")
   end
 
   it "allows to get raw fixture data as a Hash" do
-    data = stub_graphql("SpotifyClient", :artist).get(:yoshiki)
+    data = stub_graphql("SpotifyClient", :repository).get(:yoshiki)
 
     expect(data).to eq({
       "data" => {
-        "artist" => {
-          "id" => "pianist-yoshiki",
-          "name" => "Pianist Yoshiki"
+        "repository" => {
+          "name" => "did_you_mean",
+          "nameWithOwner" => "ruby/did_you_mean",
         }
       }
     })

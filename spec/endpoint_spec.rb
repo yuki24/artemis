@@ -1,4 +1,8 @@
 describe Artemis::GraphQLEndpoint do
+  after do
+    Artemis::GraphQLEndpoint.const_get(:ENDPOINT_INSTANCES).delete("gitlab")
+  end
+
   describe ".lookup" do
     it "raises an exception when the service is missing" do
       expect { Artemis::GraphQLEndpoint.lookup(:does_not_exit) }.to raise_error(Artemis::EndpointNotFound)
@@ -6,18 +10,18 @@ describe Artemis::GraphQLEndpoint do
   end
 
   it "can register an endpoint" do
-    endpoint = Artemis::GraphQLEndpoint.register!(:github, url: "https://api.github.com/graphql")
+    endpoint = Artemis::GraphQLEndpoint.register!(:gitlab, url: "https://api.gitlab.com/graphql")
 
-    expect(endpoint.url).to eq("https://api.github.com/graphql")
+    expect(endpoint.url).to eq("https://api.gitlab.com/graphql")
     expect(endpoint.connection).to be_instance_of(Artemis::Adapters::NetHttpAdapter)
   end
 
   it "can look up a registered endpoint" do
-    Artemis::GraphQLEndpoint.register!(:github, url: "https://api.github.com/graphql")
+    Artemis::GraphQLEndpoint.register!(:gitlab, url: "https://api.gitlab.com/graphql")
 
-    endpoint = Artemis::GraphQLEndpoint.lookup(:github)
+    endpoint = Artemis::GraphQLEndpoint.lookup(:gitlab)
 
-    expect(endpoint.url).to eq("https://api.github.com/graphql")
+    expect(endpoint.url).to eq("https://api.gitlab.com/graphql")
     expect(endpoint.connection).to be_instance_of(Artemis::Adapters::NetHttpAdapter) # Not a fan of this test but for now
 
     # FIXME: This #schema method makes a network call.
@@ -32,9 +36,9 @@ describe Artemis::GraphQLEndpoint do
       pool_size: 25,
     }
 
-    endpoint = Artemis::GraphQLEndpoint.register!(:github, url: "https://api.github.com/graphql", **options)
+    endpoint = Artemis::GraphQLEndpoint.register!(:gitlab, url: "https://api.gitlab.com/graphql", **options)
 
-    expect(endpoint.url).to eq("https://api.github.com/graphql")
+    expect(endpoint.url).to eq("https://api.gitlab.com/graphql")
     expect(endpoint.timeout).to eq(10)
     expect(endpoint.pool_size).to eq(25)
     expect(endpoint.connection).to be_instance_of(Artemis::Adapters::TestAdapter) # Not a fan of this test but for now

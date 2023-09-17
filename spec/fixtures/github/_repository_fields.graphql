@@ -1,0 +1,12 @@
+fragment on Repository {
+  name
+  nameWithOwner
+  url
+  updatedAt
+  languages(first: 1) {
+    nodes {
+      name
+      color
+    }
+  }
+}

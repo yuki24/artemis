@@ -1,4 +1,0 @@
-fragment on Artist {
-  hometown
-  deathday
-}

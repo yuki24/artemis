@@ -13,10 +13,10 @@ require 'pry-byebug' if RUBY_ENGINE == 'ruby'
 # tested, but we don't have any test setup for that yet.
 Artemis::Client.query_paths = [File.join(__dir__, 'fixtures')]
 Artemis::GraphQLEndpoint.suppress_warnings_on_schema_load = true
-Artemis::GraphQLEndpoint.register!(:metaphysics, adapter: :test, url: '', schema_path: 'spec/fixtures/metaphysics/schema.json')
-Artemis::GraphQLEndpoint.lookup(:metaphysics).load_schema!
+Artemis::GraphQLEndpoint.register!(:github, adapter: :test, url: '', schema_path: 'spec/fixtures/github/schema.json')
+Artemis::GraphQLEndpoint.lookup(:github).load_schema!
 
-require 'fixtures/metaphysics'
+require 'fixtures/github'
 
 PROJECT_DIR = FileUtils.pwd
 

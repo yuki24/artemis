@@ -1,0 +1,6 @@
+query {
+  user(login: "yuki24") {
+    id
+    name
+  }
+}

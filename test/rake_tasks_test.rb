@@ -13,9 +13,9 @@ module ApplicationTests
         FileUtils.rm_rf "#{app_path}/config/environments"
 
         FileUtils.mkdir "#{app_path}/app/operations"
-        File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
+        File.open("#{app_path}/app/operations/github.rb", "w") do |f|
           f.puts <<-YAML
-            class Metaphysics < Artemis::Client
+            class Github < Artemis::Client
             end
           YAML
         end
@@ -29,23 +29,23 @@ module ApplicationTests
         File.open("#{app_path}/config/graphql.yml", "w") do |f|
           f.puts <<-YAML
             development:
-              metaphysics:
+              github:
                 url: http://localhost:8000
           YAML
         end
 
         assert_equal <<~MESSAGE, run_rake("graphql:schema:update")
-          saved schema to: vendor/graphql/schema/metaphysics.json
+          saved schema to: vendor/graphql/schema/github.json
         MESSAGE
 
-        assert File.exist?("#{app_path}/vendor/graphql/schema/metaphysics.json"), "did not create vendor/graphql/schema/metaphysics.json"
+        assert File.exist?("#{app_path}/vendor/graphql/schema/github.json"), "did not create vendor/graphql/schema/github.json"
       end
 
       test "`rake graphql:schema:update` respects the schema_path config in config/graphql.yml" do
         File.open("#{app_path}/config/graphql.yml", "w") do |f|
           f.puts <<-YAML
             development:
-              metaphysics:
+              github:
                 url: http://localhost:8000
                 schema_path: tmp/schema.json
           YAML
@@ -69,7 +69,7 @@ module ApplicationTests
         File.open("#{app_path}/config/graphql.yml", "w") do |f|
           f.puts <<-YAML
             development:
-              metaphysics:
+              github:
                 url: http://localhost:8000
               github:
                 url: http://localhost:8000
@@ -87,18 +87,18 @@ module ApplicationTests
         File.open("#{app_path}/config/graphql.yml", "w") do |f|
           f.puts <<-YAML
             development:
-              metaphysics:
+              github:
                 url: http://localhost:8000
           YAML
         end
 
         assert_equal <<~MESSAGE, run_rake("graphql:schema:update AUTHORIZATION='token token'")
-          saved schema to: vendor/graphql/schema/metaphysics.json
+          saved schema to: vendor/graphql/schema/github.json
         MESSAGE
 
-        assert File.exist?("#{app_path}/vendor/graphql/schema/metaphysics.json"), "did not create vendor/graphql/schema/metaphysics.json"
+        assert File.exist?("#{app_path}/vendor/graphql/schema/github.json"), "did not create vendor/graphql/schema/github.json"
 
-        body = open("#{app_path}/vendor/graphql/schema/metaphysics.json").read
+        body = open("#{app_path}/vendor/graphql/schema/github.json").read
         json = JSON.parse(body, symbolize_names: true)
 
         assert_equal 'token token', json[:data][:headers][:AUTHORIZATION]
@@ -106,9 +106,9 @@ module ApplicationTests
 
       # test "`rake graphql:schema:update` fails when there are two or more services but SERVICE_NAME is not specified" do
       #   FileUtils.mkdir "#{app_path}/app/operations"
-      #   File.open("#{app_path}/app/operations/metaphysics.rb", "w") do |f|
+      #   File.open("#{app_path}/app/operations/github.rb", "w") do |f|
       #     f.puts <<-YAML
-      #       class Metaphysics < Artemis::Client
+      #       class Github < Artemis::Client
       #       end
       #     YAML
       #   end
@@ -116,8 +116,8 @@ module ApplicationTests
       #   File.open("#{app_path}/config/graphql.yml", "w") do |f|
       #     f.puts <<-YAML
       #       development:
-      #         metaphysics:
-      #           url: https://metaphysics-production.artsy.net
+      #         github:
+      #           url: https://api.github.com/graphql
       #         github:
       #           url: https://api.github.com/graphql
       #     YAML
@@ -126,10 +126,10 @@ module ApplicationTests
       #   run_rake("graphql:schema:update")
       #
       #   assert_equal <<~MESSAGE, run_rake("graphql:schema:update")
-      #     Please specify a service name (available services: metaphysics, github): rake graphql:schema:update SERVICE=service
+      #     Please specify a service name (available services: github, github): rake graphql:schema:update SERVICE=service
       #   MESSAGE
       #
-      #   assert_not File.exist?("#{app_path}/vendor/graphql/schema/metaphysics.json"), "found vendor/graphql/schema/metaphysics.json when it should not"
+      #   assert_not File.exist?("#{app_path}/vendor/graphql/schema/github.json"), "found vendor/graphql/schema/github.json when it should not"
       # end
 
       private

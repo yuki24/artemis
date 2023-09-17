@@ -5,22 +5,22 @@ require 'generators/artemis/install/install_generator'
 
 class InstallGeneratorTest < Rails::Generators::TestCase
   tests Artemis::InstallGenerator
-  arguments %w(metaphysics https://metaphysics-production.artsy.net)
+  arguments %w(github https://api.github.com/graphql)
   destination File.join(Dir.pwd, "tmp")
   setup :prepare_destination
 
   test "GraphQL client set up is done" do
     stub_any_instance generator_class, instance: generator do |instance|
       mock = Minitest::Mock.new
-      mock.expect(:call, nil, ["graphql:schema:update SERVICE=metaphysics"])
+      mock.expect(:call, nil, ["graphql:schema:update SERVICE=github"])
 
       instance.stub(:rake, mock) { run_generator }
 
       assert_mock mock
     end
 
-    assert_file "app/operations/metaphysics.rb" do |client|
-      assert_match(/class Metaphysics < Artemis::Client/, client)
+    assert_file "app/operations/github.rb" do |client|
+      assert_match(/class Github < Artemis::Client/, client)
     end
 
     assert_file "config/graphql.yml" do |yaml|
@@ -29,19 +29,19 @@ class InstallGeneratorTest < Rails::Generators::TestCase
       assert_match 'pool_size: 25', yaml
       assert_match(<<~YAML.strip, yaml)
         development:
-          metaphysics:
+          github:
             <<: *default
-            url: https://metaphysics-production.artsy.net
+            url: https://api.github.com/graphql
 
         test:
-          metaphysics:
+          github:
             <<: *default
-            url: https://metaphysics-production.artsy.net
+            url: https://api.github.com/graphql
 
         production:
-          metaphysics:
+          github:
             <<: *default
-            url: https://metaphysics-production.artsy.net
+            url: https://api.github.com/graphql
       YAML
     end
   end
@@ -51,9 +51,9 @@ class InstallGeneratorTest < Rails::Generators::TestCase
     File.open("#{destination_root}/config/graphql.yml", "w") do |f|
       f.puts <<~YAML
         development:
-          github:
+          gitlab:
             <<: *default
-            url: https://api.github.com/graphql
+            url: https://api.gitlab.com/graphql
 
         test:
 
@@ -68,27 +68,27 @@ class InstallGeneratorTest < Rails::Generators::TestCase
     assert_file "config/graphql.yml" do |yaml|
       assert_match(<<~YAML.strip, yaml)
         development:
-          metaphysics:
+          github:
             <<: *default
-            url: https://metaphysics-production.artsy.net
+            url: https://api.github.com/graphql
 
+          gitlab:
+            <<: *default
+            url: https://api.gitlab.com/graphql
+      YAML
+
+      assert_match(<<~YAML.strip, yaml)
+        test:
           github:
             <<: *default
             url: https://api.github.com/graphql
       YAML
 
       assert_match(<<~YAML.strip, yaml)
-        test:
-          metaphysics:
-            <<: *default
-            url: https://metaphysics-production.artsy.net
-      YAML
-
-      assert_match(<<~YAML.strip, yaml)
         production:
-          metaphysics:
+          github:
             <<: *default
-            url: https://metaphysics-production.artsy.net
+            url: https://api.github.com/graphql
       YAML
     end
   end
@@ -96,7 +96,7 @@ class InstallGeneratorTest < Rails::Generators::TestCase
   test "GraphQL client set up is done with authorization" do
     stub_any_instance generator_class, instance: generator(default_arguments, { authorization: "token token" }) do |instance|
       mock = Minitest::Mock.new
-      mock.expect(:call, nil, ["graphql:schema:update SERVICE=metaphysics AUTHORIZATION='token token'"])
+      mock.expect(:call, nil, ["graphql:schema:update SERVICE=github AUTHORIZATION='token token'"])
 
       instance.stub(:rake, mock) { run_generator }
 

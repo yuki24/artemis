@@ -3,11 +3,11 @@ require 'rails/generators/test_case'
 
 require 'generators/artemis/mutation/mutation_generator'
 
-require_relative '../../spec/fixtures/metaphysics'
+require_relative '../../spec/fixtures/github'
 
 class MutationGeneratorTest < Rails::Generators::TestCase
   tests Artemis::MutationGenerator
-  arguments %w(saveArtwork)
+  arguments %w(addStar)
   destination File.join(Dir.pwd, "tmp")
   setup :prepare_destination
 
@@ -18,10 +18,10 @@ class MutationGeneratorTest < Rails::Generators::TestCase
   test "A new GraphQL file is created" do
     run_generator
 
-    assert_file "app/operations/metaphysics/save_artwork.graphql" do |graphql|
+    assert_file "app/operations/github/add_star.graphql" do |graphql|
       assert_match <<~GRAPHQL.strip, graphql
-        mutation($input: SaveArtworkInput!) {
-          saveArtwork(input: $input) {
+        mutation($input: AddStarInput!) {
+          addStar(input: $input) {
             # Add fields here...
           }
         }
@@ -30,12 +30,12 @@ class MutationGeneratorTest < Rails::Generators::TestCase
   end
 
   test "A new GraphQL file is created with the name specified" do
-    run_generator %w(saveArtwork save_artwork_on_top_page)
+    run_generator %w(addStar add_star_2)
 
-    assert_file "app/operations/metaphysics/save_artwork_on_top_page.graphql" do |graphql|
+    assert_file "app/operations/github/add_star_2.graphql" do |graphql|
       assert_match <<~GRAPHQL.strip, graphql
-        mutation($input: SaveArtworkInput!) {
-          saveArtwork(input: $input) {
+        mutation($input: AddStarInput!) {
+          addStar(input: $input) {
             # Add fields here...
           }
         }
@@ -47,25 +47,25 @@ class MutationGeneratorTest < Rails::Generators::TestCase
     Artemis::GraphQLEndpoint.register!(:fake_service, url: '')
 
     exception = assert_raises RuntimeError do
-      run_generator %w(saveArtwork save_artwork_on_top_page)
+      run_generator %w(addStar add_star_2)
     end
 
     assert_match <<~MESSAGE.strip, exception.message
-      Please specify a service name (available services: metaphysics, fake_service):
+      Please specify a service name (available services: github, fake_service):
 
-        rails g artemis:mutation saveArtwork save_artwork_on_top_page --service SERVICE
+        rails g artemis:mutation addStar add_star_2 --service SERVICE
     MESSAGE
   end
 
   test "A new GraphQL file is created with the name specified for the service" do
     Artemis::GraphQLEndpoint.register!(:fake_service, url: '')
 
-    run_generator %w(saveArtwork save_artwork_on_top_page --service Metaphysics)
+    run_generator %w(addStar add_star_2 --service Github)
 
-    assert_file "app/operations/metaphysics/save_artwork_on_top_page.graphql" do |graphql|
+    assert_file "app/operations/github/add_star_2.graphql" do |graphql|
       assert_match <<~GRAPHQL.strip, graphql
-        mutation($input: SaveArtworkInput!) {
-          saveArtwork(input: $input) {
+        mutation($input: AddStarInput!) {
+          addStar(input: $input) {
             # Add fields here...
           }
         }

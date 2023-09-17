@@ -1,0 +1,13 @@
+query($login: String!, $size: Int!) {
+  user(login: $login) {
+    id
+    name
+    repositories(first: $size) {
+      nodes {
+        name
+        description
+        ...Github::RepositoryFields
+      }
+    }
+  }
+}
