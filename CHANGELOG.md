@@ -1,12 +1,14 @@
-## v0.9.0
+## [v0.9.0](https://github.com/yuki24/artemis/tree/v0.9.0)
+
+_<sup>released at 2023-09-18 01:08:34 UTC</sup>_
 
 #### New Features
 
-- Rails 7.1.0.beta1 is now officially supported
+- Rails 7.1.0.beta1 is now officially supported ([<tt>f25ba29</tt>](https://github.com/yuki24/artemis/commit/f25ba296f15b26ffba7e4ec0f5b4cbeb061c97a1))
 
 #### Fixes
 
-- Fixes an issue where `graphql` gem `2.1.0` may not work with `graphql-client` (`b144ee2f`)
+- Fixes an issue where `graphql` gem `2.1.0` may not work with `graphql-client` ([<tt>b144ee2</tt>](https://github.com/yuki24/artemis/commit/b144ee2fbca2c23b4aaed8236f6fc07f65d8239d))
 
 ## [v0.8.0](https://github.com/yuki24/artemis/tree/v0.8.0)
 
@@ -39,7 +41,6 @@ _<sup>released at 2021-09-03 04:17:55 UTC</sup>_
 
 #### Fixes
 
-- ~~Generate fixture YAML files on `rails g artemis:query queryName` ([#78](https://github.com/yuki24/artemis/pull/78))~~ Removed due to a bug for now.
 - Address warnings from Ruby 2.7 ([<tt>408adcb</tt>](https://github.com/yuki24/artemis/commit/408adcb3f39912f7afb7b3690a52f1d593662b7b))
 - Avoid crashing when config/graphql.yml does not exist ([@dlackty](https://github.com/dlackty), [#76](https://github.com/yuki24/artemis/pull/76))
 
@@ -107,5 +108,5 @@ _<sup>released at 2018-10-30 02:09:59 UTC</sup>_
 
 _<sup>released at 2018-10-16 20:57:51 UTC</sup>_
 
-First release of Artemis! <g-emoji class="g-emoji" alias="tada" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f389.png">&#127881;</g-emoji>
+First release of Artemis! 🎉
 
