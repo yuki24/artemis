@@ -1,3 +1,13 @@
+## v0.9.0
+
+#### New Features
+
+- Rails 7.1.0.beta1 is now officially supported
+
+#### Fixes
+
+- Fixes an issue where `graphql` gem `2.1.0` may not work with `graphql-client` (`b144ee2f`)
+
 ## [v0.8.0](https://github.com/yuki24/artemis/tree/v0.8.0)
 
 _<sup>released at 2023-01-05 05:29:37 UTC</sup>_
