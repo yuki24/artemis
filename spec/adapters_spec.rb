@@ -2,6 +2,13 @@ require 'json'
 require 'rack'
 require 'webrick'
 
+RACK_SERVER = begin
+                require 'rackup/handler/webrick'
+                Rackup::Handler::WEBrick
+              rescue LoadError
+                Rack::Handler::WEBrick
+              end
+
 describe 'Adapters' do
   FakeServer = ->(env) {
     case env['PATH_INFO']
@@ -61,7 +68,7 @@ describe 'Adapters' do
     Artemis::Adapters::AbstractAdapter.send(:attr_writer, :uri, :timeout)
 
     @server_thread = Thread.new do
-      Rack::Handler::WEBrick.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
+      RACK_SERVER.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
     end
 
     loop do
@@ -75,7 +82,7 @@ describe 'Adapters' do
   end
 
   after :all do
-    Rack::Handler::WEBrick.shutdown
+    RACK_SERVER.shutdown
     @server_thread.terminate
   end
 

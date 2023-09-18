@@ -117,8 +117,15 @@ FakeServer = ->(env) {
   [200, {}, [body]]
 }
 
+RACK_SERVER = begin
+                require 'rackup/handler/webrick'
+                Rackup::Handler::WEBrick
+              rescue LoadError
+                Rack::Handler::WEBrick
+              end
+
 SERVER_THREAD = Thread.new do
-  Rack::Handler::WEBrick.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
+  RACK_SERVER.run(FakeServer, Port: 8000, Logger: WEBrick::Log.new('/dev/null'), AccessLog: [])
 end
 
 loop do

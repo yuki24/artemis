@@ -8,6 +8,12 @@ rescue LoadError
   # no-op... Rails 7.0 requires this.
 end
 
+begin
+  require 'active_support/deprecation'
+  require 'active_support/deprecator'
+rescue LoadError
+end
+
 require 'active_support/core_ext/numeric/time'
 require 'net/http/persistent'
 

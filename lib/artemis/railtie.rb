@@ -61,7 +61,7 @@ module Artemis
       if app.config.eager_load && app.config.cache_classes
         Artemis::GraphQLEndpoint.registered_services.each do |endpoint_name|
           begin
-            require endpoint_name # Rails 7.0 requires this.
+            require_dependency endpoint_name # Rails 7.0+ requires this.
           rescue LoadError
             # no-op...
           end

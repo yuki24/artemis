@@ -4,6 +4,15 @@ appraise "rails_edge" do
     gem "railties"
     gem "activesupport"
   end
+
+  gem "rackup"
+end
+
+appraise "rails_71" do
+  gem "rails", '~> 7.1.0.beta1'
+  gem "railties", '~> 7.1.0.beta1'
+  gem "activesupport", '~> 7.1.0.beta1'
+  gem "rackup"
 end
 
 appraise "rails_70" do
