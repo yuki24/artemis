@@ -4,9 +4,9 @@ require "bundler/setup"
 require "artemis"
 
 Artemis::Client.query_paths = [File.join(__dir__, '../spec/fixtures')]
-Artemis::GraphQLEndpoint.register!(:metaphysics, adapter: :test, url: '', schema_path: 'spec/fixtures/metaphysics/schema.json')
-Artemis::GraphQLEndpoint.lookup(:metaphysics).load_schema!
-require_relative '../spec/fixtures/metaphysics'
+Artemis::GraphQLEndpoint.register!(:github, adapter: :test, url: '', schema_path: 'spec/fixtures/github/schema.json')
+Artemis::GraphQLEndpoint.lookup(:github).load_schema!
+require_relative '../spec/fixtures/github'
 
 require "pry"
 Pry.start
