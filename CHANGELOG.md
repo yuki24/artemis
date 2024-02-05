@@ -1,18 +1,18 @@
 ## Unreleased
 
-#### Breaking Changes
+#### 🚨 Breaking Changes
 
 - Drop support for Ruby 2.6. For those of you looking to use Artemis on Ruby 2.6, please use the `artemis` version
   `0.9.0` and the `graphql-client` version `0.17.0`.
 
-#### New Features
+#### ⭐️ New Features
 
 - Add support for Ruby 3.3.
 - Add support for the latest versinos of the `graphql` gem.
 
-#### Bug Fixes
+#### 🐞 Bug Fixes
 
-- No changes.
+- No bug fixes.
 
 ## [v0.9.0](https://github.com/yuki24/artemis/tree/v0.9.0)
 
