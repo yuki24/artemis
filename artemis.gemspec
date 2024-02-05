@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport", ">= 4.0.0"
   spec.add_dependency "railties", ">= 4.0.0"
-  spec.add_dependency "graphql", "< 2.1"
+  spec.add_dependency "graphql"
   spec.add_dependency "graphql-client", ">= 0.13.0"
 
   spec.add_development_dependency "appraisal", ">= 2.2"

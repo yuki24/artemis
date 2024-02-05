@@ -8,6 +8,7 @@
 #### New Features
 
 - Add support for Ruby 3.3.
+- Add support for the latest versinos of the `graphql` gem.
 
 #### Bug Fixes
 
