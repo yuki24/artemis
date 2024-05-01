@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'helpers/test_helper'
 
 class ClientTest < ActiveSupport::TestCase
   setup do
@@ -6,7 +6,7 @@ class ClientTest < ActiveSupport::TestCase
   end
 
   test ".lookup_graphql_file returns the path to the matching graph file" do
-    assert_equal "#{PROJECT_DIR}/spec/fixtures/github/user.graphql", Github.resolve_graphql_file_path("user")
+    assert_equal "#{PROJECT_DIR}/test/fixtures/github/user.graphql", Github.resolve_graphql_file_path("user")
   end
 
   test ".lookup_graphql_file returns nil if the file is missing" do

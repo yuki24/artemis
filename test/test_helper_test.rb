@@ -1,11 +1,11 @@
-require 'test_helper'
+require_relative 'helpers/test_helper'
 require 'artemis/test_helper'
 
 class TestHelperTest < ActiveSupport::TestCase
   include Artemis::TestHelper
 
   def graphql_fixture_path
-    File.join(PROJECT_DIR, "spec/fixtures/responses")
+    File.join(PROJECT_DIR, "test/fixtures/responses")
   end
 
   setup do
@@ -61,7 +61,7 @@ class TestHelperTest < ActiveSupport::TestCase
   end
 
   test "raises an exception if the specified fixture file exists but fixture key does not exist" do
-    assert_raises Artemis::FixtureNotFound, match: %r|spec/fixtures/responses/github/repository.yml| do
+    assert_raises Artemis::FixtureNotFound, match: %r|test/fixtures/responses/github/repository.yml| do
      stub_graphql(Github, :repository).to_return(:does_not_exist)
    end
   end

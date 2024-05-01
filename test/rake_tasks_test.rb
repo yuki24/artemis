@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "isolated_test_helper"
+require_relative "helpers/isolated_test_helper"
 
 module ApplicationTests
   module RakeTests

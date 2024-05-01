@@ -1,9 +1,7 @@
-require 'test_helper'
+require_relative '../helpers/test_helper'
 require 'rails/generators/test_case'
 
 require 'generators/artemis/mutation/mutation_generator'
-
-require_relative '../../spec/fixtures/github'
 
 class MutationGeneratorTest < Rails::Generators::TestCase
   tests Artemis::MutationGenerator

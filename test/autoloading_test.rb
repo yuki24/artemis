@@ -1,4 +1,4 @@
-require 'test_helper'
+require_relative 'helpers/test_helper'
 
 class AutoLoadingTest < ActiveSupport::TestCase
   test ".load_constant loads the specified constant if there is a matching graphql file" do
