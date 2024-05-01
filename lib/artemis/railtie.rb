@@ -61,7 +61,7 @@ module Artemis
 
     initializer 'graphql.client.preload', after: 'graphql.client.load_config' do |app|
       not_on_zeitwerk = !defined?(Zeitwerk) || (app.config.respond_to?(:autoloader) && app.config.autoloader != :zeitwerk)
-      # pp [!defined?(Zeitwerk), app.config.respond_to?(:autoloader), app.config.try(:autoloader) != :zeitwerk]
+
       if app.config.eager_load && app.config.cache_classes && not_on_zeitwerk
         Artemis::GraphQLEndpoint.registered_services.each do |endpoint_name|
           endpoint_name.camelize.constantize.preload!
