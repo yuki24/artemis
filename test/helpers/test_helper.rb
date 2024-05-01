@@ -25,6 +25,7 @@ rescue LoadError
   ActiveSupport::TestCase.test_order = :sorted if ActiveSupport::TestCase.respond_to?(:test_order=)
 end
 
+
 # This assumes that all of thw following methods are property implemented:
 #
 #   * +Artemis::Client.query_paths+
@@ -34,12 +35,16 @@ end
 #
 # The only method that doesn't need test coverage is +Artemis::Client.query_paths+. The rest of the methods should be
 # tested, but we don't have any test setup for that yet.
-Artemis::Client.query_paths = [File.expand_path('spec/fixtures/')]
+Artemis::Client.query_paths = [File.expand_path('test/fixtures/')]
 
 Artemis::GraphQLEndpoint.suppress_warnings_on_schema_load = true
-Artemis::GraphQLEndpoint.register!(:github, adapter: :test, url: '', schema_path: 'spec/fixtures/github/schema.json')
+Artemis::GraphQLEndpoint.register!(:github, adapter: :test, url: '', schema_path: 'test/fixtures/github/schema.json')
 Artemis::GraphQLEndpoint.lookup(:github).load_schema!
 
-require_relative '../spec/fixtures/github'
+require_relative '../fixtures/github'
 
 PROJECT_DIR = FileUtils.pwd
+
+require_relative 'fake_server'
+server_thread = start_server
+Minitest.after_run { teardown_server(server_thread) }

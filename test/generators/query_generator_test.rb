@@ -1,9 +1,7 @@
-require 'test_helper'
+require_relative '../helpers/test_helper'
 require 'rails/generators/test_case'
 
 require 'generators/artemis/query/query_generator'
-
-require_relative '../../spec/fixtures/github'
 
 class QueryGeneratorTest < Rails::Generators::TestCase
   tests Artemis::QueryGenerator

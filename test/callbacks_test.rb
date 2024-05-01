@@ -1,4 +1,5 @@
-require 'test_helper'
+require_relative 'helpers/test_helper'
+
 require 'active_support/core_ext/module/attribute_accessors'
 
 class CallbacksTest < ActiveSupport::TestCase

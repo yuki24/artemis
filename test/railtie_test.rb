@@ -1,6 +1,7 @@
 require "rack/test"
 require "rails/version"
-require "isolated_test_helper"
+
+require_relative "helpers/isolated_test_helper"
 
 class RailtieTest < ActiveSupport::TestCase
   include ActiveSupport::Testing::Isolation
@@ -44,7 +45,7 @@ class RailtieTest < ActiveSupport::TestCase
     end
 
     FileUtils.mkdir_p "#{app_path}/vendor/graphql/schema"
-    FileUtils.cp_r File.expand_path("spec/fixtures/github/schema.json"), "#{app_path}/vendor/graphql/schema/github.json"
+    FileUtils.cp_r File.expand_path("test/fixtures/github/schema.json"), "#{app_path}/vendor/graphql/schema/github.json"
 
     boot_rails
 
@@ -163,7 +164,7 @@ class RailtieTest < ActiveSupport::TestCase
         development:
           github:
             url: https://api.github.com/graphql
-            schema_path: spec/fixtures/github/schema.json
+            schema_path: test/fixtures/github/schema.json
       YAML
     end
 

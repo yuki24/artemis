@@ -1,4 +1,4 @@
-require 'test_helper'
+require_relative 'helpers/test_helper'
 
 class GraphQLEndpointTest < ActiveSupport::TestCase
   teardown do
