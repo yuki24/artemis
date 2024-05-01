@@ -1,6 +1,7 @@
+require 'test_helper'
 require 'active_support/core_ext/module/attribute_accessors'
 
-describe "#{GraphQL::Client} Callbacks" do
+class CallbacksTest < ActiveSupport::TestCase
   Client = Class.new(Artemis::Client) do
     def self.name
       'Github'
@@ -33,28 +34,24 @@ describe "#{GraphQL::Client} Callbacks" do
     end
   end
 
-  describe ".before_execute" do
-    it "gets invoked before executing" do
-      Client.repository(owner: "yuki24", name: "artemis", context: { user_id: 'yuki24' })
+  test ".before_execute gets invoked before executing" do
+    Client.repository(owner: "yuki24", name: "artemis", context: { user_id: 'yuki24' })
 
-      document, operation_name, variables, context = Client.before_callback
+    document, operation_name, variables, context = Client.before_callback
 
-      expect(document).to eq(Client::Repository.document)
-      expect(operation_name).to eq('Client__Repository')
-      expect(variables).to eq("name" => "artemis", "owner" => "yuki24")
-      expect(context).to eq(user_id: 'yuki24')
-    end
+    assert_equal Client::Repository.document, document
+    assert_equal 'CallbacksTest__Client__Repository', operation_name
+    assert_equal({ "name" => "artemis", "owner" => "yuki24" }, variables)
+    assert_equal({ user_id: 'yuki24' }, context)
   end
 
-  describe ".after_execute" do
-    it "gets invoked after executing" do
-      Client.user
+  test ".after_execute gets invoked after executing" do
+    Client.user
 
-      data, errors, extensions = Client.after_callback
+    data, errors, extensions = Client.after_callback
 
-      expect(data).to eq("test" => "data")
-      expect(errors).to eq([])
-      expect(extensions).to eq({})
-    end
+    assert_equal({ "test" => "data" }, data)
+    assert_equal [], errors
+    assert_equal({}, extensions)
   end
 end
