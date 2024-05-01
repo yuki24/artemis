@@ -150,8 +150,8 @@ class RailtieTest < ActiveSupport::TestCase
     assert_not_equal old_object_id, Github.object_id
   end
 
-  test "preload the *.graphql files when eager_load is true" do
-    if Rails::VERSION::MAJOR >= 6
+  test "preload the *.graphql files when eager_load is true and the app loader is set to :classic" do
+    if Rails::VERSION::MAJOR >= 7
       skip "Skipping this test for Rails versions that work with Zeitwerk."
     end
 
@@ -185,6 +185,7 @@ class RailtieTest < ActiveSupport::TestCase
     end
 
     add_to_config <<-RUBY
+      config.autoloader = :classic
       config.cache_classes = true
       config.eager_load = true
 

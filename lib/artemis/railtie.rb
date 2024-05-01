@@ -31,7 +31,9 @@ module Artemis
     end
 
     initializer 'graphql.client.set_reloader', after: 'graphql.client.set_query_paths' do |app|
-      if !config.respond_to?(:autoloader) || config.autoloader != :zeitwerk
+      not_on_zeitwerk = !defined?(Zeitwerk) || (app.config.respond_to?(:autoloader) && app.config.autoloader != :zeitwerk)
+
+      if not_on_zeitwerk
         files_to_watch = Artemis::Client.query_paths.map {|path| [path, config.artemis.graphql_extentions] }.to_h
 
         app.reloaders << ActiveSupport::FileUpdateChecker.new([], files_to_watch) do
@@ -58,7 +60,9 @@ module Artemis
     end
 
     initializer 'graphql.client.preload', after: 'graphql.client.load_config' do |app|
-      if app.config.eager_load && app.config.cache_classes && (!config.respond_to?(:autoloader) || config.autoloader != :zeitwerk)
+      not_on_zeitwerk = !defined?(Zeitwerk) || (app.config.respond_to?(:autoloader) && app.config.autoloader != :zeitwerk)
+      # pp [!defined?(Zeitwerk), app.config.respond_to?(:autoloader), app.config.try(:autoloader) != :zeitwerk]
+      if app.config.eager_load && app.config.cache_classes && not_on_zeitwerk
         Artemis::GraphQLEndpoint.registered_services.each do |endpoint_name|
           endpoint_name.camelize.constantize.preload!
         end
