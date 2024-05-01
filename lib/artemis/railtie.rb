@@ -58,14 +58,8 @@ module Artemis
     end
 
     initializer 'graphql.client.preload', after: 'graphql.client.load_config' do |app|
-      if app.config.eager_load && app.config.cache_classes
+      if app.config.eager_load && app.config.cache_classes && (!config.respond_to?(:autoloader) || config.autoloader != :zeitwerk)
         Artemis::GraphQLEndpoint.registered_services.each do |endpoint_name|
-          begin
-            require_dependency endpoint_name # Rails 7.0+ requires this.
-          rescue LoadError
-            # no-op...
-          end
-
           endpoint_name.camelize.constantize.preload!
         end
       end
