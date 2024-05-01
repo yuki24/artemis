@@ -1,6 +1,5 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
-require 'rspec/core/rake_task'
 
 TESTS_IN_ISOLATION = ['test/railtie_test.rb', 'test/rake_tasks_test.rb']
 
@@ -16,6 +15,4 @@ Rake::TestTask.new('test:isolated') do |t|
   t.warning    = false
 end
 
-RSpec::Core::RakeTask.new(:spec)
-
-task default: ['spec', 'test', 'test:isolated']
+task default: ['test', 'test:isolated']
