@@ -1,3 +1,9 @@
+## v1.0.1
+
+#### 🐞 Bug Fixes
+
+- Fixes a bug where abstract client classes are not loaded correctly (#93, `494d30b`)
+
 ## v1.0.0
 
 #### 🚨 Breaking Changes
