@@ -1,8 +1,12 @@
-## v1.0.1
+## v1.0.2
 
 #### 🐞 Bug Fixes
 
 - Fixes a bug where abstract client classes are not loaded correctly (#93, `494d30b`)
+
+## v1.0.1
+
+> Yanked due to inconsistent commit history.
 
 ## v1.0.0
 
