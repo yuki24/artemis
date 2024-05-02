@@ -1,24 +1,30 @@
-## v1.0.2
+## [v1.0.2](https://github.com/yuki24/artemis/tree/v1.0.2)
+
+_<sup>released at 2024-05-02 02:41:10 UTC</sup>_
 
 #### 🐞 Bug Fixes
 
-- Fixes a bug where abstract client classes are not loaded correctly (#93, `494d30b`)
+- Fixes a bug where abstract client classes are not loaded correctly ([#93](https://github.com/yuki24/artemis/issues/93), `494d30b`)
 
-## v1.0.1
+## [v1.0.1](https://github.com/yuki24/artemis/tree/v1.0.1)
+
+_<sup>released at 2024-05-02 02:40:54 UTC</sup>_
 
 > Yanked due to inconsistent commit history.
 
-## v1.0.0
+## [v1.0.0](https://github.com/yuki24/artemis/tree/v1.0.0)
+
+_<sup>released at 2024-02-05 06:16:35 UTC</sup>_
 
 #### 🚨 Breaking Changes
 
 - Drop support for Ruby 2.6. For those of you looking to use Artemis on Ruby 2.6, please use the `artemis` version
-  `0.9.0` and the `graphql-client` version `0.17.0`.
+  `0.9.0` and the `graphql-client` version `0.17.0`. ([#90](https://github.com/yuki24/artemis/pull/90))
 
 #### ⭐️ New Features
 
-- Add support for Ruby 3.3.
-- Add support for the latest versinos of the `graphql` gem.
+- Add support for Ruby 3.3. ([#91](https://github.com/yuki24/artemis/pull/91))
+- Add support for the latest versions of the `graphql` gem. ([#92](https://github.com/yuki24/artemis/pull/92))
 
 #### 🐞 Bug Fixes
 
