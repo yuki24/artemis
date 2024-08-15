@@ -75,7 +75,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install curl
         run: sudo apt-get install curl libcurl4-openssl-dev
       - name: Set up Ruby
@@ -92,7 +92,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: gemfiles/rails_edge.gemfile
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install curl
         run: sudo apt-get install curl libcurl4-openssl-dev
       - name: Set up Ruby
@@ -116,7 +116,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install curl
         run: sudo apt-get install curl libcurl4-openssl-dev
       - name: Set up Ruby
@@ -141,7 +141,7 @@ jobs:
 #    env:
 #      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
 #    steps:
-#      - uses: actions/checkout@v3
+#      - uses: actions/checkout@v4
 #      - name: Set up Ruby
 #        uses: ruby/setup-ruby@v1
 #        with:
