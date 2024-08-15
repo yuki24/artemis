@@ -6,9 +6,9 @@ gem "pry"
 gem "pry-byebug", platforms: :mri
 gem "curb", ">= 0.9.6"
 gem "webrick"
+gem "minitest", "5.10.3"
 gem "rails", "~> 5.0.0"
 gem "railties", "~> 5.0.0"
 gem "activesupport", "~> 5.0.0"
-gem "minitest", "5.10.3"
 
 gemspec path: "../"

@@ -9,3 +9,4 @@ gem 'pry'
 gem 'pry-byebug', platforms: :mri
 gem 'curb', '>= 0.9.6' if RUBY_ENGINE == 'ruby'
 gem 'webrick' if RUBY_VERSION >= '3.0.0'
+gem 'minitest', '< 5.25.0'
