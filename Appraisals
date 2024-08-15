@@ -17,6 +17,13 @@ appraise "graphql_2_0" do
   gem "graphql", "< 2.1"
 end
 
+appraise "rails_72" do
+  gem "rails", '~> 7.2.0'
+  gem "railties", '~> 7.2.0'
+  gem "activesupport", '~> 7.2.0'
+  gem "rackup"
+end
+
 appraise "rails_71" do
   gem "rails", '~> 7.1.0'
   gem "railties", '~> 7.1.0'
