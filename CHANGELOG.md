@@ -1,10 +1,10 @@
-## v1.1.0
+## [v1.1.0](https://github.com/yuki24/artemis/tree/v1.1.0)
 
-_<sup>Unreleased</sup>_
+_<sup>released at 2024-08-16 05:38:33 UTC</sup>_
 
 #### ⭐️ New Features
 
-- Add support for Ruby 3.3. (e05756768c1535babccfca71f32d5218dd4da626)
+- Add support for Ruby 3.3. ([<tt>e057567</tt>](https://github.com/yuki24/artemis/commit/e05756768c1535babccfca71f32d5218dd4da626))
 
 ## [v1.0.2](https://github.com/yuki24/artemis/tree/v1.0.2)
 
