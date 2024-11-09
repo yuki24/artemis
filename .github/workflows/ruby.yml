@@ -14,6 +14,8 @@ jobs:
           - '3.0'
           - '2.7'
         gemfile:
+          - gemfiles/rails_80.gemfile
+          - gemfiles/rails_72.gemfile
           - gemfiles/rails_71.gemfile
           - gemfiles/rails_70.gemfile
           - gemfiles/rails_61.gemfile
@@ -44,6 +46,8 @@ jobs:
           - ruby_version: '3.2'
             gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '3.1'
+            gemfile: gemfiles/rails_80.gemfile
+          - ruby_version: '3.1'
             gemfile: gemfiles/rails_61.gemfile
           - ruby_version: '3.1'
             gemfile: gemfiles/rails_60.gemfile
@@ -54,6 +58,10 @@ jobs:
           - ruby_version: '3.1'
             gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '3.0'
+            gemfile: gemfiles/rails_80.gemfile
+          - ruby_version: '3.0'
+            gemfile: gemfiles/rails_72.gemfile
+          - ruby_version: '3.0'
             gemfile: gemfiles/rails_52.gemfile
           - ruby_version: '3.0'
             gemfile: gemfiles/rails_51.gemfile
@@ -61,6 +69,10 @@ jobs:
             gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '3.0'
             gemfile: gemfiles/graphql_2_0.gemfile
+          - ruby_version: '2.7'
+            gemfile: gemfiles/rails_80.gemfile
+          - ruby_version: '2.7'
+            gemfile: gemfiles/rails_72.gemfile
           - ruby_version: '2.7'
             gemfile: gemfiles/rails_71.gemfile
           - ruby_version: '2.7'
@@ -111,7 +123,7 @@ jobs:
           - 'ruby-head'
         gemfile:
           - gemfiles/rails_edge.gemfile
-          - gemfiles/rails_71.gemfile
+          - gemfiles/rails_80.gemfile
     runs-on: ubuntu-22.04
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
