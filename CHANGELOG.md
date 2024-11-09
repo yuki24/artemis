@@ -1,3 +1,17 @@
+## Unreleased
+
+#### 🚨 Breaking Changes
+
+- No changes.
+
+#### ⭐️ New Features
+
+- Add support for Rails 8.0 ([<tt>#96</tt>](https://github.com/yuki24/artemis/pull/96))
+
+#### 🐞 Bug Fixes
+
+- No changes.
+
 ## [v1.1.0](https://github.com/yuki24/artemis/tree/v1.1.0)
 
 _<sup>released at 2024-08-16 05:38:33 UTC</sup>_
