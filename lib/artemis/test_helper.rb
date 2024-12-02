@@ -70,7 +70,7 @@ module Artemis
     end
 
     def read_erb_yaml(path) #:nodoc:
-      YAML.load(ERB.new(File.read(path)).result)
+      YAML.load(ERB.new(File.read(path)).result, aliases: true)
     end
 
     class StubbingDSL #:nodoc:
