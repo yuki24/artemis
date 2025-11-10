@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'delegate'
-
-require 'active_support/configurable'
+require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/module/attribute_accessors'
@@ -13,28 +12,25 @@ require 'artemis/exceptions'
 
 module Artemis
   class Client
-    include ActiveSupport::Configurable
-
     # The paths in which the Artemis client looks for files that have the +.graphql+ extension.
     # In a rails app, this value will be set to +["app/operations"]+ by Artemis' +Artemis::Railtie+.
     cattr_accessor :query_paths
 
-    # Default context that is appended to every GraphQL request for the client.
-    config.default_context = nil
-
-    # List of before callbacks that get invoked in every +execute+ call.
-    #
-    # @api  private
-    config.before_callbacks = []
-
-    # List of after callbacks that get invoked in every +execute+ call.
-    #
-    # @api private
-    config.after_callbacks = []
-
     # Returns a plain +GraphQL::Client+ object. For more details please refer to the official documentation for
     # {the +graphql-client+ gem}[https://github.com/github/graphql-client].
     attr_reader :client
+
+    # Default context that is appended to every GraphQL request for the client.
+    class_attribute :default_context, default: {}
+
+    # List of before callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    class_attribute :before_callbacks, default: []
+    # List of after callbacks that get invoked in every +execute+ call.
+    #
+    # @api private
+    class_attribute :after_callbacks, default: []
 
     # Creates a new instance of the GraphQL client for the service.
     #
@@ -60,8 +56,6 @@ module Artemis
     end
 
     class << self
-      delegate :default_context=, to: :config
-
       # Creates a new instance of the GraphQL client for the service.
       #
       #   # app/operations/github/user.graphql
@@ -138,7 +132,7 @@ module Artemis
       #   end
       #
       def before_execute(&block)
-        config.before_callbacks = [*config.before_callbacks, block]
+        self.before_callbacks += [block]
       end
 
       # Defines a callback that will get called right after the
@@ -156,14 +150,7 @@ module Artemis
       #   end
       #
       def after_execute(&block)
-        config.after_callbacks = [*config.after_callbacks, block]
-      end
-
-      # Returns the default configured context or an empty hash by default
-      #
-      # @return [Hash]
-      def default_context
-        config.default_context || {}
+        self.after_callbacks += [block]
       end
 
       def resolve_graphql_file_path(filename, fragment: false)
@@ -279,7 +266,7 @@ module Artemis
       #
       # @api private
       def callbacks
-        Callbacks.new(config.before_callbacks, config.after_callbacks)
+        Callbacks.new(before_callbacks, after_callbacks)
       end
     end
 
