@@ -10,6 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby_version:
+          - '3.4'
           - '3.3'
           - '3.2'
           - '3.1'
@@ -27,6 +28,20 @@ jobs:
           - gemfiles/rails_50.gemfile
           - gemfiles/graphql_2_0.gemfile
         exclude:
+          - ruby_version: '3.4'
+            gemfile: gemfiles/rails_71.gemfile
+          - ruby_version: '3.4'
+            gemfile: gemfiles/rails_70.gemfile
+          - ruby_version: '3.4'
+            gemfile: gemfiles/rails_61.gemfile
+          - ruby_version: '3.4'
+            gemfile: gemfiles/rails_60.gemfile
+          - ruby_version: '3.4'
+            gemfile: gemfiles/rails_52.gemfile
+          - ruby_version: '3.4'
+            gemfile: gemfiles/rails_51.gemfile
+          - ruby_version: '3.4'
+            gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '3.3'
             gemfile: gemfiles/rails_61.gemfile
           - ruby_version: '3.3'
