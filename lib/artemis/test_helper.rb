@@ -70,7 +70,11 @@ module Artemis
     end
 
     def read_erb_yaml(path) #:nodoc:
-      YAML.load(ERB.new(File.read(path)).result, aliases: true)
+      if YAML.method(:load).parameters.any? { |_arg_type, arg_name| arg_name == :aliases }
+        YAML.load(ERB.new(File.read(path)).result, aliases: true)
+      else
+        YAML.load(ERB.new(File.read(path)).result)
+      end
     end
 
     class StubbingDSL #:nodoc:
