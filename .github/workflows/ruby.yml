@@ -21,69 +21,18 @@ jobs:
           - gemfiles/rails_72.gemfile
           - gemfiles/rails_71.gemfile
           - gemfiles/rails_70.gemfile
-          - gemfiles/rails_61.gemfile
-          - gemfiles/rails_60.gemfile
-          - gemfiles/rails_52.gemfile
-          - gemfiles/rails_51.gemfile
-          - gemfiles/rails_50.gemfile
           - gemfiles/graphql_2_0.gemfile
         exclude:
           - ruby_version: '3.4'
             gemfile: gemfiles/rails_71.gemfile
           - ruby_version: '3.4'
             gemfile: gemfiles/rails_70.gemfile
-          - ruby_version: '3.4'
-            gemfile: gemfiles/rails_61.gemfile
-          - ruby_version: '3.4'
-            gemfile: gemfiles/rails_60.gemfile
-          - ruby_version: '3.4'
-            gemfile: gemfiles/rails_52.gemfile
-          - ruby_version: '3.4'
-            gemfile: gemfiles/rails_51.gemfile
-          - ruby_version: '3.4'
-            gemfile: gemfiles/rails_50.gemfile
-          - ruby_version: '3.3'
-            gemfile: gemfiles/rails_61.gemfile
-          - ruby_version: '3.3'
-            gemfile: gemfiles/rails_60.gemfile
-          - ruby_version: '3.3'
-            gemfile: gemfiles/rails_52.gemfile
-          - ruby_version: '3.3'
-            gemfile: gemfiles/rails_51.gemfile
-          - ruby_version: '3.3'
-            gemfile: gemfiles/rails_50.gemfile
-          - ruby_version: '3.2'
-            gemfile: gemfiles/rails_61.gemfile
-          - ruby_version: '3.2'
-            gemfile: gemfiles/rails_60.gemfile
-          - ruby_version: '3.2'
-            gemfile: gemfiles/rails_52.gemfile
-          - ruby_version: '3.2'
-            gemfile: gemfiles/rails_51.gemfile
-          - ruby_version: '3.2'
-            gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '3.1'
             gemfile: gemfiles/rails_80.gemfile
-          - ruby_version: '3.1'
-            gemfile: gemfiles/rails_61.gemfile
-          - ruby_version: '3.1'
-            gemfile: gemfiles/rails_60.gemfile
-          - ruby_version: '3.1'
-            gemfile: gemfiles/rails_52.gemfile
-          - ruby_version: '3.1'
-            gemfile: gemfiles/rails_51.gemfile
-          - ruby_version: '3.1'
-            gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '3.0'
             gemfile: gemfiles/rails_80.gemfile
           - ruby_version: '3.0'
             gemfile: gemfiles/rails_72.gemfile
-          - ruby_version: '3.0'
-            gemfile: gemfiles/rails_52.gemfile
-          - ruby_version: '3.0'
-            gemfile: gemfiles/rails_51.gemfile
-          - ruby_version: '3.0'
-            gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '3.0'
             gemfile: gemfiles/graphql_2_0.gemfile
           - ruby_version: '2.7'
@@ -92,12 +41,6 @@ jobs:
             gemfile: gemfiles/rails_72.gemfile
           - ruby_version: '2.7'
             gemfile: gemfiles/rails_71.gemfile
-          - ruby_version: '2.7'
-            gemfile: gemfiles/rails_52.gemfile
-          - ruby_version: '2.7'
-            gemfile: gemfiles/rails_51.gemfile
-          - ruby_version: '2.7'
-            gemfile: gemfiles/rails_50.gemfile
           - ruby_version: '2.7'
             gemfile: gemfiles/graphql_2_0.gemfile
     runs-on: ubuntu-22.04
@@ -127,7 +70,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3
+          ruby-version: 3.4
           bundler-cache: true
       - run: bundle exec rake || echo "Rails edge test is done."
 
