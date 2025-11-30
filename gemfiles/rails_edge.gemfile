@@ -8,11 +8,15 @@ git "https://github.com/rails/rails.git" do
   gem "activesupport"
 end
 
-gem "pry"
-gem "pry-byebug", platforms: :mri
+gem "bigdecimal"
+gem "drb"
+gem "irb"
+gem "logger"
+gem "mutex_m"
+gem "reline"
 gem "curb", ">= 0.9.6"
+gem "minitest"
 gem "webrick"
-gem "minitest", "< 5.25.0"
 gem "rackup"
 
 gemspec path: "../"
